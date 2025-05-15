@@ -33,6 +33,15 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
 
+      - name: Test report 
+        run: npx vitest --reporter=junit --outputFile=test-report.junit.xml
+
+      - name: Upload test report to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: SonarQube Scan
         run: echo "Disabling Sonar for Private Repo, Re enabling when ready."
         # uses: sonarsource/sonarqube-scan-action@v2.0.2
