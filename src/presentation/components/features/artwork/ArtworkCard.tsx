@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Heart } from "lucide-react"
-import { type Artwork } from "@/core/domain/entities/Artwork"
-import { useSavedArtworkViewModel } from "../../../viewmodels/SavedArtworkViewModel"
-import { usePrefetchArtworkViewModel } from "../../../viewmodels/ArtworkDetailViewModel"
-import { useNavigate } from "react-router"
-import Image from "../../shared/Image"
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { Heart } from 'lucide-react'
+import { type Artwork } from '@/core/domain/entities/Artwork'
+import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
+import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
+import { useNavigate } from 'react-router'
+import Image from '../../shared/Image'
 
 interface ArtworkCardProps {
   artwork: Artwork
@@ -19,7 +19,8 @@ interface ArtworkCardProps {
  */
 export function ArtworkCard({ artwork }: ArtworkCardProps) {
   const [isLoading, setIsLoading] = useState(true)
-  const { isArtworkSaved, saveArtwork, removeSavedArtwork } = useSavedArtworkViewModel()
+  const { isArtworkSaved, saveArtwork, removeSavedArtwork } =
+    useSavedArtworkViewModel()
   const isSaved = isArtworkSaved(artwork.id)
   const { prefetchArtwork } = usePrefetchArtworkViewModel()
   const [isHovering, setIsHovering] = useState(false)
@@ -51,7 +52,7 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
 
   return (
     <motion.div
-      className="group relative h-full overflow-hidden rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+      className="group relative h-full overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
@@ -67,12 +68,12 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
               )}
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title || "Artwork"}
+                alt={artwork.title || 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                className={`object-cover transition-opacity duration-200 ${isLoading ? "opacity-0" : "opacity-100"}`}
+                className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                 style={{
-                  viewTransitionName: "artwork-image-" + artwork.id,
+                  viewTransitionName: 'artwork-image-' + artwork.id,
                 }}
                 onLoadingComplete={() => setIsLoading(false)}
               />
@@ -86,18 +87,25 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
           {/* Save button overlay */}
           <button
             onClick={handleSaveClick}
-            className={`absolute right-2 top-2 rounded-full p-2 transition-all duration-200 ${isSaved ? "bg-[#a20000] text-white" : "bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100"
-              }`}
-            aria-label={isSaved ? "Unsave artwork" : "Save artwork"}
+            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${
+              isSaved
+                ? 'bg-[#a20000] text-white'
+                : 'bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100'
+            }`}
+            aria-label={isSaved ? 'Unsave artwork' : 'Save artwork'}
           >
-            <Heart className={`h-4 w-4 ${isSaved ? "fill-white" : ""}`} />
+            <Heart className={`h-4 w-4 ${isSaved ? 'fill-white' : ''}`} />
           </button>
         </div>
 
         <div className="p-3">
           <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
-          <p className="line-clamp-1 text-sm text-gray-600">{artwork.artist_title || "Unknown artist"}</p>
-          {artwork.date_display && <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>}
+          <p className="line-clamp-1 text-sm text-gray-600">
+            {artwork.artist_title || 'Unknown artist'}
+          </p>
+          {artwork.date_display && (
+            <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>
+          )}
         </div>
       </div>
     </motion.div>

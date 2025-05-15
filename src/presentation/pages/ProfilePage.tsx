@@ -1,19 +1,18 @@
-"use client"
+'use client'
 
 import { motion } from 'framer-motion'
 import { ProfilePageContent } from '../components/features/profile/ProfilePageContent'
 
 export default function ProfilePage() {
-
   return (
     <motion.main
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="p-4 max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl p-4">
         <motion.h1
-          className="text-2xl font-bold mb-6"
+          className="mb-6 text-2xl font-bold"
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.2 }}
@@ -21,7 +20,7 @@ export default function ProfilePage() {
           Profile
         </motion.h1>
 
-        <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+        <div className="space-y-6 rounded-lg bg-white p-6 shadow-md">
           <ProfilePageContent />
         </div>
       </div>

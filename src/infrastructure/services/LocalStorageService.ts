@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import localforage from "localforage"
+import localforage from 'localforage'
 
 /**
  * Service for handling local storage operations using LocalForage
@@ -9,8 +9,8 @@ export class LocalStorageService {
   constructor() {
     // Initialize localforage
     localforage.config({
-      name: "art-gallery",
-      storeName: "saved_artworks",
+      name: 'art-gallery',
+      storeName: 'saved_artworks',
     })
   }
 

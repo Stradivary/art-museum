@@ -1,5 +1,5 @@
-import type { Artwork } from "../../../domain/entities/Artwork"
-import type { IArtworkRepository } from "../../interfaces/IArtworkRepository"
+import type { Artwork } from '../../../domain/entities/Artwork'
+import type { IArtworkRepository } from '../../interfaces/IArtworkRepository'
 
 /**
  * Use case for retrieving a specific artwork by ID

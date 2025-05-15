@@ -1,6 +1,5 @@
-import { Skeleton } from "@/presentation/components/ui/skeleton";
+import { Skeleton } from '@/presentation/components/ui/skeleton'
 
- 
 /**
  * Skeleton loader for the artwork detail page
  */
@@ -9,8 +8,8 @@ export function ArtworkDetailSkeleton() {
     <div className="animate-pulse">
       <Skeleton className="h-[40vh] w-full" />
 
-      <div className="p-4 space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="space-y-6 p-4">
+        <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-1/3" />
           <Skeleton className="h-10 w-24 rounded-full" />
         </div>

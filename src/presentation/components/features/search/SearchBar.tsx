@@ -1,51 +1,51 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Search, X } from "lucide-react";
-import { useDebounce } from "@/presentation/hooks/useDebounce";
-import { useNavigate } from "react-router";
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { Search, X } from 'lucide-react'
+import { useDebounce } from '@/presentation/hooks/useDebounce'
+import { useNavigate } from 'react-router'
 
 interface SearchBarProps {
-  initialQuery?: string;
-  onSearch: (query: string) => void;
+  initialQuery?: string
+  onSearch: (query: string) => void
 }
 
 /**
  * Search bar component for searching artworks
  */
-export function SearchBar({ initialQuery = "", onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState(initialQuery);
-  const debouncedQuery = useDebounce(query, 300);
-  const navigate = useNavigate();
+export function SearchBar({ initialQuery = '', onSearch }: SearchBarProps) {
+  const [query, setQuery] = useState(initialQuery)
+  const debouncedQuery = useDebounce(query, 300)
+  const navigate = useNavigate()
 
   // Update the URL when the search query changes
   useEffect(() => {
-    onSearch(debouncedQuery);
+    onSearch(debouncedQuery)
 
     // Update URL with query parameter
     if (debouncedQuery) {
-      navigate(`/?q=${encodeURIComponent(debouncedQuery)}`);
+      navigate(`/?q=${encodeURIComponent(debouncedQuery)}`)
     } else {
-      navigate("/",);
+      navigate('/')
     }
-  }, [debouncedQuery, onSearch]);
+  }, [debouncedQuery, onSearch, navigate])
 
   const clearSearch = () => {
-    setQuery("");
-  };
+    setQuery('')
+  }
 
   return (
     <div className="relative mb-6">
-      <div className="relative rounded-full border overflow-hidden">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+      <div className="relative overflow-hidden rounded-full border">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
           <Search className="h-5 w-5 text-gray-400" />
         </div>
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full p-4 pl-12 pr-10 bg-white text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-[#a20000]"
+          className="w-full rounded-full bg-white p-4 pr-10 pl-12 text-gray-900 focus:ring-2 focus:ring-[#a20000] focus:outline-none"
           placeholder="Search for artworks, artists, etc."
           aria-label="Search"
         />
@@ -63,5 +63,5 @@ export function SearchBar({ initialQuery = "", onSearch }: SearchBarProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

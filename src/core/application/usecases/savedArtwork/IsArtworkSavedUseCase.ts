@@ -1,4 +1,4 @@
-import type { ISavedArtworkRepository } from "../../interfaces/ISavedArtworkRepository"
+import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepository'
 
 /**
  * Use case for checking if an artwork is saved in the user's collection

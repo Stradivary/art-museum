@@ -7,16 +7,16 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   test: {
-    environment: "jsdom",
+    environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     include: ['./tests/**/*.spec.tsx'],
     globals: true,
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
-    }
-  }
+    },
+  },
 })

@@ -1,4 +1,7 @@
-import type { IArtworkRepository, ArtworkPaginationResult } from "../../interfaces/IArtworkRepository"
+import type {
+  IArtworkRepository,
+  ArtworkPaginationResult,
+} from '../../interfaces/IArtworkRepository'
 
 /**
  * Use case for retrieving paginated artworks

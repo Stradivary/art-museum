@@ -1,5 +1,5 @@
-import type { SavedArtwork } from "../../../domain/entities/Artwork"
-import type { ISavedArtworkRepository } from "../../interfaces/ISavedArtworkRepository"
+import type { SavedArtwork } from '../../../domain/entities/Artwork'
+import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepository'
 
 /**
  * Use case for retrieving all saved artworks

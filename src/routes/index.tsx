@@ -4,7 +4,9 @@ import { MainLayout } from '../presentation/layouts/MainLayout'
 
 const HomePage = lazy(() => import('../presentation/pages/HomePage'))
 const SavedPage = lazy(() => import('../presentation/pages/SavedPage'))
-const ArtworkDetailPage = lazy(() => import('../presentation/pages/ArtworkDetailPage'))
+const ArtworkDetailPage = lazy(
+  () => import('../presentation/pages/ArtworkDetailPage')
+)
 const ProfilePage = lazy(() => import('../presentation/pages/ProfilePage'))
 
 export const router = createBrowserRouter([
@@ -14,20 +16,20 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />
+        element: <HomePage />,
       },
       {
         path: 'saved',
-        element: <SavedPage />
+        element: <SavedPage />,
       },
       {
         path: 'artwork/:id',
-        element: <ArtworkDetailPage />
+        element: <ArtworkDetailPage />,
       },
       {
         path: 'profile',
-        element: <ProfilePage />
-      }
-    ]
-  }
+        element: <ProfilePage />,
+      },
+    ],
+  },
 ])

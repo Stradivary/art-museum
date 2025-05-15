@@ -1,14 +1,14 @@
-import type { Artwork } from "@/core/domain/entities/Artwork"
-import type { ISavedArtworkRepository } from "../../interfaces/ISavedArtworkRepository"
+import type { Artwork } from '@/core/domain/entities/Artwork'
+import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepository'
 
 /**
  * Use case for saving an artwork to the user's collection
  */
 export class SaveArtworkUseCase {
-  private savedArtworkRepository: ISavedArtworkRepository;
+  private savedArtworkRepository: ISavedArtworkRepository
 
   constructor(savedArtworkRepository: ISavedArtworkRepository) {
-    this.savedArtworkRepository = savedArtworkRepository;
+    this.savedArtworkRepository = savedArtworkRepository
   }
 
   /**

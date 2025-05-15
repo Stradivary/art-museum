@@ -1,4 +1,4 @@
-import type { Artwork, SavedArtwork } from "../../domain/entities/Artwork"
+import type { Artwork, SavedArtwork } from '../../domain/entities/Artwork'
 
 /**
  * Repository interface for saved artwork operations

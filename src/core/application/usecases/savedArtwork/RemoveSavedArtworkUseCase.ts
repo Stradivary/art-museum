@@ -1,4 +1,4 @@
-import type { ISavedArtworkRepository } from "../../interfaces/ISavedArtworkRepository"
+import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepository'
 
 /**
  * Use case for removing a saved artwork from the user's collection

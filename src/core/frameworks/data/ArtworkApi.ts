@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import type { Artwork } from "@/core/domain/entities/Artwork"
+import type { Artwork } from '@/core/domain/entities/Artwork'
 
 /**
  * API response structure from Art Institute of Chicago API
@@ -23,7 +23,7 @@ export interface ArtworkApiResponse {
  * Data source for the Art Institute of Chicago API
  */
 export class ArtworkApi {
-  private baseUrl = "https://api.artic.edu/api/v1"
+  private baseUrl = 'https://api.artic.edu/api/v1'
 
   /**
    * Fetch paginated artworks from the API
@@ -31,7 +31,7 @@ export class ArtworkApi {
   async fetchArtworks(page = 1, limit = 10): Promise<ArtworkApiResponse> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/artworks?page=${page}&limit=${limit}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display`,
+        `${this.baseUrl}/artworks?page=${page}&limit=${limit}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display`
       )
 
       if (!response.ok) {
@@ -40,7 +40,7 @@ export class ArtworkApi {
 
       return await response.json()
     } catch (error) {
-      console.error("Error fetching artworks:", error)
+      console.error('Error fetching artworks:', error)
       throw error
     }
   }
@@ -51,7 +51,7 @@ export class ArtworkApi {
   async fetchArtworkById(id: number): Promise<Artwork> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/artworks/${id}?fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display`,
+        `${this.baseUrl}/artworks/${id}?fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display`
       )
 
       if (!response.ok) {
@@ -72,7 +72,7 @@ export class ArtworkApi {
   async searchArtworks(query: string): Promise<ArtworkApiResponse> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/artworks/search?q=${encodeURIComponent(query)}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display&limit=20`,
+        `${this.baseUrl}/artworks/search?q=${encodeURIComponent(query)}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display&limit=20`
       )
 
       if (!response.ok) {
@@ -81,7 +81,7 @@ export class ArtworkApi {
 
       return await response.json()
     } catch (error) {
-      console.error("Error searching artworks:", error)
+      console.error('Error searching artworks:', error)
       throw error
     }
   }

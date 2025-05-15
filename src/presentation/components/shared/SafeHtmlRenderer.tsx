@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import DOMPurify from "dompurify"
+import DOMPurify from 'dompurify'
 
 interface SafeHtmlRendererProps {
   html: string
@@ -13,11 +13,11 @@ interface SafeHtmlRendererProps {
 export function SafeHtmlRenderer({ html, className }: SafeHtmlRendererProps) {
   // Sanitize HTML to prevent XSS attacks
   const sanitizedHtml = DOMPurify.sanitize(html)
-  
+
   return (
-    <div 
+    <div
       className={className}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }} 
+      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   )
 }

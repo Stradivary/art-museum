@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Trash2 } from "lucide-react"
-import { type SavedArtwork } from "@/core/domain/entities/Artwork"
-import { usePrefetchArtworkViewModel } from "../../../viewmodels/ArtworkDetailViewModel"
-import { useNavigate } from "react-router"
-import Image from "../../shared/Image"
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { Trash2 } from 'lucide-react'
+import { type SavedArtwork } from '@/core/domain/entities/Artwork'
+import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
+import { useNavigate } from 'react-router'
+import Image from '../../shared/Image'
 
 interface SavedArtworkCardProps {
   artwork: SavedArtwork
@@ -58,7 +58,7 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
 
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+      className="group relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
@@ -74,10 +74,10 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
               )}
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title || "Artwork"}
+                alt={artwork.title || 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                className={`object-cover transition-opacity duration-200 ${isLoading ? "opacity-0" : "opacity-100"}`}
+                className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                 onLoadingComplete={() => setIsLoading(false)}
               />
             </>
@@ -90,7 +90,7 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
           {/* Delete button overlay */}
           <button
             onClick={handleDelete}
-            className="absolute right-2 top-2 rounded-full bg-white/80 p-2 text-red-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            className="absolute top-2 right-2 rounded-full bg-white/80 p-2 text-red-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             aria-label="Delete saved artwork"
           >
             <Trash2 className="h-4 w-4" />
@@ -99,8 +99,12 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
 
         <div className="p-3">
           <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
-          <p className="line-clamp-1 text-sm text-gray-600">{artwork.artist_title || "Unknown artist"}</p>
-          {artwork.date_display && <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>}
+          <p className="line-clamp-1 text-sm text-gray-600">
+            {artwork.artist_title || 'Unknown artist'}
+          </p>
+          {artwork.date_display && (
+            <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>
+          )}
         </div>
       </div>
     </motion.div>
