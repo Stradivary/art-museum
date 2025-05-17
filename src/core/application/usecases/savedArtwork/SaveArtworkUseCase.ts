@@ -5,7 +5,7 @@ import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepo
  * Use case for saving an artwork to the user's collection
  */
 export class SaveArtworkUseCase {
-  private savedArtworkRepository: ISavedArtworkRepository
+  private readonly savedArtworkRepository: ISavedArtworkRepository
 
   constructor(savedArtworkRepository: ISavedArtworkRepository) {
     this.savedArtworkRepository = savedArtworkRepository

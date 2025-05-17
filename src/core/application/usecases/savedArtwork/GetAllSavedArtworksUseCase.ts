@@ -5,7 +5,7 @@ import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepo
  * Use case for retrieving all saved artworks
  */
 export class GetAllSavedArtworksUseCase {
-  private savedArtworkRepository: ISavedArtworkRepository
+  private readonly savedArtworkRepository: ISavedArtworkRepository
   constructor(savedArtworkRepository: ISavedArtworkRepository) {
     this.savedArtworkRepository = savedArtworkRepository
   }

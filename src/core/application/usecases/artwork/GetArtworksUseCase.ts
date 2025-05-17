@@ -7,7 +7,7 @@ import type {
  * Use case for retrieving paginated artworks
  */
 export class GetArtworksUseCase {
-  private artworkRepository: IArtworkRepository
+  private readonly artworkRepository: IArtworkRepository
   constructor(artworkRepository: IArtworkRepository) {
     this.artworkRepository = artworkRepository
   }

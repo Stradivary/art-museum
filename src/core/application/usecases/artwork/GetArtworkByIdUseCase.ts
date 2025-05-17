@@ -5,7 +5,7 @@ import type { IArtworkRepository } from '../../interfaces/IArtworkRepository'
  * Use case for retrieving a specific artwork by ID
  */
 export class GetArtworkByIdUseCase {
-  private artworkRepository: IArtworkRepository
+  private readonly artworkRepository: IArtworkRepository
   constructor(artworkRepository: IArtworkRepository) {
     this.artworkRepository = artworkRepository
   }

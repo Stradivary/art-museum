@@ -4,7 +4,7 @@ import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepo
  * Use case for checking if an artwork is saved in the user's collection
  */
 export class IsArtworkSavedUseCase {
-  private savedArtworkRepository: ISavedArtworkRepository
+  private readonly savedArtworkRepository: ISavedArtworkRepository
   constructor(savedArtworkRepository: ISavedArtworkRepository) {
     this.savedArtworkRepository = savedArtworkRepository
   }

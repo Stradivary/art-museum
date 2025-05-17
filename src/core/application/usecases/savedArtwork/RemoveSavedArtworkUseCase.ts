@@ -4,7 +4,7 @@ import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepo
  * Use case for removing a saved artwork from the user's collection
  */
 export class RemoveSavedArtworkUseCase {
-  private savedArtworkRepository: ISavedArtworkRepository
+  private readonly savedArtworkRepository: ISavedArtworkRepository
   constructor(savedArtworkRepository: ISavedArtworkRepository) {
     this.savedArtworkRepository = savedArtworkRepository
   }
