@@ -16,7 +16,7 @@ interface SavedArtworkCardProps {
 /**
  * Card component for displaying and managing saved artworks
  */
-export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
+export function SavedArtworkCard({ artwork, onDelete }: Readonly<SavedArtworkCardProps>) {
   const [isLoading, setIsLoading] = useState(true)
   const [isDeleting, setIsDeleting] = useState(false)
   const { prefetchArtwork } = usePrefetchArtworkViewModel()
@@ -74,7 +74,7 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
               )}
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title || 'Artwork'}
+                alt={artwork.title ?? 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
                 className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
@@ -100,7 +100,7 @@ export function SavedArtworkCard({ artwork, onDelete }: SavedArtworkCardProps) {
         <div className="p-3">
           <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
           <p className="line-clamp-1 text-sm text-gray-600">
-            {artwork.artist_title || 'Unknown artist'}
+            {artwork.artist_title ?? 'Unknown artist'}
           </p>
           {artwork.date_display && (
             <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>

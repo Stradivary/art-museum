@@ -11,13 +11,12 @@ import Image from '../../shared/Image'
 
 interface ArtworkCardProps {
   artwork: Artwork
-  index: number
 }
 
 /**
  * Card component to display an artwork thumbnail and basic info
  */
-export function ArtworkCard({ artwork }: ArtworkCardProps) {
+export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
   const [isLoading, setIsLoading] = useState(true)
   const { isArtworkSaved, saveArtwork, removeSavedArtwork } =
     useSavedArtworkViewModel()
@@ -68,7 +67,7 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
               )}
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title || 'Artwork'}
+                alt={artwork.title ?? 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
                 className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
@@ -87,11 +86,10 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
           {/* Save button overlay */}
           <button
             onClick={handleSaveClick}
-            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${
-              isSaved
+            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${isSaved
                 ? 'bg-[#a20000] text-white'
                 : 'bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100'
-            }`}
+              }`}
             aria-label={isSaved ? 'Unsave artwork' : 'Save artwork'}
           >
             <Heart className={`h-4 w-4 ${isSaved ? 'fill-white' : ''}`} />
@@ -101,7 +99,7 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
         <div className="p-3">
           <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
           <p className="line-clamp-1 text-sm text-gray-600">
-            {artwork.artist_title || 'Unknown artist'}
+            {artwork.artist_title ?? 'Unknown artist'}
           </p>
           {artwork.date_display && (
             <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>

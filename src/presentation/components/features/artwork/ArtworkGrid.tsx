@@ -17,7 +17,7 @@ interface ArtworkGridProps {
 /**
  * Grid component to display artworks with infinite scrolling or search results
  */
-export function ArtworkGrid({ searchQuery }: ArtworkGridProps) {
+export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
   // Get view models for list and search functionality
   const {
     artworks: listArtworks,
@@ -43,8 +43,8 @@ export function ArtworkGrid({ searchQuery }: ArtworkGridProps) {
   if (isLoading && artworks.length === 0) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i}>
+        {Array.from({ length: 12 }).map((id) => (
+          <div key={`artwork-${id}`}>
             <ArtworkCardSkeleton />
           </div>
         ))}
@@ -52,7 +52,7 @@ export function ArtworkGrid({ searchQuery }: ArtworkGridProps) {
     )
   }
 
-  if (isEmpty || !artworks?.length) {
+  if (isEmpty ?? !artworks?.length) {
     return (
       <motion.div
         key="empty"
@@ -73,7 +73,7 @@ export function ArtworkGrid({ searchQuery }: ArtworkGridProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {artworks.map((artwork, index) => (
+        {artworks.map((artwork) => (
           <motion.div
             key={'art-' + artwork.id + artwork.image_id}
             initial={{ opacity: 0 }}
@@ -81,7 +81,7 @@ export function ArtworkGrid({ searchQuery }: ArtworkGridProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <ArtworkCard artwork={artwork} index={index} />
+            <ArtworkCard artwork={artwork} />
           </motion.div>
         ))}
       </div>

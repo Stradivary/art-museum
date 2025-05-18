@@ -44,7 +44,7 @@ export function useArtworkListViewModel() {
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage])
 
   return {
-    artworks: infiniteData?.pages?.flatMap((page) => page.artworks) || [],
+    artworks: infiniteData?.pages?.flatMap((page) => page.artworks) ?? [],
     isLoading: infiniteStatus === 'pending',
     isFetchingNextPage,
     hasNextPage,

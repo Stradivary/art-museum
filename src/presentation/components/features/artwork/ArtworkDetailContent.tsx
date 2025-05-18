@@ -17,7 +17,7 @@ interface ArtworkDetailContentProps {
 /**
  * Component to display detailed information about an artwork
  */
-export function ArtworkDetailContent({ id }: ArtworkDetailContentProps) {
+export function ArtworkDetailContent({ id }: Readonly<ArtworkDetailContentProps>) {
   const navigate = useNavigate()
   const { artwork, isLoading, error } = useArtworkDetailViewModel(
     Number.parseInt(id)
@@ -59,7 +59,7 @@ export function ArtworkDetailContent({ id }: ArtworkDetailContentProps) {
         </button>
       </div>
 
-      {isLoading || !artwork ? (
+      {(isLoading || !artwork) ? (
         <ArtworkDetailSkeleton />
       ) : (
         <div>
@@ -67,7 +67,7 @@ export function ArtworkDetailContent({ id }: ArtworkDetailContentProps) {
             {artwork.image_id ? (
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title || 'Artwork'}
+                alt={artwork.title ?? 'Artwork'}
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -85,7 +85,7 @@ export function ArtworkDetailContent({ id }: ArtworkDetailContentProps) {
           <div className="p-4">
             <div className="mb-4">
               <p className="text-sm text-gray-600">
-                {artwork.credit_line || 'Credit information unavailable'}
+                {artwork.credit_line ?? 'Credit information unavailable'}
               </p>
             </div>
 

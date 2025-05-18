@@ -65,7 +65,7 @@ export class SavedArtworkRepositoryImpl implements ISavedArtworkRepository {
       const savedArtworks = await localStorageService.getItem<SavedArtwork[]>(
         this.STORAGE_KEY
       )
-      return savedArtworks || []
+      return savedArtworks ?? []
     } catch (error) {
       console.error('Error getting saved artworks:', error)
       throw error
