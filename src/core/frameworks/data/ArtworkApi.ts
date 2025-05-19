@@ -23,7 +23,7 @@ export interface ArtworkApiResponse {
  * Data source for the Art Institute of Chicago API
  */
 export class ArtworkApi {
-  private baseUrl = 'https://api.artic.edu/api/v1'
+  private readonly baseUrl = 'https://api.artic.edu/api/v1'
 
   /**
    * Fetch paginated artworks from the API

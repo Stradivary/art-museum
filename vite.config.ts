@@ -1,8 +1,8 @@
-import { codecovVitePlugin } from "@codecov/vite-plugin";
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react-swc';
-import path from 'path';
-import { defineConfig } from 'vitest/config';
+import { codecovVitePlugin } from '@codecov/vite-plugin'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react-swc'
+import path from 'path'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -10,9 +10,9 @@ export default defineConfig({
     react(),
     codecovVitePlugin({
       enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: "art-museum",
+      bundleName: 'art-museum',
       uploadToken: process.env.CODECOV_TOKEN,
-    })
+    }),
   ],
   resolve: {
     alias: {
