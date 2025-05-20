@@ -86,10 +86,11 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
           {/* Save button overlay */}
           <button
             onClick={handleSaveClick}
-            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${isSaved
+            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${
+              isSaved
                 ? 'bg-[#a20000] text-white'
                 : 'bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100'
-              }`}
+            }`}
             aria-label={isSaved ? 'Unsave artwork' : 'Save artwork'}
           >
             <Heart className={`h-4 w-4 ${isSaved ? 'fill-white' : ''}`} />

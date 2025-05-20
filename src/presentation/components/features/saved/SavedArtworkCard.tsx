@@ -16,7 +16,10 @@ interface SavedArtworkCardProps {
 /**
  * Card component for displaying and managing saved artworks
  */
-export function SavedArtworkCard({ artwork, onDelete }: Readonly<SavedArtworkCardProps>) {
+export function SavedArtworkCard({
+  artwork,
+  onDelete,
+}: Readonly<SavedArtworkCardProps>) {
   const [isLoading, setIsLoading] = useState(true)
   const [isDeleting, setIsDeleting] = useState(false)
   const { prefetchArtwork } = usePrefetchArtworkViewModel()

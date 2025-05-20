@@ -17,7 +17,9 @@ interface ArtworkDetailContentProps {
 /**
  * Component to display detailed information about an artwork
  */
-export function ArtworkDetailContent({ id }: Readonly<ArtworkDetailContentProps>) {
+export function ArtworkDetailContent({
+  id,
+}: Readonly<ArtworkDetailContentProps>) {
   const navigate = useNavigate()
   const { artwork, isLoading, error } = useArtworkDetailViewModel(
     Number.parseInt(id)
@@ -59,7 +61,7 @@ export function ArtworkDetailContent({ id }: Readonly<ArtworkDetailContentProps>
         </button>
       </div>
 
-      {(isLoading || !artwork) ? (
+      {isLoading || !artwork ? (
         <ArtworkDetailSkeleton />
       ) : (
         <div>

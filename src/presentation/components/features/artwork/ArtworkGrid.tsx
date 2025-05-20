@@ -43,10 +43,8 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
   if (isLoading && artworks.length === 0) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {Array.from({ length: 12 }).map((id) => (
-          <div key={`artwork-${id}`}>
-            <ArtworkCardSkeleton />
-          </div>
+        {Array.from({ length: 12 }).map((_, id) => (
+          <ArtworkCardSkeleton key={`artwork-${id}`} />
         ))}
       </div>
     )
@@ -73,17 +71,19 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {artworks.map((artwork) => (
-          <motion.div
-            key={'art-' + artwork.id + artwork.image_id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            <ArtworkCard artwork={artwork} />
-          </motion.div>
-        ))}
+        {artworks
+          .filter((artwork) => artwork?.image_id && artwork?.id)
+          .map((artwork) => (
+            <motion.div
+              key={`art-${artwork.id}-${artwork.image_id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <ArtworkCard artwork={artwork} />
+            </motion.div>
+          ))}
       </div>
 
       {!isSearching && hasNextPage && (
