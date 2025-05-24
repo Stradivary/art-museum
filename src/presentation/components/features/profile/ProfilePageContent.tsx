@@ -123,7 +123,8 @@ export const ProfilePageContent = () => {
             </p>
             <Button
               onClick={handleInstallApp}
-              disabled={pwaStatus.isInstalling || !pwaStatus.canInstall}
+              disabled={pwaStatus.isInstalling} 
+              //  || !pwaStatus.canInstall}
               className="bg-[#a20000] hover:bg-[#8a0000] disabled:opacity-50"
             >
               <Download className="mr-2 h-4 w-4" />

@@ -17,27 +17,45 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Art Museum',
-        short_name: 'ArtMuseum',
-        description:
-          'Browse and save artworks from the Art Institute of Chicago.',
-        start_url: '.',
-        display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#a20000',
-        icons: [
-          {
-            src: '/vite.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml',
-          },
-          {
-            src: '/vite.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-          },
+        "name": "Art Institute of Chicago Gallery",
+        "short_name": "Art Gallery",
+        "description": "Browse and save artworks from the Art Institute of Chicago.",
+        "start_url": ".",
+        "display": "standalone",
+        "display_override": [
+          "window-controls-overlay"
         ],
+        "icons": [
+          {
+            "src": "/web-app-manifest-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+          },
+          {
+            "src": "/web-app-manifest-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+          }
+        ],
+        "theme_color": "#ffffff",
+        "background_color": "#8a0000",
+        "screenshots": [
+          {
+            "src": "/screenshot-desktop.png",
+            "sizes": "1280x800",
+            "type": "image/png",
+            "form_factor": "wide"
+          },
+          {
+            "src": "/screenshot-mobile.png",
+            "sizes": "375x667",
+            "type": "image/png"
+          }
+        ]
       },
+      injectRegister: false,
       workbox: {
         runtimeCaching: [
           {
@@ -46,7 +64,7 @@ export default defineConfig({
             options: {
               cacheName: 'artwork-api-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 1000,
                 maxAgeSeconds: 24 * 60 * 60, // 1 day
               },
               networkTimeoutSeconds: 10,
@@ -58,7 +76,7 @@ export default defineConfig({
             options: {
               cacheName: 'artwork-images-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 1000,
                 maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
               },
             },
