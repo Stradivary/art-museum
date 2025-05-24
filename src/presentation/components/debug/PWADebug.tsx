@@ -1,8 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/presentation/components/ui/button'
 
+interface PWADebugInfo {
+  isSecure?: boolean
+  serviceWorkerSupported?: boolean
+  manifestPresent?: boolean
+  isStandalone?: boolean
+  userAgent?: string
+  serviceWorkerRegistrations?: number
+  serviceWorkerActive?: boolean
+  serviceWorkerState?: string
+  serviceWorkerError?: string
+  manifestValid?: boolean
+  manifestName?: string
+  manifestStartUrl?: string
+  manifestDisplay?: string
+  manifestError?: string
+}
+
 export const PWADebug = () => {
-  const [debugInfo, setDebugInfo] = useState<any>({})
+  const [debugInfo, setDebugInfo] = useState<PWADebugInfo>({})
   const [logs, setLogs] = useState<string[]>([])
 
   const addLog = (message: string) => {
@@ -14,7 +31,7 @@ export const PWADebug = () => {
 
   useEffect(() => {
     const checkPWAStatus = async () => {
-      const info: any = {
+      const info: PWADebugInfo = {
         isSecure:
           location.protocol === 'https:' || location.hostname === 'localhost',
         serviceWorkerSupported: 'serviceWorker' in navigator,
@@ -36,7 +53,8 @@ export const PWADebug = () => {
               registrations[0].active?.state || 'unknown'
           }
         } catch (error) {
-          info.serviceWorkerError = error.message
+          info.serviceWorkerError =
+            error instanceof Error ? error.message : String(error)
         }
       }
 
@@ -54,7 +72,8 @@ export const PWADebug = () => {
           info.manifestDisplay = manifest.display
         }
       } catch (error) {
-        info.manifestError = error.message
+        info.manifestError =
+          error instanceof Error ? error.message : String(error)
       }
 
       setDebugInfo(info)
