@@ -30,27 +30,45 @@ export default defineConfig({
             "src": "/web-app-manifest-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "maskable"
+            "purpose": "any maskable"
           },
           {
             "src": "/web-app-manifest-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "maskable"
-          }
+            "purpose": "any maskable"
+          },
+          {
+            "src": "/favicon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+          },
         ],
         "theme_color": "#ffffff",
         "background_color": "#8a0000",
         "screenshots": [
           {
             "src": "/screenshot-desktop.png",
-            "sizes": "1280x800",
+            "sizes": "2560x1600",
             "type": "image/png",
             "form_factor": "wide"
           },
           {
             "src": "/screenshot-mobile.png",
-            "sizes": "375x667",
+            "sizes": "750x1334",
             "type": "image/png"
           }
         ]
