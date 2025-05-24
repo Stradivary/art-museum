@@ -8,6 +8,8 @@ import { ArtworkDetailSkeleton } from './ArtworkDetailSkeleton'
 import { SafeHtmlRenderer } from '../../shared/SafeHtmlRenderer'
 import { useNavigate } from 'react-router'
 import { Button } from '@/presentation/components/ui/button'
+import { shouldShowOfflineFallback } from '@/lib/networkUtils'
+import { OfflineFallback } from '../OfflineFallback'
 import Image from '../../shared/Image'
 
 interface ArtworkDetailContentProps {
@@ -28,6 +30,11 @@ export function ArtworkDetailContent({
     useSavedArtworkViewModel()
 
   const isSaved = artwork ? isArtworkSaved(artwork.id) : false
+
+  // Show offline fallback if we have a network error and no cached data
+  if (shouldShowOfflineFallback(error, !!artwork)) {
+    return <OfflineFallback />
+  }
 
   if (error) {
     return (
@@ -72,6 +79,7 @@ export function ArtworkDetailContent({
                 alt={artwork.title ?? 'Artwork'}
                 fill
                 className="object-contain"
+                draggable="false"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 style={{
                   viewTransitionName: 'artwork-image-' + artwork.id,

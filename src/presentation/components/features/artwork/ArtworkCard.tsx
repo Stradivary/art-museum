@@ -74,6 +74,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
                 style={{
                   viewTransitionName: 'artwork-image-' + artwork.id,
                 }}
+                draggable="false"
                 onLoadingComplete={() => setIsLoading(false)}
               />
             </>

@@ -17,64 +17,67 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        "name": "Art Institute of Chicago Gallery",
-        "short_name": "Art Gallery",
-        "description": "Browse and save artworks from the Art Institute of Chicago.",
-        "start_url": ".",
-        "display": "standalone",
-        "display_override": [
-          "window-controls-overlay"
+        name: 'Art Institute of Chicago Gallery',
+        short_name: 'Art Gallery',
+        description:
+          'Browse and save artworks from the Art Institute of Chicago.',
+        start_url: '/',
+        display: 'standalone',
+        display_override: ['window-controls-overlay'],
+        icons: [
+          {
+            src: '/web-app-manifest-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: '/web-app-manifest-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: '/favicon-96x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any',
+          },
         ],
-        "icons": [
+        theme_color: '#ffffff',
+        background_color: '#8a0000',
+        screenshots: [
           {
-            "src": "/web-app-manifest-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
+            src: '/screenshot-desktop.png',
+            sizes: '1280x800',
+            type: 'image/png',
+            form_factor: 'wide',
           },
           {
-            "src": "/web-app-manifest-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-          },
-          {
-            "src": "/favicon-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png",
-            "purpose": "any"
-          },
-          {
-            "src": "/apple-touch-icon.png",
-            "sizes": "180x180",
-            "type": "image/png",
-            "purpose": "any"
-          },
-          {
-            "src": "/favicon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any"
+            src: '/screenshot-mobile.png',
+            sizes: '375x667',
+            type: 'image/png',
           },
         ],
-        "theme_color": "#ffffff",
-        "background_color": "#8a0000",
-        "screenshots": [
-          {
-            "src": "/screenshot-desktop.png",
-            "sizes": "2560x1600",
-            "type": "image/png",
-            "form_factor": "wide"
-          },
-          {
-            "src": "/screenshot-mobile.png",
-            "sizes": "750x1334",
-            "type": "image/png"
-          }
-        ]
       },
-      injectRegister: false,
+      injectRegister: 'auto',
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        globPatterns: ['**/*.{tsx,ts,js,css,html,ico,png,svg,webp,woff2}'], // Precache all chunks
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.artic\.edu\/api\/v1\/artworks.*/,

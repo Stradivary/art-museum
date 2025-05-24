@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion'
 import { ImageOff } from 'lucide-react'
 import { Button } from '@/presentation/components/ui/button'
+import { shouldShowOfflineFallback } from '@/lib/networkUtils'
+import { OfflineFallback } from '../OfflineFallback'
 import {
   useArtworkListViewModel,
   useArtworkSearchViewModel,
@@ -26,6 +28,8 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
     hasNextPage,
     fetchNextPage,
     ref,
+    error: listError,
+    hasData: listHasData,
   } = useArtworkListViewModel()
 
   const {
@@ -33,11 +37,20 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
     isLoading: searchLoading,
     isEmpty,
     isSearching,
+    error: searchError,
+    hasData: searchHasData,
   } = useArtworkSearchViewModel(searchQuery)
 
   // Determine which data to use based on search query
   const artworks = isSearching ? searchResults : listArtworks
   const isLoading = isSearching ? searchLoading : listLoading
+  const error = isSearching ? searchError : listError
+  const hasData = isSearching ? searchHasData : listHasData
+
+  // Show offline fallback if we have a network error and no data
+  if (shouldShowOfflineFallback(error, hasData)) {
+    return <OfflineFallback />
+  }
 
   // Always show skeletons during initial load
   if (isLoading && artworks.length === 0) {

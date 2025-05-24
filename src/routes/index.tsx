@@ -8,6 +8,8 @@ const ArtworkDetailPage = lazy(
   () => import('../presentation/pages/ArtworkDetailPage')
 )
 const ProfilePage = lazy(() => import('../presentation/pages/ProfilePage'))
+const ErrorPage = lazy(() => import('../presentation/pages/ErrorPage'))
+const OfflinePage = lazy(() => import('../presentation/pages/OfflinePage'))
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +31,14 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <ProfilePage />,
+      },
+      {
+        path: 'offline',
+        element: <OfflinePage />,
+      },
+      {
+        path: '*',
+        element: <ErrorPage />,
       },
     ],
   },

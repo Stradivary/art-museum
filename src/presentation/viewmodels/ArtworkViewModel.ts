@@ -23,6 +23,7 @@ export function useArtworkListViewModel() {
     hasNextPage,
     isFetchingNextPage,
     status: infiniteStatus,
+    error: infiniteError,
   } = useInfiniteQuery({
     queryKey: ['artworks'],
     queryFn: ({ pageParam = 1 }) => getArtworksUseCase.execute(pageParam, 12),
@@ -50,6 +51,9 @@ export function useArtworkListViewModel() {
     hasNextPage,
     fetchNextPage,
     ref,
+    error: infiniteError,
+    hasData:
+      (infiniteData?.pages?.flatMap((page) => page.artworks) ?? []).length > 0,
   }
 }
 
@@ -61,6 +65,7 @@ export function useArtworkSearchViewModel(query: string) {
     data: searchResults = [],
     isLoading,
     status,
+    error,
   } = useQuery({
     queryKey: ['artworks', 'search', query],
     queryFn: async () => {
@@ -80,5 +85,7 @@ export function useArtworkSearchViewModel(query: string) {
     isLoading,
     isEmpty: searchResults.length === 0 && !isLoading && status !== 'pending',
     isSearching: query.trim() !== '',
+    error,
+    hasData: searchResults.length > 0,
   }
 }
