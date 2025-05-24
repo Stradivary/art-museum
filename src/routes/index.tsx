@@ -15,26 +15,32 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <HomePage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: 'saved',
         element: <SavedPage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: 'artwork/:id',
         element: <ArtworkDetailPage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: 'profile',
         element: <ProfilePage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: 'offline',
         element: <OfflinePage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: '*',

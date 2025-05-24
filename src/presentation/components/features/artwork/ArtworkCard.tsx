@@ -6,8 +6,9 @@ import { Heart } from 'lucide-react'
 import { type Artwork } from '@/core/domain/entities/Artwork'
 import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
 import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import Image from '../../shared/Image'
+import { Button } from '@/presentation/components/ui/button'
 
 interface ArtworkCardProps {
   artwork: Artwork
@@ -24,6 +25,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
   const { prefetchArtwork } = usePrefetchArtworkViewModel()
   const [isHovering, setIsHovering] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Prefetch artwork details on hover for better UX
   useEffect(() => {
@@ -46,6 +48,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
   const handleCardClick = () => {
     navigate(`/artwork/${artwork.id}`, {
       viewTransition: true,
+      state: { from: location.pathname },
     })
   }
 
@@ -55,6 +58,9 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
+      style={{
+        viewTransitionName: 'artwork-card-' + artwork.id,
+      }}
     >
       <div className="block h-full">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
@@ -85,26 +91,50 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
           )}
 
           {/* Save button overlay */}
-          <button
+          <Button
             onClick={handleSaveClick}
-            className={`absolute top-2 right-2 rounded-full p-2 transition-all duration-200 ${
+            variant={isSaved ? 'destructive' : 'ghost'}
+            size="icon"
+            className={`absolute top-2 right-2 h-8 w-8 rounded-full transition-all duration-200 ${
               isSaved
-                ? 'bg-[#a20000] text-white'
-                : 'bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100'
+                ? ''
+                : 'bg-white/80 opacity-0 group-hover:opacity-100 hover:bg-white/90'
             }`}
+            style={{
+              viewTransitionName: 'artwork-save-button-' + artwork.id,
+            }}
             aria-label={isSaved ? 'Unsave artwork' : 'Save artwork'}
           >
             <Heart className={`h-4 w-4 ${isSaved ? 'fill-white' : ''}`} />
-          </button>
+          </Button>
         </div>
 
         <div className="p-3">
-          <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
-          <p className="line-clamp-1 text-sm text-gray-600">
+          <h2
+            className="line-clamp-1 font-medium"
+            style={{
+              viewTransitionName: 'artwork-title-' + artwork.id,
+            }}
+          >
+            {artwork.title}
+          </h2>
+          <p
+            className="line-clamp-1 text-sm text-gray-600"
+            style={{
+              viewTransitionName: 'artwork-artist-' + artwork.id,
+            }}
+          >
             {artwork.artist_title ?? 'Unknown artist'}
           </p>
           {artwork.date_display && (
-            <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>
+            <p
+              className="mt-1 text-xs text-gray-500"
+              style={{
+                viewTransitionName: 'artwork-date-' + artwork.id,
+              }}
+            >
+              {artwork.date_display}
+            </p>
           )}
         </div>
       </div>

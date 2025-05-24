@@ -5,8 +5,9 @@ import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react'
 import { type SavedArtwork } from '@/core/domain/entities/Artwork'
 import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import Image from '../../shared/Image'
+import { Button } from '@/presentation/components/ui/button'
 
 interface SavedArtworkCardProps {
   artwork: SavedArtwork
@@ -25,6 +26,7 @@ export function SavedArtworkCard({
   const { prefetchArtwork } = usePrefetchArtworkViewModel()
   const [isHovering, setIsHovering] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Prefetch artwork details on hover for better UX
   useEffect(() => {
@@ -45,7 +47,10 @@ export function SavedArtworkCard({
   }
 
   const handleCardClick = () => {
-    navigate(`/artwork/${artwork.id}`)
+    navigate(`/artwork/${artwork.id}`, {
+      viewTransition: true,
+      state: { from: location.pathname },
+    })
   }
 
   if (isDeleting) {
@@ -65,6 +70,9 @@ export function SavedArtworkCard({
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
+      style={{
+        viewTransitionName: 'artwork-card-' + artwork.id,
+      }}
     >
       <div className="block">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
@@ -81,6 +89,10 @@ export function SavedArtworkCard({
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
                 className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                  viewTransitionName: 'artwork-image-' + artwork.id,
+                }}
+                draggable="false"
                 onLoadingComplete={() => setIsLoading(false)}
               />
             </>
@@ -91,22 +103,43 @@ export function SavedArtworkCard({
           )}
 
           {/* Delete button overlay */}
-          <button
+          <Button
             onClick={handleDelete}
-            className="absolute top-2 right-2 rounded-full bg-white/80 p-2 text-red-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            variant="destructive"
+            size="icon"
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-white/90"
             aria-label="Delete saved artwork"
           >
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         <div className="p-3">
-          <h2 className="line-clamp-1 font-medium">{artwork.title}</h2>
-          <p className="line-clamp-1 text-sm text-gray-600">
+          <h2
+            className="line-clamp-1 font-medium"
+            style={{
+              viewTransitionName: 'artwork-title-' + artwork.id,
+            }}
+          >
+            {artwork.title}
+          </h2>
+          <p
+            className="line-clamp-1 text-sm text-gray-600"
+            style={{
+              viewTransitionName: 'artwork-artist-' + artwork.id,
+            }}
+          >
             {artwork.artist_title ?? 'Unknown artist'}
           </p>
           {artwork.date_display && (
-            <p className="mt-1 text-xs text-gray-500">{artwork.date_display}</p>
+            <p
+              className="mt-1 text-xs text-gray-500"
+              style={{
+                viewTransitionName: 'artwork-date-' + artwork.id,
+              }}
+            >
+              {artwork.date_display}
+            </p>
           )}
         </div>
       </div>

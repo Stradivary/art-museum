@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft, Heart } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { useArtworkDetailViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
 import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
 import { ArtworkDetailSkeleton } from './ArtworkDetailSkeleton'
@@ -40,7 +40,9 @@ export function ArtworkDetailContent({
     return (
       <div className="flex h-screen flex-col items-center justify-center p-4">
         <p className="mb-4 text-red-500">Failed to load artwork</p>
-        <Button onClick={() => navigate('..')}>Go Back</Button>
+        <Button onClick={() => navigate('..')} variant="outline">
+          Go Back
+        </Button>
       </div>
     )
   }
@@ -52,22 +54,10 @@ export function ArtworkDetailContent({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
+      style={{
+        viewTransitionName: artwork ? 'artwork-card-' + artwork.id : undefined,
+      }}
     >
-      <div className="sticky top-0 z-10 flex items-center border-b bg-white p-4">
-        <button
-          onClick={() =>
-            navigate('..', {
-              viewTransition: true,
-            })
-          }
-          className="flex items-center text-gray-700"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="mr-2" size={20} />
-          <span>Detail</span>
-        </button>
-      </div>
-
       {isLoading || !artwork ? (
         <ArtworkDetailSkeleton />
       ) : (
@@ -101,7 +91,14 @@ export function ArtworkDetailContent({
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">{artwork.title}</h1>
+                <h1
+                  className="text-2xl font-bold"
+                  style={{
+                    viewTransitionName: 'artwork-title-' + artwork.id,
+                  }}
+                >
+                  {artwork.title}
+                </h1>
                 <Button
                   onClick={() =>
                     isSaved
@@ -109,7 +106,11 @@ export function ArtworkDetailContent({
                       : saveArtwork(artwork)
                   }
                   variant="destructive"
+                  size="sm"
                   className="flex items-center gap-2 rounded-full px-4"
+                  style={{
+                    viewTransitionName: 'artwork-save-button-' + artwork.id,
+                  }}
                 >
                   <Heart className={isSaved ? 'fill-white' : ''} size={16} />
                   {isSaved ? 'Saved' : 'Save'}
@@ -117,10 +118,24 @@ export function ArtworkDetailContent({
               </div>
 
               {artwork.artist_title && (
-                <p className="text-lg text-gray-700">{artwork.artist_title}</p>
+                <p
+                  className="text-lg text-gray-700"
+                  style={{
+                    viewTransitionName: 'artwork-artist-' + artwork.id,
+                  }}
+                >
+                  {artwork.artist_title}
+                </p>
               )}
               {artwork.date_display && (
-                <p className="text-gray-600">{artwork.date_display}</p>
+                <p
+                  className="text-gray-600"
+                  style={{
+                    viewTransitionName: 'artwork-date-' + artwork.id,
+                  }}
+                >
+                  {artwork.date_display}
+                </p>
               )}
 
               <section>

@@ -7,7 +7,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/infrastructure/services/queryClientService'
 import { SecurityProvider } from '../components/shared/SecurityProvider'
 import { ErrorBoundary } from '../components/shared/ErrorBoundary'
-import { PWADebug } from '../components/debug/PWADebug'
+import { PageLoadingFallback } from '../components/shared/Loading'
+// import { PWADebug } from '../components/debug/PWADebug'
 
 /**
  * Main layout component for the application
@@ -18,13 +19,7 @@ export function MainLayout() {
       <div className="min-h-screen pb-16">
         <QueryClientProvider client={queryClient}>
           <ErrorBoundary>
-            <Suspense
-              fallback={
-                <div className="flex min-h-screen items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
-                </div>
-              }
-            >
+            <Suspense fallback={<PageLoadingFallback text="Loading page..." />}>
               <Outlet />
             </Suspense>
           </ErrorBoundary>
@@ -32,7 +27,7 @@ export function MainLayout() {
             <BottomNavigation />
           </Suspense>
         </QueryClientProvider>
-        <PWADebug />
+        {/* <PWADebug /> */}
       </div>
     </SecurityProvider>
   )

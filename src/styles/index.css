@@ -118,3 +118,123 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* View Transitions */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page header transitions */
+::view-transition-old(page-header),
+::view-transition-new(page-header) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page title transitions */
+::view-transition-old(page-title-*),
+::view-transition-new(page-title-*) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page transitions */
+::view-transition-old(home-page),
+::view-transition-new(home-page),
+::view-transition-old(saved-page),
+::view-transition-new(saved-page),
+::view-transition-old(profile-page),
+::view-transition-new(profile-page),
+::view-transition-old(artwork-detail-page),
+::view-transition-new(artwork-detail-page),
+::view-transition-old(error-page),
+::view-transition-new(error-page),
+::view-transition-old(offline-page),
+::view-transition-new(offline-page) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Artwork card to detail transition */
+::view-transition-old(artwork-card-*),
+::view-transition-new(artwork-card-*) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image transitions */
+::view-transition-old(artwork-image-*),
+::view-transition-new(artwork-image-*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Title transitions - slide from top effect */
+::view-transition-old(artwork-title-*) {
+  animation: slide-out-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-new(artwork-title-*) {
+  animation: slide-in-down 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+/* Artist transitions */
+::view-transition-old(artwork-artist-*) {
+  animation: slide-out-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-new(artwork-artist-*) {
+  animation: slide-in-down 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+/* Date transitions */
+::view-transition-old(artwork-date-*) {
+  animation: slide-out-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-new(artwork-date-*) {
+  animation: slide-in-down 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+/* Save button transition */
+::view-transition-old(artwork-save-button-*),
+::view-transition-new(artwork-save-button-*) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for back button and header elements */
+::view-transition-old(*),
+::view-transition-new(*) {
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Keyframes for slide animations */
+@keyframes slide-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
