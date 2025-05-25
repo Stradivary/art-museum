@@ -14,7 +14,10 @@ interface SearchBarProps {
 /**
  * Search bar component for searching artworks
  */
-export function SearchBar({ initialQuery = '', onSearch }: SearchBarProps) {
+export function SearchBar({
+  initialQuery = '',
+  onSearch,
+}: Readonly<SearchBarProps>) {
   const [query, setQuery] = useState(initialQuery)
   const debouncedQuery = useDebounce(query, 300)
   const navigate = useNavigate()

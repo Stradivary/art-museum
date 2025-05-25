@@ -59,16 +59,16 @@ export function LoadingSpinner({
  */
 export function PageLoadingFallback({
   text = 'Loading...',
-}: {
+}: Readonly<{
   text?: string
-}) {
+}>) {
   return <LoadingSpinner fullScreen size="lg" text={text} />
 }
 
 /**
  * Content-level loading component
  */
-export function ContentLoadingFallback({ text }: { text?: string }) {
+export function ContentLoadingFallback({ text }: Readonly<{ text?: string }>) {
   return (
     <div className="flex h-40 w-full items-center justify-center">
       <LoadingSpinner size="md" text={text} />

@@ -15,7 +15,7 @@ interface HomePageContentProps {
  */
 export function HomePageContent({
   initialSearchQuery = '',
-}: HomePageContentProps) {
+}: Readonly<HomePageContentProps>) {
   const [searchParams, setSeachParams] = useSearchParams()
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery)

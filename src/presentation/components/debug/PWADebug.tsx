@@ -50,7 +50,7 @@ export const PWADebug = () => {
 
           if (registrations.length > 0) {
             info.serviceWorkerState =
-              registrations[0].active?.state || 'unknown'
+              registrations[0].active?.state ?? 'unknown'
           }
         } catch (error) {
           info.serviceWorkerError =
@@ -154,8 +154,8 @@ export const PWADebug = () => {
         {logs.length === 0 ? (
           <div className="text-gray-500">No events yet...</div>
         ) : (
-          logs.slice(-5).map((log, i) => (
-            <div key={i} className="text-gray-700">
+          logs.slice(-5).map((log) => (
+            <div key={log} className="text-gray-700">
               {log}
             </div>
           ))

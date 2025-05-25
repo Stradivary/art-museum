@@ -16,19 +16,19 @@ import { PageLoadingFallback } from '../components/shared/Loading'
 export function MainLayout() {
   return (
     <SecurityProvider>
-      <div className="min-h-screen pb-16">
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ErrorBoundary>
+          <div className="min-h-screen pb-16">
             <Suspense fallback={<PageLoadingFallback text="Loading page..." />}>
               <Outlet />
             </Suspense>
-          </ErrorBoundary>
-          <Suspense fallback={null}>
-            <BottomNavigation />
-          </Suspense>
-        </QueryClientProvider>
-        {/* <PWADebug /> */}
-      </div>
+            <Suspense fallback={null}>
+              <BottomNavigation />
+            </Suspense>
+          </div>
+        </ErrorBoundary>
+      </QueryClientProvider>
+      {/* <PWADebug /> */}
     </SecurityProvider>
   )
 }

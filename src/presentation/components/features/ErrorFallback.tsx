@@ -5,10 +5,10 @@ import { Button } from '../ui/button'
 export function ErrorFallback({
   error,
   resetErrorBoundary,
-}: {
+}: Readonly<{
   error?: Error
   resetErrorBoundary?: () => void
-}) {
+}>) {
   const navigate = useNavigate()
 
   return (
@@ -25,7 +25,7 @@ export function ErrorFallback({
         </h1>
 
         <p className="mb-6 leading-relaxed text-gray-600">
-          {error?.message ||
+          {error?.message ??
             'An unexpected error occurred. Please try refreshing the page or go back to the home page.'}
         </p>
 

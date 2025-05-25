@@ -56,9 +56,10 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
   if (isLoading && artworks.length === 0) {
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {Array.from({ length: 12 }).map((_, id) => (
-          <ArtworkCardSkeleton key={`artwork-${id}`} />
-        ))}
+        {Array.from({ length: 12 }).map(() => {
+          const uniqueKey = `artwork-skeleton-${Math.random().toString(36).substring(2, 9)}`
+          return <ArtworkCardSkeleton key={uniqueKey} />
+        })}
       </div>
     )
   }

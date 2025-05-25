@@ -10,7 +10,7 @@ interface SafeHtmlRendererProps {
 /**
  * Component for safely rendering HTML content with sanitization
  */
-export function SafeHtmlRenderer({ html, className }: SafeHtmlRendererProps) {
+export function SafeHtmlRenderer({ html, className }: Readonly<SafeHtmlRendererProps>) {
   // Sanitize HTML to prevent XSS attacks
   const sanitizedHtml = DOMPurify.sanitize(html)
 

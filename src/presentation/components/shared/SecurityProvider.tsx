@@ -11,10 +11,10 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({
     const style = document.createElement('style')
     style.innerHTML = `
       body, #root, .security-protected {
+        user-select: none !important;
         -webkit-user-select: none !important;
         -moz-user-select: none !important;
         -ms-user-select: none !important;
-        user-select: none !important;
         -webkit-touch-callout: none !important;
         -webkit-user-drag: none !important;
       }
