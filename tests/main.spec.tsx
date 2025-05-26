@@ -1,8 +1,15 @@
-import { test } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 
-test('renders name', async () => {
-  const { getByText } = render(<div>Hello world!</div>)
+describe('Application Smoke Tests', () => {
+  it('should render a basic component', () => {
+    const { getByText } = render(<div>Art Museum App</div>)
+    expect(getByText('Art Museum App')).toBeDefined()
+  })
 
-  expect(getByText('Hello world!')).toBeDefined()
+  it('should support JSX rendering', () => {
+    const TestComponent = () => <span data-testid="test">Test Component</span>
+    const { getByTestId } = render(<TestComponent />)
+    expect(getByTestId('test')).toBeDefined()
+  })
 })
