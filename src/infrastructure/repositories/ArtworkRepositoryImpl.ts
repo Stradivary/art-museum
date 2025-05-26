@@ -3,6 +3,7 @@
 import type {
   IArtworkRepository,
   ArtworkPaginationResult,
+  ArtworkFilters,
 } from '@/core/application/interfaces/IArtworkRepository'
 import type { Artwork } from '@/core/domain/entities/Artwork'
 import { artworkApi } from '@/core/frameworks/data/ArtworkApi'
@@ -16,10 +17,11 @@ export class ArtworkRepositoryImpl implements IArtworkRepository {
    */
   async getArtworks(
     page: number,
-    limit: number
+    limit: number,
+    filters?: ArtworkFilters
   ): Promise<ArtworkPaginationResult> {
     try {
-      const response = await artworkApi.fetchArtworks(page, limit)
+      const response = await artworkApi.fetchArtworks(page, limit, filters)
 
       return {
         artworks: response.data,
@@ -46,9 +48,12 @@ export class ArtworkRepositoryImpl implements IArtworkRepository {
   /**
    * Search for artworks matching a query
    */
-  async searchArtworks(query: string): Promise<Artwork[]> {
+  async searchArtworks(
+    query: string,
+    filters?: ArtworkFilters
+  ): Promise<Artwork[]> {
     try {
-      const response = await artworkApi.searchArtworks(query)
+      const response = await artworkApi.searchArtworks(query, filters)
       return response.data
     } catch (error) {
       console.error('Repository error searching artworks:', error)

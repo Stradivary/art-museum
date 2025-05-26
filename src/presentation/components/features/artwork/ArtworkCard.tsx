@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
 import { type Artwork } from '@/core/domain/entities/Artwork'
-import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
 import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
 import { useNavigate, useLocation } from 'react-router'
 import Image from '../../shared/Image'
-import { Button } from '@/presentation/components/ui/button'
+import { LikeButton } from '../../shared/LikeButton'
 
 interface ArtworkCardProps {
   artwork: Artwork
@@ -19,9 +17,6 @@ interface ArtworkCardProps {
  */
 export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
   const [isLoading, setIsLoading] = useState(true)
-  const { isArtworkSaved, saveArtwork, removeSavedArtwork } =
-    useSavedArtworkViewModel()
-  const isSaved = isArtworkSaved(artwork.id)
   const { prefetchArtwork } = usePrefetchArtworkViewModel()
   const [isHovering, setIsHovering] = useState(false)
   const navigate = useNavigate()
@@ -33,17 +28,6 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
       prefetchArtwork(artwork.id)
     }
   }, [isHovering, artwork.id, prefetchArtwork])
-
-  const handleSaveClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (isSaved) {
-      removeSavedArtwork(artwork.id)
-    } else {
-      saveArtwork(artwork)
-    }
-  }
 
   const handleCardClick = () => {
     navigate(`/artwork/${artwork.id}`, {
@@ -72,7 +56,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
                 </div>
               )}
               <Image
-                src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
+                src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/400,/0/default.jpg`}
                 alt={artwork.title ?? 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
@@ -91,22 +75,15 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
           )}
 
           {/* Save button overlay */}
-          <Button
-            onClick={handleSaveClick}
-            variant={isSaved ? 'destructive' : 'ghost'}
-            size="icon"
-            className={`absolute top-2 right-2 h-8 w-8 rounded-full transition-all duration-200 ${
-              isSaved
-                ? ''
-                : 'bg-white/80 opacity-0 group-hover:opacity-100 hover:bg-white/90'
-            }`}
-            style={{
-              viewTransitionName: 'artwork-save-button-' + artwork.id,
-            }}
-            aria-label={isSaved ? 'Unsave artwork' : 'Save artwork'}
-          >
-            <Heart className={`h-4 w-4 ${isSaved ? 'fill-white' : ''}`} />
-          </Button>
+          <div className="absolute top-2 right-2">
+            <LikeButton
+              artwork={artwork}
+              mode="compact"
+              artworkId={artwork.id.toString()}
+              showLabel={false}
+              className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            />
+          </div>
         </div>
 
         <div className="p-3">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import type { BeforeInstallPromptEvent } from '@/types/pwa'
 
@@ -111,7 +111,7 @@ export function usePWAInstall() {
     }
   }, [isInstalled, isInstallable])
 
-  const installApp = async () => {
+  const installApp = useCallback(async () => {
     if (!deferredPrompt) {
       console.warn('[PWA] No deferredPrompt available, cannot install')
 
@@ -163,7 +163,7 @@ export function usePWAInstall() {
       console.error('Error installing PWA:', error)
       return false
     }
-  }
+  }, [deferredPrompt, fallbackInstallable])
 
   return {
     isInstallable: isInstallable || fallbackInstallable,

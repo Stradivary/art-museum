@@ -5,6 +5,7 @@ import { ImageOff } from 'lucide-react'
 import { Button } from '@/presentation/components/ui/button'
 import { shouldShowOfflineFallback } from '@/lib/networkUtils'
 import { OfflineFallback } from '../OfflineFallback'
+import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
 import {
   useArtworkListViewModel,
   useArtworkSearchViewModel,
@@ -14,12 +15,16 @@ import { ArtworkCardSkeleton } from './ArtworkCardSkeleton'
 
 interface ArtworkGridProps {
   searchQuery: string
+  filters: ArtworkFilters
 }
 
 /**
  * Grid component to display artworks with infinite scrolling or search results
  */
-export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
+export function ArtworkGrid({
+  searchQuery,
+  filters,
+}: Readonly<ArtworkGridProps>) {
   // Get view models for list and search functionality
   const {
     artworks: listArtworks,
@@ -30,7 +35,7 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
     ref,
     error: listError,
     hasData: listHasData,
-  } = useArtworkListViewModel()
+  } = useArtworkListViewModel(filters)
 
   const {
     searchResults,
@@ -39,7 +44,7 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
     isSearching,
     error: searchError,
     hasData: searchHasData,
-  } = useArtworkSearchViewModel(searchQuery)
+  } = useArtworkSearchViewModel(searchQuery, filters)
 
   // Determine which data to use based on search query
   const artworks = isSearching ? searchResults : listArtworks
@@ -55,10 +60,22 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
   // Always show skeletons during initial load
   if (isLoading && artworks.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-        {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
-          <ArtworkCardSkeleton key={`artwork-skeleton-${n}`} />
-        ))}
+      <div>
+        {/* Header */}
+        {(searchQuery || Object.keys(filters).length > 0) && (
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
+              <div className="h-4 w-32 animate-pulse rounded bg-gray-300"></div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+            <ArtworkCardSkeleton key={`artwork-skeleton-${n}`} />
+          ))}
+        </div>
       </div>
     )
   }
@@ -83,6 +100,34 @@ export function ArtworkGrid({ searchQuery }: Readonly<ArtworkGridProps>) {
 
   return (
     <div className="space-y-4">
+      {/* Results Header */}
+      {(searchQuery || Object.keys(filters).length > 0) &&
+        artworks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                {searchQuery
+                  ? `Results for "${searchQuery}"`
+                  : 'Filtered results'}
+              </span>
+              {Object.keys(filters).length > 0 && (
+                <span className="text-xs text-gray-500">
+                  • {Object.keys(filters).length} filter
+                  {Object.keys(filters).length === 1 ? '' : 's'} applied
+                </span>
+              )}
+            </div>
+            <span className="text-sm font-medium text-gray-900">
+              {artworks.length.toLocaleString()} artwork
+              {artworks.length === 1 ? '' : 's'}
+            </span>
+          </motion.div>
+        )}
+
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {artworks
           .filter((artwork) => artwork?.image_id && artwork?.id)

@@ -31,7 +31,11 @@ export function ErrorFallback({
 
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
           {resetErrorBoundary && (
-            <Button onClick={resetErrorBoundary} variant="error">
+            <Button
+              onClick={resetErrorBoundary}
+              variant="error"
+              data-testid="reset-button"
+            >
               <RefreshCw className="h-4 w-4" />
               Try Again
             </Button>

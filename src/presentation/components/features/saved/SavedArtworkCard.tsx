@@ -107,10 +107,10 @@ export function SavedArtworkCard({
             onClick={handleDelete}
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-white/90"
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-white/80"
             aria-label="Delete saved artwork"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="text-primary h-4 w-4" />
           </Button>
         </div>
 

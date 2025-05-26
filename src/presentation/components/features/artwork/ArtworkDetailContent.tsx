@@ -1,9 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
 import { useArtworkDetailViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
-import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
 import { ArtworkDetailSkeleton } from './ArtworkDetailSkeleton'
 import { SafeHtmlRenderer } from '../../shared/SafeHtmlRenderer'
 import { useNavigate } from 'react-router'
@@ -11,6 +9,7 @@ import { Button } from '@/presentation/components/ui/button'
 import { shouldShowOfflineFallback } from '@/lib/networkUtils'
 import { OfflineFallback } from '../OfflineFallback'
 import Image from '../../shared/Image'
+import { LikeButton } from '../../shared/LikeButton'
 
 interface ArtworkDetailContentProps {
   id: string
@@ -26,10 +25,6 @@ export function ArtworkDetailContent({
   const { artwork, isLoading, error } = useArtworkDetailViewModel(
     Number.parseInt(id)
   )
-  const { isArtworkSaved, saveArtwork, removeSavedArtwork } =
-    useSavedArtworkViewModel()
-
-  const isSaved = artwork ? isArtworkSaved(artwork.id) : false
 
   // Show offline fallback if we have a network error and no cached data
   if (shouldShowOfflineFallback(error, !!artwork)) {
@@ -99,22 +94,13 @@ export function ArtworkDetailContent({
                 >
                   {artwork.title}
                 </h1>
-                <Button
-                  onClick={() =>
-                    isSaved
-                      ? removeSavedArtwork(artwork.id)
-                      : saveArtwork(artwork)
-                  }
-                  variant="destructive"
-                  size="sm"
-                  className="flex items-center gap-2 rounded-full px-4"
-                  style={{
-                    viewTransitionName: 'artwork-save-button-' + artwork.id,
-                  }}
-                >
-                  <Heart className={isSaved ? 'fill-white' : ''} size={16} />
-                  {isSaved ? 'Saved' : 'Save'}
-                </Button>
+                <LikeButton
+                  artwork={artwork}
+                  mode="default"
+                  size="lg"
+                  artworkId={artwork.id.toString()}
+                  className="px-6"
+                />
               </div>
 
               {artwork.artist_title && (
