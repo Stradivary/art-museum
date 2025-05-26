@@ -35,7 +35,7 @@ export function PageHeader({
 
   return (
     <motion.header
-      className={`sticky top-0 z-20 bg-white/95 backdrop-blur-sm ${className}`}
+      className={`sticky top-0 z-20 bg-gray-50/90 bg-white/95 backdrop-blur-sm ${className}`}
       initial={{ y: -10, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.2 }}

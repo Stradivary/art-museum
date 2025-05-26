@@ -8,7 +8,7 @@ import { queryClient } from '@/infrastructure/services/queryClientService'
 import { SecurityProvider } from '../components/shared/SecurityProvider'
 import { ErrorBoundary } from '../components/shared/ErrorBoundary'
 import { PageLoadingFallback } from '../components/shared/Loading'
-// import { PWADebug } from '../components/debug/PWADebug'
+import { TooltipProvider } from '../components/ui/tooltip'
 
 /**
  * Main layout component for the application
@@ -17,18 +17,21 @@ export function MainLayout() {
   return (
     <SecurityProvider>
       <QueryClientProvider client={queryClient}>
-        <ErrorBoundary>
-          <div className="min-h-screen pb-16">
-            <Suspense fallback={<PageLoadingFallback text="Loading page..." />}>
-              <Outlet />
-            </Suspense>
-            <Suspense fallback={null}>
-              <BottomNavigation />
-            </Suspense>
-          </div>
-        </ErrorBoundary>
+        <TooltipProvider delayDuration={300}>
+          <ErrorBoundary>
+            <div className="min-h-screen pb-16">
+              <Suspense
+                fallback={<PageLoadingFallback text="Loading page..." />}
+              >
+                <Outlet />
+              </Suspense>
+              <Suspense fallback={null}>
+                <BottomNavigation />
+              </Suspense>
+            </div>
+          </ErrorBoundary>
+        </TooltipProvider>
       </QueryClientProvider>
-      {/* <PWADebug /> */}
     </SecurityProvider>
   )
 }
