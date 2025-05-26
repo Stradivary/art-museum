@@ -112,15 +112,49 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      '~': path.resolve(__dirname, 'tests'),
     },
   },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    include: ['./tests/**/*.spec.tsx'],
+    include: ['./tests/**/*.spec.tsx', './tests/**/*.spec.ts'],
     globals: true,
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov', 'clover'],
+      exclude: [
+        '**/src/presentation/components/ui/**', // Exclude Shadcn UI components
+        '**/src/presentation/pages/**', // Exclude pages for cleaner coverage
+        '**/tests/**',
+        '**/src/main.tsx',
+        '**/src/core/**',
+        '**/src/routes/**',
+        '**/src/types/**',
+        '**/**.d.ts',
+      ],
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+    },
+    exclude: [
+      'dev-dist',
+      'dist',
+      'coverage',
+      'public',
+      'tests/__mocks__',
+      '**/*.config.ts',
+      '**/*.config.mjs',
+      '**/*.d.ts',
+      '**/*.html',
+      '**/*.json',
+      '**/*.md',
+      '**/*.png',
+      '**/*.svg',
+      '**/*.ico',
+      '**/*.webp',
+      '**/*.woff2',
+    ],
   },
 })
