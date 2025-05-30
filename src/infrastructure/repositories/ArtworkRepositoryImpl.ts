@@ -34,7 +34,38 @@ export class ArtworkRepositoryImpl implements IArtworkRepository {
   }
 
   /**
-   * Get a single artwork by ID
+   * Get basic artwork info by ID (optimized for cards)
+   */
+  async getArtworkBasicById(id: number): Promise<Artwork> {
+    try {
+      return await artworkApi.fetchArtworkBasicById(id)
+    } catch (error) {
+      console.error(
+        `Repository error fetching basic artwork with id ${id}:`,
+        error
+      )
+      throw error
+    }
+  }
+
+  /**
+   * Get detailed artwork info by ID (for detail pages)
+   */
+  async getArtworkDetailById(id: number): Promise<Artwork> {
+    try {
+      return await artworkApi.fetchArtworkDetailById(id)
+    } catch (error) {
+      console.error(
+        `Repository error fetching detailed artwork with id ${id}:`,
+        error
+      )
+      throw error
+    }
+  }
+
+  /**
+   * Get a single artwork by ID (legacy method)
+   * @deprecated Use getArtworkBasicById or getArtworkDetailById instead
    */
   async getArtworkById(id: number): Promise<Artwork> {
     try {

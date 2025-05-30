@@ -49,6 +49,23 @@ Object.defineProperty(window, 'localStorage', {
 // Mock fetch
 global.fetch = vi.fn()
 
+// Mock i18n for react-i18next
+import i18n from './__mocks__/i18nForTests'
+
+vi.mock('react-i18next', async () => {
+  const actual = await vi.importActual('react-i18next')
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: i18n.t.bind(i18n),
+      i18n,
+    }),
+    Trans: (props: { children: React.ReactNode }) => props.children,
+    withTranslation: () => (Component: React.ComponentType) => Component,
+    initReactI18next: { type: '3rdParty', init: () => {} },
+  }
+})
+
 // Setup cleanup after each test
 afterEach(() => {
   vi.clearAllMocks()

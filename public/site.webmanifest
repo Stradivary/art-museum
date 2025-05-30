@@ -4,9 +4,7 @@
   "description": "Browse and save artworks from the Art Institute of Chicago.",
   "start_url": ".",
   "display": "standalone",
-  "display_override": [
-    "window-controls-overlay"
-  ],
+  "display_override": ["window-controls-overlay"],
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

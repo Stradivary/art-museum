@@ -6,22 +6,30 @@ import { SearchArtworksUseCase } from '@/core/application/usecases/artwork/Searc
 import { GetRecommendationsUseCase } from '@/core/application/usecases/artwork/GetRecommendationsUseCase'
 import { artworkRepository } from '@/infrastructure/repositories/ArtworkRepositoryImpl'
 import { savedArtworkRepository } from '@/infrastructure/repositories/SavedArtworkRepositoryImpl'
+import { dislikedArtworkRepository } from '@/infrastructure/repositories/DislikedArtworkRepositoryImpl'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { cleanFilters } from '@/lib/utils'
+import type { ArtworkPaginationResult } from '@/core/application/interfaces/IArtworkRepository'
 
 // Initialize use cases with repository implementation
 const getArtworksUseCase = new GetArtworksUseCase(artworkRepository)
 const searchArtworksUseCase = new SearchArtworksUseCase(artworkRepository)
 const getRecommendationsUseCase = new GetRecommendationsUseCase(
   artworkRepository,
-  savedArtworkRepository
+  savedArtworkRepository,
+  dislikedArtworkRepository
 )
 
 /**
  * ViewModel for infinite scrolling artwork listing
  */
-export function useArtworkListViewModel(filters?: ArtworkFilters) {
+export function useArtworkListViewModel(
+  filters?: ArtworkFilters,
+  pageSize: number = 9
+) {
+  const cleanedFilters = filters ? cleanFilters(filters) : undefined
   const { ref, inView } = useInView()
 
   const {
@@ -31,12 +39,17 @@ export function useArtworkListViewModel(filters?: ArtworkFilters) {
     isFetchingNextPage,
     status: infiniteStatus,
     error: infiniteError,
-  } = useInfiniteQuery({
-    queryKey: ['artworks', filters],
-    queryFn: ({ pageParam = 1 }) =>
-      getArtworksUseCase.execute(pageParam, 12, filters),
+  } = useInfiniteQuery<ArtworkPaginationResult, Error>({
+    queryKey: ['artworks', cleanedFilters, pageSize],
+    queryFn: async ({ pageParam }) => {
+      return await getArtworksUseCase.execute(
+        typeof pageParam === 'number' ? pageParam : 1,
+        pageSize,
+        cleanedFilters
+      )
+    },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: (lastPage: ArtworkPaginationResult) => {
       if (lastPage.pagination.current_page < lastPage.pagination.total_pages) {
         return lastPage.pagination.current_page + 1
       }
@@ -52,16 +65,22 @@ export function useArtworkListViewModel(filters?: ArtworkFilters) {
     }
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage])
 
+  // Flatten all pages into a single array
+  const allArtworks = infiniteData?.pages
+    ? (infiniteData.pages as ArtworkPaginationResult[]).flatMap(
+        (page) => page.artworks
+      )
+    : []
+
   return {
-    artworks: infiniteData?.pages?.flatMap((page) => page.artworks) ?? [],
+    artworks: allArtworks,
     isLoading: infiniteStatus === 'pending',
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
     ref,
     error: infiniteError,
-    hasData:
-      (infiniteData?.pages?.flatMap((page) => page.artworks) ?? []).length > 0,
+    hasData: allArtworks.length > 0,
   }
 }
 
@@ -72,16 +91,17 @@ export function useArtworkSearchViewModel(
   query: string,
   filters?: ArtworkFilters
 ) {
+  const cleanedFilters = filters ? cleanFilters(filters) : undefined
   const {
     data: searchResults = [],
     isLoading,
     status,
     error,
   } = useQuery({
-    queryKey: ['artworks', 'search', query, filters],
+    queryKey: ['artworks', 'search', query, cleanedFilters],
     queryFn: async () => {
       try {
-        return await searchArtworksUseCase.execute(query, filters)
+        return await searchArtworksUseCase.execute(query, cleanedFilters)
       } catch (error) {
         console.error('Error searching artworks:', error)
         return []

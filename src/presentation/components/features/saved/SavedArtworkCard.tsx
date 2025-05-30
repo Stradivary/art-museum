@@ -8,6 +8,7 @@ import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailVi
 import { useNavigate, useLocation } from 'react-router'
 import Image from '../../shared/Image'
 import { Button } from '@/presentation/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface SavedArtworkCardProps {
   artwork: SavedArtwork
@@ -27,6 +28,7 @@ export function SavedArtworkCard({
   const [isHovering, setIsHovering] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
 
   // Prefetch artwork details on hover for better UX
   useEffect(() => {
@@ -66,7 +68,7 @@ export function SavedArtworkCard({
 
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
+      className="bg-card dark:bg-card border-border dark:border-border group relative overflow-hidden rounded-lg border shadow-sm transition-shadow duration-200 hover:shadow-md"
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
@@ -75,17 +77,17 @@ export function SavedArtworkCard({
       }}
     >
       <div className="block">
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
+        <div className="bg-muted dark:bg-muted relative aspect-[3/4] w-full overflow-hidden">
           {artwork.image_id ? (
             <>
               {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200"></div>
+                <div className="bg-muted dark:bg-muted absolute inset-0 flex items-center justify-center">
+                  {/* Optionally add a loading spinner here */}
                 </div>
               )}
               <Image
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title ?? 'Artwork'}
+                alt={artwork.title ?? t('saved.noImageAlt', 'Artwork')}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
                 className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
@@ -97,8 +99,10 @@ export function SavedArtworkCard({
               />
             </>
           ) : (
-            <div className="flex h-full items-center justify-center bg-gray-100 p-4 text-center">
-              <p className="text-sm text-gray-500">No image available</p>
+            <div className="bg-muted dark:bg-muted flex h-full items-center justify-center p-4 text-center">
+              <p className="text-muted-foreground text-sm">
+                {t('saved.noImage', 'No image available')}
+              </p>
             </div>
           )}
 
@@ -107,8 +111,8 @@ export function SavedArtworkCard({
             onClick={handleDelete}
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-white/80"
-            aria-label="Delete saved artwork"
+            className="bg-card dark:bg-card hover:bg-accent absolute top-2 right-2 h-8 w-8 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            aria-label={t('saved.deleteAria', 'Delete saved artwork')}
           >
             <Trash2 className="text-primary h-4 w-4" />
           </Button>
@@ -116,7 +120,7 @@ export function SavedArtworkCard({
 
         <div className="p-3">
           <h2
-            className="line-clamp-1 font-medium"
+            className="text-foreground line-clamp-1 font-medium"
             style={{
               viewTransitionName: 'artwork-title-' + artwork.id,
             }}
@@ -124,16 +128,16 @@ export function SavedArtworkCard({
             {artwork.title}
           </h2>
           <p
-            className="line-clamp-1 text-sm text-gray-600"
+            className="text-muted-foreground line-clamp-1 text-sm"
             style={{
               viewTransitionName: 'artwork-artist-' + artwork.id,
             }}
           >
-            {artwork.artist_title ?? 'Unknown artist'}
+            {artwork.artist_title ?? t('saved.unknownArtist', 'Unknown artist')}
           </p>
           {artwork.date_display && (
             <p
-              className="mt-1 text-xs text-gray-500"
+              className="text-muted-foreground mt-1 text-xs"
               style={{
                 viewTransitionName: 'artwork-date-' + artwork.id,
               }}

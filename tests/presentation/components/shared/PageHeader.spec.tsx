@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { PageHeader } from '@/presentation/components/shared/PageHeader'
+import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -18,6 +19,7 @@ vi.mock('framer-motion', () => ({
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
   ArrowLeft: () => <svg data-testid="arrow-left-icon" />,
+  Moon: () => <svg data-testid="moon-icon" />,
 }))
 
 // Mock the Button component
@@ -40,7 +42,11 @@ vi.mock('react-router', async (importOriginal) => {
 })
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<MemoryRouter>{component}</MemoryRouter>)
+  return render(
+    <MemoryRouter>
+      <ThemeProvider>{component}</ThemeProvider>
+    </MemoryRouter>
+  )
 }
 
 describe('PageHeader', () => {

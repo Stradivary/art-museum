@@ -127,7 +127,7 @@ describe('SecurityProvider', () => {
 
     const innerElement = screen.getByTestId('inner')
     const wrapper = innerElement.parentElement
-    
+
     expect(wrapper).toHaveClass('security-protected')
     expect(wrapper).toHaveStyle('min-height: 100vh')
     expect(wrapper).toHaveStyle('position: relative')

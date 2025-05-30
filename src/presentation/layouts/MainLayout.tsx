@@ -9,7 +9,6 @@ import { SecurityProvider } from '../components/shared/SecurityProvider'
 import { ErrorBoundary } from '../components/shared/ErrorBoundary'
 import { PageLoadingFallback } from '../components/shared/Loading'
 import { TooltipProvider } from '../components/ui/tooltip'
-
 /**
  * Main layout component for the application
  */

@@ -12,15 +12,15 @@ export function ErrorFallback({
   const navigate = useNavigate()
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 text-center shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
+      <div className="bg-card w-full max-w-md rounded-xl p-8 text-center shadow-lg">
         <div className="mb-6 flex justify-center">
-          <div className="rounded-full bg-red-100 p-3">
+          <div className="rounded-full bg-red-200/50 p-3">
             <AlertTriangle className="h-8 w-8 text-red-600" />
           </div>
         </div>
 
-        <h1 className="mb-4 text-2xl font-bold text-gray-900">
+        <h1 className="text-foreground mb-4 text-2xl font-bold">
           Oops! Something went wrong
         </h1>
 

@@ -5,7 +5,7 @@ import { SearchBar } from '@/presentation/components/features/search/SearchBar'
 
 // Mock useDebounce hook
 vi.mock('@/presentation/hooks/useDebounce', () => ({
-  useDebounce: (value: string, delay: number) => value, // Return value immediately for testing
+  useDebounce: (value: string) => value, // Return value immediately for testing
 }))
 
 // Mock react-router

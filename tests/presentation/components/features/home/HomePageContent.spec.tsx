@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from '@testing-library/react'
 import { HomePageContent } from '@/presentation/components/features/home/HomePageContent'
+import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Mock router hooks
 const mockSetSearchParams = vi.fn()
@@ -106,6 +108,22 @@ vi.mock('framer-motion', () => ({
   },
 }))
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  })
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  const queryClient = createTestQueryClient()
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{ui}</ThemeProvider>
+    </QueryClientProvider>
+  )
+}
+
 describe('HomePageContent', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -123,7 +141,7 @@ describe('HomePageContent', () => {
   })
 
   it('should render search bar and filter components', () => {
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     expect(screen.getByTestId('search-bar')).toBeInTheDocument()
     expect(screen.getByTestId('artwork-filter')).toBeInTheDocument()
@@ -131,7 +149,7 @@ describe('HomePageContent', () => {
   })
 
   it('should render with initial search query', () => {
-    render(<HomePageContent initialSearchQuery="Van Gogh" />)
+    renderWithProviders(<HomePageContent initialSearchQuery="Van Gogh" />)
 
     const searchInput = screen.getByTestId('search-query')
     expect(searchInput).toHaveValue('Van Gogh')
@@ -147,7 +165,7 @@ describe('HomePageContent', () => {
       error: null,
     })
 
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     expect(screen.getByTestId('recommendations')).toBeInTheDocument()
     expect(screen.getByTestId('recommendations-count')).toHaveTextContent('1')
@@ -160,7 +178,7 @@ describe('HomePageContent', () => {
       error: null,
     })
 
-    render(<HomePageContent initialSearchQuery="Van Gogh" />)
+    renderWithProviders(<HomePageContent initialSearchQuery="Van Gogh" />)
 
     expect(screen.queryByTestId('recommendations')).not.toBeInTheDocument()
   })
@@ -172,7 +190,7 @@ describe('HomePageContent', () => {
       error: null,
     })
 
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     // Initially shows recommendations
     expect(screen.getByTestId('recommendations')).toBeInTheDocument()
@@ -186,7 +204,7 @@ describe('HomePageContent', () => {
   })
 
   it('should handle search query changes and update URL params', () => {
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     const searchInput = screen.getByTestId('search-query')
     fireEvent.change(searchInput, { target: { value: 'Monet' } })
@@ -202,7 +220,7 @@ describe('HomePageContent', () => {
       param === 'q' ? 'Picasso' : null
     )
 
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     // Should pick up query from URL params
     const searchQuery = screen.getByTestId('artwork-search-query')
@@ -210,7 +228,7 @@ describe('HomePageContent', () => {
   })
 
   it('should pass filters to ArtworkGrid', () => {
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     const filtersDisplay = screen.getByTestId('filters')
     expect(filtersDisplay).toHaveTextContent('{}')
@@ -231,7 +249,7 @@ describe('HomePageContent', () => {
       error: null,
     })
 
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     expect(screen.getByTestId('recommendations')).toBeInTheDocument()
     expect(screen.getByTestId('recommendations-loading')).toHaveTextContent(
@@ -247,7 +265,7 @@ describe('HomePageContent', () => {
       error: testError,
     })
 
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     expect(screen.getByTestId('recommendations')).toBeInTheDocument()
     expect(screen.getByTestId('recommendations-error')).toHaveTextContent(
@@ -256,7 +274,7 @@ describe('HomePageContent', () => {
   })
 
   it('should have proper accessibility structure', () => {
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     // Check that search input has proper placeholder
     const searchInput = screen.getByPlaceholderText('Search artworks...')
@@ -269,7 +287,7 @@ describe('HomePageContent', () => {
   })
 
   it('should handle empty search query properly', () => {
-    render(<HomePageContent initialSearchQuery="" />)
+    renderWithProviders(<HomePageContent initialSearchQuery="" />)
 
     const searchQuery = screen.getByTestId('artwork-search-query')
     expect(searchQuery).toHaveTextContent('')
@@ -279,7 +297,7 @@ describe('HomePageContent', () => {
   })
 
   it('should properly pass initial filters to components', () => {
-    render(<HomePageContent />)
+    renderWithProviders(<HomePageContent />)
 
     const filtersDisplay = screen.getByTestId('filters')
     expect(filtersDisplay).toHaveTextContent('{}')

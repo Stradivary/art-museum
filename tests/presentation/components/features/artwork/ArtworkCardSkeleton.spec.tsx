@@ -61,7 +61,7 @@ describe('ArtworkCardSkeleton Component', () => {
     expect(aspectRatioContainer).toHaveClass(
       'w-full',
       'overflow-hidden',
-      'bg-gray-100'
+      'bg-muted'
     )
   })
 })

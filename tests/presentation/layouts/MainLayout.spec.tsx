@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { MainLayout } from '@/presentation/layouts/MainLayout'
+import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
 
 // Mock all the dependencies
 vi.mock(
@@ -69,7 +70,11 @@ vi.mock('react', async () => {
 })
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<MemoryRouter>{component}</MemoryRouter>)
+  return render(
+    <MemoryRouter>
+      <ThemeProvider>{component}</ThemeProvider>
+    </MemoryRouter>
+  )
 }
 
 describe('MainLayout', () => {

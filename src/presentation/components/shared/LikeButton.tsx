@@ -7,6 +7,7 @@ import { Button } from '@/presentation/components/ui/button'
 import { type Artwork } from '@/core/domain/entities/Artwork'
 import { useSavedArtworkViewModel } from '../../viewmodels/SavedArtworkViewModel'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface LikeButtonProps {
   artwork: Artwork
@@ -35,6 +36,7 @@ function LoadingContent({
   isSaved: boolean
   showLabel: boolean
 }) {
+  const { t } = useTranslation()
   return (
     <motion.div
       key="loading"
@@ -51,7 +53,9 @@ function LoadingContent({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          {isSaved ? 'Removing...' : 'Saving...'}
+          {isSaved
+            ? t('likeButton.removing', 'Removing...')
+            : t('likeButton.saving', 'Saving...')}
         </motion.span>
       )}
     </motion.div>
@@ -89,6 +93,7 @@ function HeartIcon({
  * Button label component
  */
 function ButtonLabel({ isSaved }: { isSaved: boolean }) {
+  const { t } = useTranslation()
   return (
     <motion.span
       initial={{ opacity: 0 }}
@@ -96,7 +101,7 @@ function ButtonLabel({ isSaved }: { isSaved: boolean }) {
       transition={{ delay: 0.1 }}
       className="font-medium"
     >
-      {isSaved ? 'Saved' : 'Save'}
+      {isSaved ? t('likeButton.saved', 'Saved') : t('likeButton.save', 'Save')}
     </motion.span>
   )
 }
@@ -204,14 +209,16 @@ export function LikeButton({
     }
   }
 
+  const { t } = useTranslation()
+
   const buttonProps = {
     onClick: handleClick,
     disabled: isLoading,
     className: cn(
       'rounded-full transition-all duration-200',
       isSaved
-        ? 'bg-red-600 text-white shadow-lg hover:bg-red-700'
-        : 'border-gray-300 bg-white text-gray-700 hover:border-red-300 hover:bg-gray-50 hover:text-red-600',
+        ? 'bg-primary text-white shadow-lg hover:bg-red-700'
+        : 'border-gray-300 bg-card text-gray-700 hover:border-red-300 hover:bg-gray-50 hover:text-primary',
       className
     ),
   }
@@ -236,7 +243,11 @@ export function LikeButton({
           variant={isSaved ? 'destructive' : variant}
           size="icon"
           className={cn(buttonProps.className, 'h-8 w-8')}
-          aria-label={isSaved ? 'Remove from saved' : 'Save artwork'}
+          aria-label={
+            isSaved
+              ? t('likeButton.removeAria', 'Remove from saved')
+              : t('likeButton.saveAria', 'Save artwork')
+          }
         >
           <ButtonContent
             isLoading={isLoading}
@@ -267,10 +278,14 @@ export function LikeButton({
     >
       <Button
         {...buttonProps}
-        variant={isSaved ? 'destructive' : variant}
+        variant={isSaved ? 'default' : variant}
         size={sizeVariant}
         className={cn(buttonProps.className, 'flex items-center gap-2')}
-        aria-label={isSaved ? 'Remove from saved artworks' : 'Save artwork'}
+        aria-label={
+          isSaved
+            ? t('likeButton.removeAria', 'Remove from saved artworks')
+            : t('likeButton.saveAria', 'Save artwork')
+        }
       >
         <ButtonContent
           isLoading={isLoading}
@@ -278,19 +293,6 @@ export function LikeButton({
           showLabel={showLabel}
           hasAnimated={hasAnimated}
         />
-
-        {/* Pulse effect on save */}
-        {/* <AnimatePresence>
-          {hasAnimated && isSaved && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0.6 }}
-              animate={{ scale: 2, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="pointer-events-none absolute inset-0 rounded-full bg-red-400"
-            />
-          )}
-        </AnimatePresence> */}
       </Button>
     </motion.div>
   )

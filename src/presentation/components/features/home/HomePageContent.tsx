@@ -9,6 +9,9 @@ import { ArtworkFilter } from '../search/ArtworkFilter'
 import { useRecommendationsViewModel } from '../../../viewmodels/ArtworkViewModel'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
 import { useSearchParams } from 'react-router'
+import { cleanFilters } from '@/lib/utils'
+import { localStorageService } from '@/infrastructure/services/LocalStorageService'
+import { useClearArtworkGridCacheOnFilterChange } from '@/presentation/hooks/useClearArtworkGridCacheOnFilterChange'
 
 interface HomePageContentProps {
   initialSearchQuery?: string
@@ -39,6 +42,25 @@ export function HomePageContent({
     }
   }, [searchParams])
 
+  // Load filters from local storage on mount
+  useEffect(() => {
+    localStorageService
+      .getItem<ArtworkFilters>('artwork-filters')
+      .then((stored) => {
+        if (stored) {
+          setFilters(stored)
+        }
+      })
+  }, [])
+
+  // Save filters to local storage whenever they change
+  useEffect(() => {
+    localStorageService.setItem('artwork-filters', filters)
+  }, [filters])
+
+  // Clear artwork grid cache when filters change
+  useClearArtworkGridCacheOnFilterChange(filters)
+
   const handleSearchQueryChange = useCallback(
     (query: string) => {
       setSearchQuery(query)
@@ -56,7 +78,7 @@ export function HomePageContent({
   )
 
   const handleFiltersChange = useCallback((newFilters: ArtworkFilters) => {
-    setFilters(newFilters)
+    setFilters(cleanFilters(newFilters))
   }, [])
 
   const showRecommendations = !searchQuery && Object.keys(filters).length === 0
@@ -68,7 +90,7 @@ export function HomePageContent({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="sticky top-16 z-10 -mx-4 rounded-lg border-b border-gray-200/50 bg-gray-50/90 px-4 py-4 backdrop-blur-sm"
+        className="border-border/50 bg-background/90 sticky top-16 z-10 -mx-4 rounded-lg border-b px-4 py-4 backdrop-blur-sm"
       >
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1">

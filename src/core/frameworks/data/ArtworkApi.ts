@@ -27,33 +27,63 @@ export class ArtworkApi {
   private readonly baseUrl = 'https://api.artic.edu/api/v1'
 
   /**
-   * Build filter query parameters
+   * Build query parameters for Art Institute of Chicago API
    */
-  private buildFilterParams(filters?: ArtworkFilters): string {
-    if (!filters) return ''
+  private buildParams(
+    query?: string,
+    filters?: ArtworkFilters
+  ): URLSearchParams {
+    const searchParams = new URLSearchParams()
 
-    const filterParams: string[] = []
+    // Add required fields
+    const fields = [
+      'id',
+      'title',
+      'artist_title',
+      'date_display',
+      'image_id',
+      'description',
+      'provenance_text',
+      'publication_history',
+      'exhibition_history',
+      'credit_line',
+      'place_of_origin',
+      'medium_display',
+      'dimensions',
+      'artwork_type_title',
+      'department_title',
+      'artist_display',
+    ]
+    searchParams.append('fields', fields.join(','))
 
-    if (filters.department) {
-      filterParams.push(
-        `department_title:${encodeURIComponent(filters.department)}`
-      )
-    }
-    if (filters.artworkType) {
-      filterParams.push(
-        `artwork_type_title:${encodeURIComponent(filters.artworkType)}`
-      )
-    }
-    if (filters.placeOfOrigin) {
-      filterParams.push(
-        `place_of_origin:${encodeURIComponent(filters.placeOfOrigin)}`
-      )
-    }
-    if (filters.medium) {
-      filterParams.push(`medium_display:${encodeURIComponent(filters.medium)}`)
+    // Add search query if provided
+    if (query) {
+      searchParams.append('q', query)
     }
 
-    return filterParams.length > 0 ? `&fq=${filterParams.join(' AND ')}` : ''
+    // Add filters using the correct API format: query[term][field]=value
+    if (filters) {
+      if (filters.department) {
+        searchParams.append('query[term][department_title]', filters.department)
+      }
+      if (filters.artworkType) {
+        searchParams.append(
+          'query[term][artwork_type_title]',
+          filters.artworkType
+        )
+      }
+      if (filters.placeOfOrigin) {
+        searchParams.append(
+          'query[term][place_of_origin]',
+          filters.placeOfOrigin
+        )
+      }
+      if (filters.medium) {
+        searchParams.append('query[term][medium_display]', filters.medium)
+      }
+    }
+
+    return searchParams
   }
 
   /**
@@ -65,9 +95,12 @@ export class ArtworkApi {
     filters?: ArtworkFilters
   ): Promise<ArtworkApiResponse> {
     try {
-      const filterParams = this.buildFilterParams(filters)
+      const searchParams = this.buildParams(undefined, filters)
+      searchParams.append('page', page.toString())
+      searchParams.append('limit', limit.toString())
+
       const response = await fetch(
-        `${this.baseUrl}/artworks?page=${page}&limit=${limit}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display${filterParams}`
+        `${this.baseUrl}/artworks?${searchParams.toString()}`
       )
 
       if (!response.ok) {
@@ -82,9 +115,30 @@ export class ArtworkApi {
   }
 
   /**
-   * Fetch a single artwork by ID
+   * Fetch basic artwork info by ID (optimized for cards)
    */
-  async fetchArtworkById(id: number): Promise<Artwork> {
+  async fetchArtworkBasicById(id: number): Promise<Artwork> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/artworks/${id}?fields=id,title,artist_title,date_display,image_id,artwork_type_title,department_title,place_of_origin,medium_display`
+      )
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data.data
+    } catch (error) {
+      console.error(`Error fetching basic artwork with id ${id}:`, error)
+      throw error
+    }
+  }
+
+  /**
+   * Fetch detailed artwork info by ID (for detail pages)
+   */
+  async fetchArtworkDetailById(id: number): Promise<Artwork> {
     try {
       const response = await fetch(
         `${this.baseUrl}/artworks/${id}?fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display`
@@ -97,9 +151,17 @@ export class ArtworkApi {
       const data = await response.json()
       return data.data
     } catch (error) {
-      console.error(`Error fetching artwork with id ${id}:`, error)
+      console.error(`Error fetching detailed artwork with id ${id}:`, error)
       throw error
     }
+  }
+
+  /**
+   * Fetch a single artwork by ID (legacy - use fetchArtworkDetailById instead)
+   * @deprecated Use fetchArtworkBasicById or fetchArtworkDetailById instead
+   */
+  async fetchArtworkById(id: number): Promise<Artwork> {
+    return this.fetchArtworkDetailById(id)
   }
 
   /**
@@ -110,9 +172,9 @@ export class ArtworkApi {
     filters?: ArtworkFilters
   ): Promise<ArtworkApiResponse> {
     try {
-      const filterParams = this.buildFilterParams(filters)
+      const searchParams = this.buildParams(query, filters)
       const response = await fetch(
-        `${this.baseUrl}/artworks/search?q=${encodeURIComponent(query)}&fields=id,title,artist_title,date_display,image_id,description,provenance_text,publication_history,exhibition_history,credit_line,place_of_origin,medium_display,dimensions,artwork_type_title,department_title,artist_display&limit=20${filterParams}`
+        `${this.baseUrl}/artworks/search?${searchParams.toString()}`
       )
 
       if (!response.ok) {

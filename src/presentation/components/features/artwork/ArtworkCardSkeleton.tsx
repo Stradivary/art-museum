@@ -5,8 +5,8 @@ import { Skeleton } from '@/presentation/components/ui/skeleton'
  */
 export function ArtworkCardSkeleton() {
   return (
-    <div className="h-full overflow-hidden rounded-lg bg-white shadow-sm">
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
+    <div className="bg-card h-full overflow-hidden rounded-lg shadow-sm">
+      <div className="bg-muted relative aspect-[3/4] w-full overflow-hidden">
         <Skeleton className="h-full w-full" />
       </div>
       <div className="space-y-2 p-3">

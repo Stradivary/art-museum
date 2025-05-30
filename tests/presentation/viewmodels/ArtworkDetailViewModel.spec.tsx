@@ -4,7 +4,8 @@ import { vi } from 'vitest'
 // Define the mock object directly inside the vi.mock factory to avoid hoisting issues
 vi.mock('@/infrastructure/repositories/ArtworkRepositoryImpl', () => {
   const mockArtworkRepository = {
-    getArtworkById: vi.fn(),
+    getArtworkBasicById: vi.fn(),
+    getArtworkDetailById: vi.fn(),
     getArtworks: vi.fn(),
     searchArtworks: vi.fn(),
     getRecommendations: vi.fn(),
@@ -52,7 +53,7 @@ describe('ArtworkDetailViewModel', () => {
   describe('useArtworkDetailViewModel', () => {
     it('should fetch artwork by id successfully', async () => {
       const artworkId = 123
-      mockedArtworkRepository.getArtworkById.mockResolvedValue(mockArtwork)
+      mockedArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
 
       const { result } = renderHook(
         () => useArtworkDetailViewModel(artworkId),
@@ -68,7 +69,7 @@ describe('ArtworkDetailViewModel', () => {
 
       expect(result.current.artwork).toEqual(mockArtwork)
       expect(result.current.error).toBeNull()
-      expect(mockedArtworkRepository.getArtworkById).toHaveBeenCalledWith(
+      expect(mockedArtworkRepository.getArtworkBasicById).toHaveBeenCalledWith(
         artworkId
       )
     })
@@ -83,7 +84,7 @@ describe('ArtworkDetailViewModel', () => {
 
       expect(result.current.isLoading).toBe(false)
       expect(result.current.artwork).toBeUndefined()
-      expect(mockedArtworkRepository.getArtworkById).not.toHaveBeenCalled()
+      expect(mockedArtworkRepository.getArtworkBasicById).not.toHaveBeenCalled()
     })
 
     it('should handle negative artwork id', () => {
@@ -96,7 +97,7 @@ describe('ArtworkDetailViewModel', () => {
 
       expect(result.current.isLoading).toBe(false)
       expect(result.current.artwork).toBeUndefined()
-      expect(mockedArtworkRepository.getArtworkById).not.toHaveBeenCalled()
+      expect(mockedArtworkRepository.getArtworkBasicById).not.toHaveBeenCalled()
     })
 
     it('should respect enabled option', () => {
@@ -108,7 +109,7 @@ describe('ArtworkDetailViewModel', () => {
       )
 
       expect(result.current.isLoading).toBe(false)
-      expect(mockedArtworkRepository.getArtworkById).not.toHaveBeenCalled()
+      expect(mockedArtworkRepository.getArtworkBasicById).not.toHaveBeenCalled()
     })
 
     it('should use initial data when provided', () => {
@@ -128,7 +129,7 @@ describe('ArtworkDetailViewModel', () => {
     it('should handle fetch error', async () => {
       const artworkId = 123
       const mockError = new Error('Failed to fetch artwork')
-      mockedArtworkRepository.getArtworkById.mockRejectedValue(mockError)
+      mockedArtworkRepository.getArtworkBasicById.mockRejectedValue(mockError)
 
       const { result } = renderHook(
         () => useArtworkDetailViewModel(artworkId),
@@ -152,7 +153,7 @@ describe('ArtworkDetailViewModel', () => {
       )
 
       expect(result.current.isLoading).toBe(false)
-      expect(mockedArtworkRepository.getArtworkById).not.toHaveBeenCalled()
+      expect(mockedArtworkRepository.getArtworkBasicById).not.toHaveBeenCalled()
     })
 
     it('should refetch when id changes', async () => {
@@ -165,7 +166,7 @@ describe('ArtworkDetailViewModel', () => {
         title: 'Second Artwork',
       }
 
-      mockedArtworkRepository.getArtworkById
+      mockedArtworkRepository.getArtworkBasicById
         .mockResolvedValueOnce(firstArtwork)
         .mockResolvedValueOnce(secondArtwork)
 
@@ -187,15 +188,15 @@ describe('ArtworkDetailViewModel', () => {
         expect(result.current.artwork).toEqual(secondArtwork)
       })
 
-      expect(mockedArtworkRepository.getArtworkById).toHaveBeenCalledTimes(2)
-      expect(mockedArtworkRepository.getArtworkById).toHaveBeenNthCalledWith(
-        1,
-        firstId
+      expect(mockedArtworkRepository.getArtworkBasicById).toHaveBeenCalledTimes(
+        2
       )
-      expect(mockedArtworkRepository.getArtworkById).toHaveBeenNthCalledWith(
-        2,
-        secondId
-      )
+      expect(
+        mockedArtworkRepository.getArtworkBasicById
+      ).toHaveBeenNthCalledWith(1, firstId)
+      expect(
+        mockedArtworkRepository.getArtworkBasicById
+      ).toHaveBeenNthCalledWith(2, secondId)
     })
   })
 
@@ -210,7 +211,7 @@ describe('ArtworkDetailViewModel', () => {
 
     it('should prefetch artwork when called', () => {
       const artworkId = 123
-      mockedArtworkRepository.getArtworkById.mockResolvedValue(mockArtwork)
+      mockedArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
 
       // Spy on queryClient.prefetchQuery
       const prefetchSpy = vi.spyOn(queryClient, 'prefetchQuery')
@@ -222,7 +223,7 @@ describe('ArtworkDetailViewModel', () => {
       result.current.prefetchArtwork(artworkId)
 
       expect(prefetchSpy).toHaveBeenCalledWith({
-        queryKey: ['artwork', artworkId],
+        queryKey: ['artwork', 'basic', artworkId],
         queryFn: expect.any(Function),
         staleTime: 5 * 60 * 1000,
       })
@@ -230,7 +231,7 @@ describe('ArtworkDetailViewModel', () => {
 
     it('should call use case when prefetch query function is executed', async () => {
       const artworkId = 123
-      mockedArtworkRepository.getArtworkById.mockResolvedValue(mockArtwork)
+      mockedArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
 
       // Spy on queryClient.prefetchQuery BEFORE the hook is rendered and prefetch is called
       const prefetchSpy = vi.spyOn(queryClient, 'prefetchQuery')
@@ -249,7 +250,7 @@ describe('ArtworkDetailViewModel', () => {
       // Execute the query function
       await queryFn()
 
-      expect(mockedArtworkRepository.getArtworkById).toHaveBeenCalledWith(
+      expect(mockedArtworkRepository.getArtworkBasicById).toHaveBeenCalledWith(
         artworkId
       )
     })
@@ -257,7 +258,7 @@ describe('ArtworkDetailViewModel', () => {
     it('should work with multiple prefetch calls', () => {
       const firstId = 123
       const secondId = 456
-      mockedArtworkRepository.getArtworkById.mockResolvedValue(mockArtwork)
+      mockedArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
 
       const prefetchSpy = vi.spyOn(queryClient, 'prefetchQuery')
 
@@ -272,13 +273,13 @@ describe('ArtworkDetailViewModel', () => {
       expect(prefetchSpy).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
-          queryKey: ['artwork', firstId],
+          queryKey: ['artwork', 'basic', firstId],
         })
       )
       expect(prefetchSpy).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({
-          queryKey: ['artwork', secondId],
+          queryKey: ['artwork', 'basic', secondId],
         })
       )
     })

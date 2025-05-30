@@ -111,7 +111,7 @@ describe('Loading Components', () => {
         'w-full',
         'animate-pulse',
         'rounded-full',
-        'bg-gray-100'
+        'bg-muted'
       )
     })
 

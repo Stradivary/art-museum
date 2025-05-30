@@ -4,6 +4,7 @@ import type {
   ArtworkFilters,
 } from '../../interfaces/IArtworkRepository'
 import type { ISavedArtworkRepository } from '../../interfaces/ISavedArtworkRepository'
+import type { IDislikedArtworkRepository } from '../../interfaces/IDislikedArtworkRepository'
 
 export interface RecommendationSummary {
   totalRecommendations: number
@@ -30,13 +31,16 @@ export type Preferences = {
 export class GetRecommendationsUseCase {
   private readonly artworkRepository: IArtworkRepository
   private readonly savedArtworkRepository: ISavedArtworkRepository
+  private readonly dislikedArtworkRepository: IDislikedArtworkRepository
 
   constructor(
     artworkRepository: IArtworkRepository,
-    savedArtworkRepository: ISavedArtworkRepository
+    savedArtworkRepository: ISavedArtworkRepository,
+    dislikedArtworkRepository: IDislikedArtworkRepository
   ) {
     this.artworkRepository = artworkRepository
     this.savedArtworkRepository = savedArtworkRepository
+    this.dislikedArtworkRepository = dislikedArtworkRepository
   }
 
   /**
@@ -47,6 +51,10 @@ export class GetRecommendationsUseCase {
       // Get user's saved artworks
       const savedArtworks =
         await this.savedArtworkRepository.getAllSavedArtworks()
+
+      // Get user's disliked artworks
+      const dislikedArtworks =
+        await this.dislikedArtworkRepository.getAllDislikedArtworks()
 
       if (savedArtworks.length === 0) {
         return {
@@ -64,15 +72,20 @@ export class GetRecommendationsUseCase {
       // Analyze user preferences
       const preferences = this.analyzePreferences(savedArtworks)
 
-      // Extract saved artwork IDs for filtering
+      // Extract saved and disliked artwork IDs for filtering
       const savedArtworkIds = new Set(
         savedArtworks.map((artwork) => artwork.id)
       )
 
-      // Generate recommendations based on the most common preferences (excluding saved artworks)
+      const dislikedArtworkIds = new Set(
+        dislikedArtworks.map((artwork) => artwork.id)
+      )
+
+      // Generate recommendations based on the most common preferences (excluding saved and disliked artworks)
       const recommendations = await this.generateRecommendations(
         preferences,
-        savedArtworkIds
+        savedArtworkIds,
+        dislikedArtworkIds
       )
 
       // Create summary
@@ -143,32 +156,100 @@ export class GetRecommendationsUseCase {
    */
   private async generateRecommendations(
     preferences: Preferences,
-    savedArtworkIds: Set<number>
+    savedArtworkIds: Set<number>,
+    dislikedArtworkIds: Set<number>
   ): Promise<Artwork[]> {
     const recommendations: Artwork[] = []
     const seenIds = new Set<number>()
+    const TARGET_RECOMMENDATIONS = 20
+    const BATCH_SIZE = 12
+    const MAX_PAGES_PER_STRATEGY = 3 // Limit to avoid infinite loops
 
-    // Helper to fetch and add artworks
-    const fetchAndAdd = async (filters: ArtworkFilters) => {
-      const result = await this.artworkRepository.getArtworks(1, 30, filters)
-      if (result?.artworks) {
-        for (const artwork of result.artworks) {
-          if (
-            !seenIds.has(artwork.id) &&
-            !savedArtworkIds.has(artwork.id) &&
-            artwork.image_id
-          ) {
-            recommendations.push(artwork)
-            seenIds.add(artwork.id)
-            if (recommendations.length >= 20) return true
+    // Helper to progressively fetch and add artworks
+    const addValidArtworksFromBatch = (
+      artworks: Artwork[],
+      seenIds: Set<number>,
+      savedArtworkIds: Set<number>,
+      dislikedArtworkIds: Set<number>,
+      recommendations: Artwork[],
+      target: number
+    ): { added: number; complete: boolean } => {
+      let added = 0
+      for (const artwork of artworks) {
+        if (
+          !seenIds.has(artwork.id) &&
+          !savedArtworkIds.has(artwork.id) &&
+          !dislikedArtworkIds.has(artwork.id) &&
+          artwork.image_id
+        ) {
+          recommendations.push(artwork)
+          seenIds.add(artwork.id)
+          added++
+          if (recommendations.length >= target) {
+            return { added, complete: true }
           }
         }
       }
-      return false
+      return { added, complete: false }
     }
 
-    // Prepare strategies as filter objects
+    const fetchAndAddProgressively = async (
+      filters: ArtworkFilters
+    ): Promise<boolean> => {
+      let page = 1
+      let pagesAttempted = 0
+
+      while (
+        recommendations.length < TARGET_RECOMMENDATIONS &&
+        pagesAttempted < MAX_PAGES_PER_STRATEGY
+      ) {
+        try {
+          const result = await this.artworkRepository.getArtworks(
+            page,
+            BATCH_SIZE,
+            filters
+          )
+
+          if (!result?.artworks || result.artworks.length === 0) {
+            break
+          }
+
+          const { added, complete } = addValidArtworksFromBatch(
+            result.artworks,
+            seenIds,
+            savedArtworkIds,
+            dislikedArtworkIds,
+            recommendations,
+            TARGET_RECOMMENDATIONS
+          )
+
+          if (complete) {
+            return true
+          }
+
+          if (added === 0 || result.artworks.length < BATCH_SIZE) {
+            break
+          }
+
+          page++
+          pagesAttempted++
+        } catch (error) {
+          console.warn(
+            `Error fetching page ${page} for strategy:`,
+            filters,
+            error
+          )
+          break
+        }
+      }
+
+      return recommendations.length >= TARGET_RECOMMENDATIONS
+    }
+
+    // Prepare strategies as filter objects (ordered by specificity)
     const strategies: ArtworkFilters[] = []
+
+    // Most specific: department + artwork type
     if (
       preferences.departments.length > 0 &&
       preferences.artworkTypes.length > 0
@@ -178,6 +259,8 @@ export class GetRecommendationsUseCase {
         artworkType: preferences.artworkTypes[0][0],
       })
     }
+
+    // Medium specificity: individual preferences
     if (preferences.departments.length > 0) {
       strategies.push({ department: preferences.departments[0][0] })
     }
@@ -187,13 +270,31 @@ export class GetRecommendationsUseCase {
     if (preferences.placesOfOrigin.length > 0) {
       strategies.push({ placeOfOrigin: preferences.placesOfOrigin[0][0] })
     }
+    if (preferences.mediums.length > 0) {
+      strategies.push({ medium: preferences.mediums[0][0] })
+    }
 
+    // Execute strategies until we have enough recommendations
     for (const filters of strategies) {
       try {
-        const done = await fetchAndAdd(filters)
-        if (done) break
+        const isComplete = await fetchAndAddProgressively(filters)
+        if (isComplete) {
+          break
+        }
       } catch (error) {
-        console.warn('Strategy failed:', error)
+        console.warn('Strategy failed:', filters, error)
+      }
+    }
+
+    // If we still don't have enough recommendations, try a fallback without filters
+    if (recommendations.length < TARGET_RECOMMENDATIONS) {
+      try {
+        console.log(
+          `Only found ${recommendations.length} recommendations, trying fallback without filters`
+        )
+        await fetchAndAddProgressively({})
+      } catch (error) {
+        console.warn('Fallback strategy failed:', error)
       }
     }
 
@@ -231,6 +332,11 @@ export class GetRecommendationsUseCase {
       )
     }
 
+    if (preferences.mediums.length > 0) {
+      const topMedium = preferences.mediums[0]
+      reasons.push(`You favor ${topMedium[0]} (${topMedium[1]} saved)`)
+    }
+
     if (preferences.artists.length > 0) {
       const topArtist = preferences.artists[0]
       reasons.push(
@@ -240,6 +346,15 @@ export class GetRecommendationsUseCase {
 
     if (reasons.length === 0) {
       reasons.push('Based on your saved artworks')
+    }
+
+    // Add insight about recommendation strategy
+    if (totalRecommendations === 20) {
+      reasons.push('✨ Found a rich collection matching your preferences')
+    } else if (totalRecommendations > 15) {
+      reasons.push('📚 Curated selection from available artworks')
+    } else if (totalRecommendations > 0) {
+      reasons.push('🔍 Explored multiple strategies to find these gems')
     }
 
     return {

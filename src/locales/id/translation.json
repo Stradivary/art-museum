@@ -1,0 +1,110 @@
+{
+  "welcome": "Selamat datang",
+  "offline": {
+    "title": "Anda sedang offline",
+    "description": "Beberapa fitur atau konten mungkin tidak tersedia saat offline. Silakan periksa koneksi internet Anda dan coba lagi.",
+    "tryAgain": "Coba Lagi",
+    "goHome": "Kembali ke Beranda",
+    "savedContent": "Anda masih dapat melihat konten yang tersimpan saat offline"
+  },
+  "nav": {
+    "home": "Beranda",
+    "saved": "Tersimpan",
+    "profile": "Profil"
+  },
+  "likeButton": {
+    "save": "Simpan",
+    "saved": "Tersimpan",
+    "saving": "Menyimpan...",
+    "removing": "Menghapus...",
+    "saveAria": "Simpan karya seni",
+    "removeAria": "Hapus dari yang tersimpan"
+  },
+  "pwa": {
+    "installed": "Aplikasi Terpasang",
+    "installing": "Menginstal...",
+    "install": "Pasang"
+  },
+  "settings": {
+    "darkMode": "Mode Gelap",
+    "language": "Bahasa",
+    "english": "Inggris",
+    "bahasa": "Bahasa Indonesia",
+    "notifications": "Notifikasi",
+    "clearPreferences": "Hapus Preferensi",
+    "clearing": "Menghapus...",
+    "clearSaved": "Hapus Konten Tersimpan & Tidak Disukai"
+  },
+  "about": {
+    "title": "Tentang Aplikasi Ini",
+    "description": "Ini adalah Progressive Web App (PWA) yang menyediakan fungsionalitas lebih saat diinstal. Fitur seperti penjelajahan offline dan caching gambar otomatis aktif setelah aplikasi diinstal.",
+    "installed": " Aplikasi Anda sudah terpasang dan semua fitur PWA aktif.",
+    "notInstalled": " Pasang aplikasi untuk mengaktifkan mode offline dan performa yang lebih baik."
+  },
+  "features": {
+    "title": "Fitur Aplikasi",
+    "offline": {
+      "name": "Mode Offline",
+      "description": "Jelajahi karya seni bahkan saat Anda tidak terhubung ke internet."
+    },
+    "imageCaching": {
+      "name": "Cache Gambar",
+      "description": "Gambar karya seni disimpan untuk pemuatan lebih cepat dan akses offline."
+    },
+    "pwa": {
+      "name": "Instalasi PWA",
+      "description": "Pasang aplikasi ke perangkat Anda untuk pengalaman seperti aplikasi native."
+    },
+    "notifications": {
+      "name": "Notifikasi",
+      "description": "Dapatkan notifikasi tentang karya seni dan pembaruan terbaru."
+    }
+  },
+  "saved": {
+    "noImage": "Gambar tidak tersedia",
+    "noImageAlt": "Karya seni",
+    "deleteAria": "Hapus karya seni tersimpan",
+    "unknownArtist": "Seniman tidak diketahui"
+  },
+  "profile": {
+    "user": "Pengguna #{{fingerprint}}",
+    "generated": "Profil dibuat berdasarkan sidik jari browser",
+    "savedArtworks": "Karya Seni Tersimpan",
+    "status": "Status",
+    "connectionStatus": {
+      "online": "Online",
+      "offline": "Offline"
+    }
+  },
+  "recommendations": {
+    "title": "Rekomendasi untuk Anda",
+    "error": "Gagal memuat rekomendasi. Silakan coba lagi nanti.",
+    "discover": "Temukan Selera Anda",
+    "saveSome": "Simpan beberapa karya seni yang Anda sukai untuk mendapatkan rekomendasi personal!",
+    "tip": "Tips: Klik ikon hati pada karya seni untuk menyimpannya",
+    "howTitle": "Bagaimana rekomendasi bekerja",
+    "howDesc": "Mesin rekomendasi kami menganalisis karya seni yang Anda simpan untuk mengidentifikasi pola pada departemen, tipe karya, asal geografis, dan medium artistik.",
+    "whyTitle": "Mengapa rekomendasi ini?",
+    "likeMore": "Suka dengan rekomendasi ini? Simpan lebih banyak karya seni untuk meningkatkan rekomendasi Anda!",
+    "browseAll": "Lihat Semua Karya Seni"
+  },
+  "search": {
+    "placeholder": "Cari karya seni, seniman, gerakan...",
+    "aria": "Cari",
+    "clear": "Hapus pencarian"
+  },
+  "filter": {
+    "filters": "Filter",
+    "summary": "Jelajahi dan filter karya seni berdasarkan departemen, tipe, asal, dan medium",
+    "title": "Filter Karya Seni",
+    "clearAll": "Hapus Semua",
+    "department": "Departemen",
+    "artworkType": "Tipe Karya Seni",
+    "placeOfOrigin": "Asal",
+    "medium": "Medium",
+    "allDepartments": "Semua Departemen",
+    "allArtworkTypes": "Semua Tipe Karya Seni",
+    "allPlacesOfOrigin": "Semua Asal",
+    "allMediums": "Semua Medium"
+  }
+}
