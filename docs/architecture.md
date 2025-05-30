@@ -3,6 +3,7 @@
 The Art Museum App is built with a modular, scalable architecture using modern frontend technologies and best practices.
 
 ## Key Technologies
+
 - **React** (with hooks and functional components)
 - **TypeScript** (type safety)
 - **Vite** (build tool)
@@ -12,6 +13,7 @@ The Art Museum App is built with a modular, scalable architecture using modern f
 - **Vitest** (testing)
 
 ## Directory Structure
+
 - `src/` — Main source code
   - `core/` — Domain logic, use cases, entities
   - `infrastructure/` — Data access, services, repositories
@@ -24,14 +26,17 @@ The Art Museum App is built with a modular, scalable architecture using modern f
 - `public/` — Static assets
 
 ## Layered Approach
+
 - **Core**: Pure business logic, entities, and use cases (framework-agnostic)
 - **Infrastructure**: Implements data access (APIs, local storage)
 - **Presentation**: UI, state management, and user interaction
 
 ## Dependency Flow
+
 ```
 core → infrastructure → presentation
 ```
+
 - Core has no dependencies on infrastructure or presentation.
 - Infrastructure depends on core.
 - Presentation depends on both core and infrastructure.

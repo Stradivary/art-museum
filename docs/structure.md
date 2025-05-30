@@ -3,12 +3,14 @@
 The project is organized for clarity, scalability, and maintainability.
 
 ## Root
+
 - `src/` — Main source code
 - `tests/` — All test files and mocks
 - `public/` — Static assets
 - `docs/` — Project documentation
 
 ## `src/` Breakdown
+
 - `core/`
   - `domain/` — Entities and domain models
   - `application/` — Use cases (business logic)
@@ -28,6 +30,7 @@ The project is organized for clarity, scalability, and maintainability.
 - `types/` — Shared TypeScript types
 
 ## `tests/` Breakdown
+
 - Mirrors the `src/` structure for easy navigation
 - `__mocks__/` — Custom mocks for libraries and modules
 - `integration/` — Integration tests

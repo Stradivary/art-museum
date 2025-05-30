@@ -3,11 +3,13 @@
 This guide will help you set up, develop, and contribute to the Art Museum App.
 
 ## Prerequisites
+
 - Node.js (v18+ recommended)
 - npm or yarn
 - Modern browser
 
 ## Getting Started
+
 1. **Install dependencies:**
    ```bash
    npm install
@@ -24,6 +26,7 @@ This guide will help you set up, develop, and contribute to the Art Museum App.
    Visit `http://localhost:5173` (or the port shown in your terminal).
 
 ## Scripts
+
 - `dev`: Start the development server
 - `build`: Build for production
 - `preview`: Preview the production build
@@ -32,14 +35,17 @@ This guide will help you set up, develop, and contribute to the Art Museum App.
 - `format`: Format code with Prettier
 
 ## Linting & Formatting
+
 - ESLint, Prettier, and Stylelint are configured.
 - Run `npm run lint` and `npm run format` before committing.
 
 ## Environment Variables
+
 - Use a `.env` file for secrets and environment-specific settings.
 - Do **not** commit `.env` files (see `.gitignore`).
 
 ## Contributing
+
 - Fork the repo and create a feature branch.
 - Write tests for new features.
 - Open a pull request with a clear description.
