@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 
 import type { BeforeInstallPromptEvent } from '@/types/pwa'
 
+declare global {
+  interface Window {
+    deferredPWAInstallPrompt?: Event
+  }
+}
+
 /**
  * Hook to handle PWA installation functionality
  */
@@ -39,13 +45,24 @@ export function usePWAInstall() {
 
     const isAlreadyInstalled = checkInstalled()
 
-    // Listen for beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('[PWA] beforeinstallprompt event fired')
-      e.preventDefault()
-      setDeferredPrompt(e as unknown as BeforeInstallPromptEvent)
+    // Check if beforeinstallprompt was already caught by early script
+    if (window.deferredPWAInstallPrompt) {
+      setDeferredPrompt(
+        window.deferredPWAInstallPrompt as unknown as BeforeInstallPromptEvent
+      )
       setIsInstallable(true)
     }
+
+    // Listen for custom event if beforeinstallprompt is caught after mount
+    const handleCustomPrompt = () => {
+      if (window.deferredPWAInstallPrompt) {
+        setDeferredPrompt(
+          window.deferredPWAInstallPrompt as unknown as BeforeInstallPromptEvent
+        )
+        setIsInstallable(true)
+      }
+    }
+    window.addEventListener('pwa-install-prompt-captured', handleCustomPrompt)
 
     // Listen for app installed event
     const handleAppInstalled = () => {
@@ -58,7 +75,6 @@ export function usePWAInstall() {
     // Only add listeners if not already installed
     if (!isAlreadyInstalled) {
       console.log('[PWA] Adding event listeners for install prompt')
-      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.addEventListener('appinstalled', handleAppInstalled)
 
       // Debug: Check if service worker is registered
@@ -87,8 +103,8 @@ export function usePWAInstall() {
 
     return () => {
       window.removeEventListener(
-        'beforeinstallprompt',
-        handleBeforeInstallPrompt
+        'pwa-install-prompt-captured',
+        handleCustomPrompt
       )
       window.removeEventListener('appinstalled', handleAppInstalled)
     }

@@ -82,7 +82,7 @@ export function ContentLoadingFallback({ text }: Readonly<{ text?: string }>) {
 export function SearchBarSkeleton() {
   return (
     <motion.div
-      className="h-10 w-full animate-pulse rounded-full bg-gray-100"
+      className="bg-muted h-10 w-full animate-pulse rounded-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}

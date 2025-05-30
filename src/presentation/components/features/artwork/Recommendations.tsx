@@ -18,6 +18,8 @@ import {
 } from '@/presentation/components/ui/hover-card'
 import { Badge } from '@/presentation/components/ui/badge'
 import type { RecommendationResult } from '@/core/application/usecases/artwork/GetRecommendationsUseCase'
+import { Button } from '../../ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface RecommendationsProps {
   recommendations: RecommendationResult | null | undefined
@@ -33,6 +35,7 @@ export function Recommendations({
   isLoading,
   error,
 }: Readonly<RecommendationsProps>) {
+  const { t } = useTranslation()
   if (isLoading) {
     return (
       <motion.div
@@ -42,8 +45,8 @@ export function Recommendations({
       >
         <div className="mb-4 flex items-center gap-2">
           <Lightbulb className="h-5 w-5 text-[#a20000]" />
-          <h2 className="text-xl font-semibold text-gray-900">
-            Recommended for You
+          <h2 className="text-foreground text-xl font-semibold">
+            {t('recommendations.title', 'Recommended for You')}
           </h2>
         </div>
         <Carousel
@@ -76,7 +79,10 @@ export function Recommendations({
         className="mb-8 rounded-lg border border-red-200 bg-red-50 p-4"
       >
         <p className="text-red-600">
-          Failed to load recommendations. Please try again later.
+          {t(
+            'recommendations.error',
+            'Failed to load recommendations. Please try again later.'
+          )}
         </p>
       </motion.div>
     )
@@ -87,19 +93,28 @@ export function Recommendations({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="mb-8 rounded-lg border bg-gradient-to-r from-gray-50 to-gray-100 p-6"
+        className="from-foreground mb-8 rounded-lg border bg-gradient-to-r to-gray-100 p-6"
       >
         <div className="mb-3 flex items-center gap-3">
           <Heart className="h-5 w-5 text-[#a20000]" />
-          <h2 className="text-xl font-semibold text-gray-900">
-            Discover Your Taste
+          <h2 className="text-foreground text-xl font-semibold">
+            {t('recommendations.discover', 'Discover Your Taste')}
           </h2>
         </div>
         <p className="mb-4 text-gray-600">
-          Save some artworks you love to get personalized recommendations!
+          {t(
+            'recommendations.saveSome',
+            'Save some artworks you love to get personalized recommendations!'
+          )}
         </p>
-        <div className="flex items-center text-sm text-gray-500">
-          <span>💡 Tip: Click the heart icon on any artwork to save it</span>
+        <div className="text-foreground0 flex items-center text-sm">
+          <span>
+            💡{' '}
+            {t(
+              'recommendations.tip',
+              'Tip: Click the heart icon on any artwork to save it'
+            )}
+          </span>
         </div>
       </motion.div>
     )
@@ -116,8 +131,8 @@ export function Recommendations({
       {/* Simplified Header */}
       <div className="mb-6 flex items-center gap-3">
         <Lightbulb className="h-5 w-5 text-[#a20000]" />
-        <h2 className="text-xl font-semibold text-gray-900">
-          Recommended for You
+        <h2 className="text-foreground text-xl font-semibold">
+          {t('recommendations.title', 'Recommended for You')}
         </h2>
         <Badge variant="secondary" className="text-xs">
           {summary.totalRecommendations}
@@ -126,26 +141,30 @@ export function Recommendations({
         {/* Consolidated hover card with recommendations info */}
         <HoverCard>
           <HoverCardTrigger asChild>
-            <button className="text-gray-400 transition-colors hover:text-gray-600">
+            <Button
+              variant="ghost"
+              className="text-gray-400 transition-colors hover:text-gray-600"
+            >
               <Info className="h-4 w-4" />
-            </button>
+            </Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-96" align="start">
             <div className="space-y-4">
               <div>
-                <h4 className="mb-2 font-semibold text-gray-900">
-                  How recommendations work
+                <h4 className="text-foreground mb-2 font-semibold">
+                  {t('recommendations.howTitle', 'How recommendations work')}
                 </h4>
                 <p className="mb-3 text-sm text-gray-600">
-                  Our recommendation engine analyzes your saved artworks to
-                  identify patterns in departments, artwork types, geographic
-                  origins, and artistic mediums.
+                  {t(
+                    'recommendations.howDesc',
+                    'Our recommendation engine analyzes your saved artworks to identify patterns in departments, artwork types, geographic origins, and artistic mediums.'
+                  )}
                 </p>
               </div>
 
               <div>
-                <h5 className="mb-2 font-medium text-gray-900">
-                  Why these recommendations?
+                <h5 className="text-foreground mb-2 font-medium">
+                  {t('recommendations.whyTitle', 'Why these recommendations?')}
                 </h5>
                 <ul className="space-y-1">
                   {summary.reasons.map((reason, index) => (
@@ -199,10 +218,12 @@ export function Recommendations({
           transition={{ duration: 0.3, delay: 0.5 }}
           className="mt-6 text-center"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#a20000]/10 to-[#a20000]/5 px-4 py-2 text-sm text-gray-600">
+          <div className="text-foreground inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#a20000]/20 to-[#a20000]/15 px-4 py-2 text-sm">
             <Heart className="h-4 w-4 text-[#a20000]" />
-            Like what you see? Save more artworks to improve your
-            recommendations!
+            {t(
+              'recommendations.likeMore',
+              'Like what you see? Save more artworks to improve your recommendations!'
+            )}
           </div>
         </motion.div>
       )}
@@ -211,11 +232,11 @@ export function Recommendations({
       <div className="mt-12 mb-8">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="border-border w-full border-t"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-gray-50 px-4 text-gray-500">
-              Browse All Artworks
+            <span className="bg-background text-foreground px-4">
+              {t('recommendations.browseAll', 'Browse All Artworks')}
             </span>
           </div>
         </div>

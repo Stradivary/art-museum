@@ -15,7 +15,7 @@ export default function ProfilePage() {
       <PageHeader title="Profile" />
 
       <div className="mx-auto max-w-7xl p-4">
-        <div className="space-y-6 rounded-lg bg-white p-6 shadow-md">
+        <div className="bg-background space-y-6 rounded-lg p-6">
           <ProfilePageContent />
         </div>
       </div>

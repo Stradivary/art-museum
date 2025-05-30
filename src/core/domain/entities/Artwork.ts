@@ -26,3 +26,10 @@ export interface Artwork {
 export interface SavedArtwork extends Artwork {
   savedAt: number
 }
+
+/**
+ * Extension of Artwork that includes a disliked timestamp
+ */
+export interface DislikedArtwork extends Artwork {
+  dislikedAt: number
+}

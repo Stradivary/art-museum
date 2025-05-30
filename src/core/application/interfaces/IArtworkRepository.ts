@@ -38,7 +38,18 @@ export interface IArtworkRepository {
   ): Promise<ArtworkPaginationResult>
 
   /**
-   * Get a single artwork by ID
+   * Get basic artwork info by ID (optimized for cards)
+   */
+  getArtworkBasicById(id: number): Promise<Artwork>
+
+  /**
+   * Get detailed artwork info by ID (for detail pages)
+   */
+  getArtworkDetailById(id: number): Promise<Artwork>
+
+  /**
+   * Get a single artwork by ID (legacy method)
+   * @deprecated Use getArtworkBasicById or getArtworkDetailById instead
    */
   getArtworkById(id: number): Promise<Artwork>
 

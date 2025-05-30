@@ -17,6 +17,8 @@ import {
   TooltipTrigger,
 } from '@/presentation/components/ui/tooltip'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
+import { cleanFilters } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface ArtworkFilterProps {
   filters: ArtworkFilters
@@ -83,6 +85,7 @@ export function ArtworkFilter({
   filters,
   onFiltersChange,
 }: Readonly<ArtworkFilterProps>) {
+  const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
 
   const hasActiveFilters = Object.values(filters).some(
@@ -94,13 +97,8 @@ export function ArtworkFilter({
       ...filters,
       [key]: value || undefined,
     }
-    // Remove empty values
-    Object.keys(newFilters).forEach((k) => {
-      if (!newFilters[k as keyof ArtworkFilters]) {
-        delete newFilters[k as keyof ArtworkFilters]
-      }
-    })
-    onFiltersChange(newFilters)
+    // Use utility to clean filters
+    onFiltersChange(cleanFilters(newFilters))
   }
 
   const clearAllFilters = () => {
@@ -111,21 +109,24 @@ export function ArtworkFilter({
   const getFilterSummary = () => {
     const activeFilters = Object.entries(filters).filter(([, value]) => value)
     if (activeFilters.length === 0)
-      return 'Browse and filter artworks by department, type, origin, and medium'
+      return t(
+        'filter.summary',
+        'Browse and filter artworks by department, type, origin, and medium'
+      )
 
     return activeFilters
       .map(([key, value]) => {
         switch (key) {
           case 'department':
-            return `Department: ${value}`
+            return t('filter.department', 'Department') + ': ' + value
           case 'artworkType':
-            return `Type: ${value}`
+            return t('filter.artworkType', 'Type') + ': ' + value
           case 'placeOfOrigin':
-            return `Origin: ${value}`
+            return t('filter.placeOfOrigin', 'Origin') + ': ' + value
           case 'medium':
-            return `Medium: ${value}`
+            return t('filter.medium', 'Medium') + ': ' + value
           default:
-            return `${key}: ${value}`
+            return key + ': ' + value
         }
       })
       .join(' • ')
@@ -138,14 +139,14 @@ export function ArtworkFilter({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={`h-12 w-32 rounded-full bg-white transition-all duration-200 hover:bg-gray-50 ${
+              className={`bg-card text-foreground h-12 w-42 rounded-full transition-all duration-200 hover:bg-gray-50 ${
                 hasActiveFilters
                   ? 'border-[#a20000] text-[#a20000] shadow-sm'
                   : 'border-gray-200'
               }`}
             >
               <Filter className="mr-2 h-4 w-4" />
-              Filters
+              {t('filter.filters', 'Filters')}
               {hasActiveFilters && (
                 <Badge
                   variant="destructive"
@@ -170,7 +171,9 @@ export function ArtworkFilter({
           className="p-4"
         >
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Filter Artworks</h3>
+            <h3 className="text-foreground font-semibold">
+              {t('filter.title', 'Filter Artworks')}
+            </h3>
             {hasActiveFilters && (
               <Button
                 variant="outline"
@@ -178,7 +181,7 @@ export function ArtworkFilter({
                 onClick={clearAllFilters}
                 className="text-xs hover:border-red-300 hover:bg-red-50 hover:text-red-600"
               >
-                Clear All
+                {t('filter.clearAll', 'Clear All')}
               </Button>
             )}
           </div>
@@ -186,14 +189,16 @@ export function ArtworkFilter({
           <div className="space-y-4">
             <div>
               <Select
-                label="Department"
+                label={t('filter.department', 'Department')}
                 value={filters.department || ''}
                 onChange={(e) =>
                   handleFilterChange('department', e.target.value)
                 }
                 className="w-full"
               >
-                <option value="">All Departments</option>
+                <option value="">
+                  {t('filter.allDepartments', 'All Departments')}
+                </option>
                 {DEPARTMENT_OPTIONS.map((dept) => (
                   <option key={dept} value={dept}>
                     {dept}
@@ -204,14 +209,16 @@ export function ArtworkFilter({
 
             <div>
               <Select
-                label="Artwork Type"
+                label={t('filter.artworkType', 'Artwork Type')}
                 value={filters.artworkType || ''}
                 onChange={(e) =>
                   handleFilterChange('artworkType', e.target.value)
                 }
                 className="w-full"
               >
-                <option value="">All Artwork Types</option>
+                <option value="">
+                  {t('filter.allArtworkTypes', 'All Artwork Types')}
+                </option>
                 {ARTWORK_TYPE_OPTIONS.map((type) => (
                   <option key={type} value={type}>
                     {type}
@@ -222,14 +229,16 @@ export function ArtworkFilter({
 
             <div>
               <Select
-                label="Place of Origin"
+                label={t('filter.placeOfOrigin', 'Place of Origin')}
                 value={filters.placeOfOrigin || ''}
                 onChange={(e) =>
                   handleFilterChange('placeOfOrigin', e.target.value)
                 }
                 className="w-full"
               >
-                <option value="">All Places of Origin</option>
+                <option value="">
+                  {t('filter.allPlacesOfOrigin', 'All Places of Origin')}
+                </option>
                 {PLACE_OF_ORIGIN_OPTIONS.map((place) => (
                   <option key={place} value={place}>
                     {place}
@@ -240,12 +249,14 @@ export function ArtworkFilter({
 
             <div>
               <Select
-                label="Medium"
+                label={t('filter.medium', 'Medium')}
                 value={filters.medium || ''}
                 onChange={(e) => handleFilterChange('medium', e.target.value)}
                 className="w-full"
               >
-                <option value="">All Mediums</option>
+                <option value="">
+                  {t('filter.allMediums', 'All Mediums')}
+                </option>
                 {MEDIUM_OPTIONS.map((medium) => (
                   <option key={medium} value={medium}>
                     {medium}

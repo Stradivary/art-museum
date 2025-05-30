@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { Button } from '../ui/button'
+import { ThemeToggle } from './ThemeToggle'
 
 interface PageHeaderProps {
   title: string
@@ -35,7 +36,7 @@ export function PageHeader({
 
   return (
     <motion.header
-      className={`sticky top-0 z-20 bg-gray-50/90 bg-white/95 backdrop-blur-sm ${className}`}
+      className={`bg-background/95 dark:bg-background/95 sticky top-0 z-20 backdrop-blur-sm ${className}`}
       initial={{ y: -10, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.2 }}
@@ -54,7 +55,7 @@ export function PageHeader({
                   variant="ghost"
                   size="sm"
                   onClick={handleBackClick}
-                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                  className="hover:bg-accent h-8 w-8 p-0"
                   aria-label="Go back"
                 >
                   <ArrowLeft size={18} />
@@ -63,7 +64,7 @@ export function PageHeader({
             )}
 
             <motion.h1
-              className="text-2xl font-bold text-gray-900"
+              className="text-foreground text-2xl font-bold"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.2, delay: 0.15 }}
@@ -84,6 +85,8 @@ export function PageHeader({
               {children}
             </motion.div>
           )}
+
+          <ThemeToggle />
         </div>
       </div>
     </motion.header>

@@ -1,12 +1,14 @@
 'use client'
 
-import { GetArtworkByIdUseCase } from '@/core/application/usecases/artwork/GetArtworkByIdUseCase'
+import { GetArtworkBasicByIdUseCase } from '@/core/application/usecases/artwork/GetArtworkBasicByIdUseCase'
 import type { Artwork } from '@/core/domain/entities/Artwork'
 import { artworkRepository } from '@/infrastructure/repositories/ArtworkRepositoryImpl'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Initialize use cases with repository implementation
-const getArtworkByIdUseCase = new GetArtworkByIdUseCase(artworkRepository)
+const getArtworkBasicByIdUseCase = new GetArtworkBasicByIdUseCase(
+  artworkRepository
+)
 
 interface UseArtworkDetailViewModelOptions {
   enabled?: boolean
@@ -27,8 +29,8 @@ export function useArtworkDetailViewModel(
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['artwork', id],
-    queryFn: () => getArtworkByIdUseCase.execute(id),
+    queryKey: ['artwork', 'detail', id],
+    queryFn: () => getArtworkBasicByIdUseCase.execute(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: enabled && id > 0,
     initialData,
@@ -49,8 +51,8 @@ export function usePrefetchArtworkViewModel() {
 
   const prefetchArtwork = (id: number) => {
     queryClient.prefetchQuery({
-      queryKey: ['artwork', id],
-      queryFn: () => getArtworkByIdUseCase.execute(id),
+      queryKey: ['artwork', 'basic', id],
+      queryFn: () => getArtworkBasicByIdUseCase.execute(id),
       staleTime: 5 * 60 * 1000, // 5 minutes
     })
   }

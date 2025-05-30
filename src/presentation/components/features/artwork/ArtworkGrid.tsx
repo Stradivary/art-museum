@@ -6,12 +6,10 @@ import { Button } from '@/presentation/components/ui/button'
 import { shouldShowOfflineFallback } from '@/lib/networkUtils'
 import { OfflineFallback } from '../OfflineFallback'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
-import {
-  useArtworkListViewModel,
-  useArtworkSearchViewModel,
-} from '../../../viewmodels/ArtworkViewModel'
+import { useArtworkGridViewModel } from '../../../viewmodels/ArtworkGridViewModel'
 import { ArtworkCard } from './ArtworkCard'
 import { ArtworkCardSkeleton } from './ArtworkCardSkeleton'
+import type { Artwork } from '@/core/domain/entities/Artwork'
 
 interface ArtworkGridProps {
   searchQuery: string
@@ -25,32 +23,18 @@ export function ArtworkGrid({
   searchQuery,
   filters,
 }: Readonly<ArtworkGridProps>) {
-  // Get view models for list and search functionality
   const {
-    artworks: listArtworks,
-    isLoading: listLoading,
+    artworks,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
     ref,
-    error: listError,
-    hasData: listHasData,
-  } = useArtworkListViewModel(filters)
-
-  const {
-    searchResults,
-    isLoading: searchLoading,
+    error,
+    hasData,
     isEmpty,
     isSearching,
-    error: searchError,
-    hasData: searchHasData,
-  } = useArtworkSearchViewModel(searchQuery, filters)
-
-  // Determine which data to use based on search query
-  const artworks = isSearching ? searchResults : listArtworks
-  const isLoading = isSearching ? searchLoading : listLoading
-  const error = isSearching ? searchError : listError
-  const hasData = isSearching ? searchHasData : listHasData
+  } = useArtworkGridViewModel(searchQuery, filters)
 
   // Show offline fallback if we have a network error and no data
   if (shouldShowOfflineFallback(error, hasData)) {
@@ -121,7 +105,7 @@ export function ArtworkGrid({
                 </span>
               )}
             </div>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-foreground text-sm font-medium">
               {artworks.length.toLocaleString()} artwork
               {artworks.length === 1 ? '' : 's'}
             </span>
@@ -130,8 +114,8 @@ export function ArtworkGrid({
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {artworks
-          .filter((artwork) => artwork?.image_id && artwork?.id)
-          .map((artwork) => (
+          .filter((artwork: Artwork) => artwork?.image_id && artwork?.id)
+          .map((artwork: Artwork) => (
             <motion.div
               key={`art-${artwork.id}-${artwork.image_id}`}
               initial={{ opacity: 0 }}
@@ -152,7 +136,7 @@ export function ArtworkGrid({
             <Button
               onClick={() => fetchNextPage()}
               variant="outline"
-              className="bg-white hover:bg-gray-50"
+              className="bg-card hover:bg-gray-50"
             >
               Load More
             </Button>

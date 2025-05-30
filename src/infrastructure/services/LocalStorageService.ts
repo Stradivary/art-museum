@@ -54,6 +54,36 @@ export class LocalStorageService {
       throw error
     }
   }
+
+  /**
+   * Get an item from browser localStorage (sync fallback)
+   */
+  getItemSync<T>(key: string): T | null {
+    if (typeof window === 'undefined') return null
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    try {
+      return JSON.parse(raw) as T
+    } catch {
+      return null
+    }
+  }
+
+  /**
+   * Set an item in browser localStorage (sync fallback)
+   */
+  setItemSync<T>(key: string, value: T): void {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+
+  /**
+   * Remove an item from browser localStorage (sync fallback)
+   */
+  removeItemSync(key: string): void {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(key)
+  }
 }
 
 // Export a singleton instance

@@ -7,6 +7,8 @@ import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailVi
 import { useNavigate, useLocation } from 'react-router'
 import Image from '../../shared/Image'
 import { LikeButton } from '../../shared/LikeButton'
+import { DislikeButton } from '../../shared/DislikeButton'
+import { Badge } from '../../ui/badge'
 
 interface ArtworkCardProps {
   artwork: Artwork
@@ -38,7 +40,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
 
   return (
     <motion.div
-      className="group relative h-full overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md"
+      className="bg-card border-border group relative h-full overflow-hidden rounded-lg border shadow-sm transition-shadow duration-200 hover:shadow-md"
       onClick={handleCardClick}
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
@@ -47,12 +49,12 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
       }}
     >
       <div className="block h-full">
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-100">
+        <div className="bg-muted relative aspect-[3/4] w-full overflow-hidden">
           {artwork.image_id ? (
             <>
               {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200"></div>
+                <div className="bg-muted absolute inset-0 flex items-center justify-center">
+                  <div className="bg-border dark:bg-border h-8 w-8 animate-pulse rounded-full"></div>
                 </div>
               )}
               <Image
@@ -69,14 +71,23 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
               />
             </>
           ) : (
-            <div className="flex h-full items-center justify-center bg-gray-100 p-4 text-center">
-              <p className="text-sm text-gray-500">No image available</p>
+            <div className="bg-muted flex h-full items-center justify-center p-4 text-center">
+              <p className="text-muted-foreground text-sm">
+                No image available
+              </p>
             </div>
           )}
 
-          {/* Save button overlay */}
-          <div className="absolute top-2 right-2">
+          {/* Action buttons overlay */}
+          <div className="absolute top-2 right-2 flex gap-1">
             <LikeButton
+              artwork={artwork}
+              mode="compact"
+              artworkId={artwork.id.toString()}
+              showLabel={false}
+              className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            />
+            <DislikeButton
               artwork={artwork}
               mode="compact"
               artworkId={artwork.id.toString()}
@@ -88,7 +99,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
 
         <div className="p-3">
           <h2
-            className="line-clamp-1 font-medium"
+            className="text-foreground line-clamp-1 font-medium"
             style={{
               viewTransitionName: 'artwork-title-' + artwork.id,
             }}
@@ -96,23 +107,61 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
             {artwork.title}
           </h2>
           <p
-            className="line-clamp-1 text-sm text-gray-600"
+            className="text-muted-foreground line-clamp-1 truncate text-sm"
             style={{
               viewTransitionName: 'artwork-artist-' + artwork.id,
             }}
+            title={artwork.artist_title ?? 'Unknown artist'}
           >
             {artwork.artist_title ?? 'Unknown artist'}
           </p>
           {artwork.date_display && (
             <p
-              className="mt-1 text-xs text-gray-500"
+              className="text-muted-foreground mt-1 truncate text-xs"
               style={{
                 viewTransitionName: 'artwork-date-' + artwork.id,
               }}
+              title={artwork.date_display}
             >
               {artwork.date_display}
             </p>
           )}
+          {/* Tags for filterable properties, compressed to 1 line with overflow as (n+) badge */}
+          <div className="mt-2 flex flex-nowrap gap-1 overflow-hidden">
+            {(() => {
+              const tags = [
+                artwork.department_title,
+                artwork.artwork_type_title,
+                artwork.place_of_origin,
+                artwork.medium_display,
+              ].filter(Boolean)
+              const maxTags = 3
+              const visibleTags = tags.slice(0, maxTags)
+              const hiddenTags = tags.slice(maxTags)
+              return (
+                <>
+                  {visibleTags.map((tag, i) => (
+                    <Badge
+                      key={i}
+                      variant="secondary"
+                      className="max-w-[7rem] truncate"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                  {hiddenTags.length > 0 && (
+                    <Badge
+                      variant="secondary"
+                      className="cursor-pointer select-none"
+                      title={hiddenTags.join(', ')}
+                    >
+                      +{hiddenTags.length}
+                    </Badge>
+                  )}
+                </>
+              )
+            })()}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -8,8 +8,8 @@ import { useNavigate } from 'react-router'
 import { Button } from '@/presentation/components/ui/button'
 import { shouldShowOfflineFallback } from '@/lib/networkUtils'
 import { OfflineFallback } from '../OfflineFallback'
-import Image from '../../shared/Image'
 import { LikeButton } from '../../shared/LikeButton'
+import { ImageViewer } from '../../shared/ImageViewer'
 
 interface ArtworkDetailContentProps {
   id: string
@@ -57,18 +57,13 @@ export function ArtworkDetailContent({
         <ArtworkDetailSkeleton />
       ) : (
         <div>
-          <div className="relative h-[40vh] w-full bg-gray-100">
+          <div className="bg-muted relative h-[50vh] w-full">
             {artwork.image_id ? (
-              <Image
+              <ImageViewer
                 src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
                 alt={artwork.title ?? 'Artwork'}
-                fill
-                className="object-contain"
-                draggable="false"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                style={{
-                  viewTransitionName: 'artwork-image-' + artwork.id,
-                }}
+                className="h-full w-full object-contain"
+                style={{ viewTransitionName: 'artwork-image-' + artwork.id }}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -94,13 +89,22 @@ export function ArtworkDetailContent({
                 >
                   {artwork.title}
                 </h1>
-                <LikeButton
-                  artwork={artwork}
-                  mode="default"
-                  size="lg"
-                  artworkId={artwork.id.toString()}
-                  className="px-6"
-                />
+                <div className="flex items-center gap-2">
+                  <LikeButton
+                    artwork={artwork}
+                    mode="default"
+                    size="lg"
+                    artworkId={artwork.id.toString()}
+                    className="px-6"
+                  />
+                  {/* <DislikeButton
+                    artwork={artwork}
+                    mode="default"
+                    size="lg"
+                    artworkId={artwork.id.toString()}
+                    className="px-6"
+                  /> */}
+                </div>
               </div>
 
               {artwork.artist_title && (
