@@ -57,7 +57,7 @@ describe('ArtworkApi', () => {
       const result = await api.fetchArtworks()
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('artworks?page=1&limit=9&fields=')
+        expect.stringContaining('artworks?fields=')
       )
       expect(result).toEqual(mockResponse)
     })
@@ -91,11 +91,16 @@ describe('ArtworkApi', () => {
       await api.fetchArtworks(1, 9, filters)
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain('fq=')
-      expect(callUrl).toContain('department_title:Modern%20Art')
-      expect(callUrl).toContain('artwork_type_title:Painting')
-      expect(callUrl).toContain('place_of_origin:France')
-      expect(callUrl).toContain('medium_display:Oil%20on%20canvas')
+      expect(callUrl).toContain(
+        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
+      )
+      expect(callUrl).toContain(
+        'query%5Bterm%5D%5Bartwork_type_title%5D=Painting'
+      )
+      expect(callUrl).toContain('query%5Bterm%5D%5Bplace_of_origin%5D=France')
+      expect(callUrl).toContain(
+        'query%5Bterm%5D%5Bmedium_display%5D=Oil+on+canvas'
+      )
     })
 
     it('should handle partial filters', async () => {
@@ -111,7 +116,9 @@ describe('ArtworkApi', () => {
       await api.fetchArtworks(1, 9, filters)
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain('department_title:Modern%20Art')
+      expect(callUrl).toContain(
+        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
+      )
     })
 
     it('should handle API errors', async () => {
@@ -138,7 +145,7 @@ describe('ArtworkApi', () => {
       await api.fetchArtworks()
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).not.toContain('fq=')
+      expect(callUrl).not.toContain('query%5Bterm%5D%5B')
     })
   })
 
@@ -239,7 +246,10 @@ describe('ArtworkApi', () => {
       const result = await api.searchArtworks('test query')
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('artworks/search?q=test%20query')
+        expect.stringContaining('artworks/search?fields=')
+      )
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('q=test+query')
       )
       expect(result).toEqual(mockResponse)
     })
@@ -258,7 +268,9 @@ describe('ArtworkApi', () => {
 
       const callUrl = mockFetch.mock.calls[0][0] as string
       expect(callUrl).toContain('q=test')
-      expect(callUrl).toContain('fq=department_title:Modern%20Art')
+      expect(callUrl).toContain(
+        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
+      )
     })
 
     it('should handle search API errors', async () => {
@@ -287,7 +299,7 @@ describe('ArtworkApi', () => {
       await api.searchArtworks('test & special chars')
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain('q=test%20%26%20special%20chars')
+      expect(callUrl).toContain('q=test+%26+special+chars')
     })
   })
 
@@ -318,7 +330,7 @@ describe('ArtworkApi', () => {
       await api.fetchArtworks(1, 9, filters)
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain('Art%20%26%20Design')
+      expect(callUrl).toContain('Art+%26+Design')
       expect(callUrl).toContain('Painting%2FDrawing')
     })
   })

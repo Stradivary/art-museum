@@ -85,7 +85,7 @@ describe('ErrorFallback', () => {
       'w-full',
       'max-w-md',
       'rounded-xl',
-      'bg-white'
+      'bg-card'
     )
   })
 

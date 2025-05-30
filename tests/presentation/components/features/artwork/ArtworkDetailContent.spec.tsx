@@ -67,6 +67,20 @@ vi.mock('@/presentation/components/shared/LikeButton', () => ({
   ),
 }))
 
+vi.mock('@/presentation/components/shared/DislikeButton', () => ({
+  DislikeButton: ({
+    artwork,
+    artworkId,
+  }: {
+    artwork: Artwork
+    artworkId: string
+  }) => (
+    <button data-testid="dislike-button" data-artwork-id={artworkId}>
+      Dislike {artwork.title}
+    </button>
+  ),
+}))
+
 vi.mock('@/lib/networkUtils', () => ({
   shouldShowOfflineFallback: vi.fn(() => false),
 }))

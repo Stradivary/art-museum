@@ -1,5 +1,3 @@
-import { vi } from 'vitest'
-
 interface MockProps {
   children?: React.ReactNode
   [key: string]: unknown

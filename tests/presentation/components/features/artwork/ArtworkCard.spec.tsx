@@ -20,9 +20,29 @@ vi.mock('@/presentation/viewmodels/ArtworkDetailViewModel', () => ({
 }))
 
 vi.mock('@/presentation/components/shared/LikeButton', () => ({
-  LikeButton: ({ artwork, className }: any) => (
+  LikeButton: ({
+    artwork,
+    className,
+  }: {
+    artwork: any
+    className?: string
+  }) => (
     <button className={className} data-testid="like-button">
       Like {artwork.title}
+    </button>
+  ),
+}))
+
+vi.mock('@/presentation/components/shared/DislikeButton', () => ({
+  DislikeButton: ({
+    artwork,
+    className,
+  }: {
+    artwork: any
+    className?: string
+  }) => (
+    <button className={className} data-testid="dislike-button">
+      Dislike {artwork.title}
     </button>
   ),
 }))
@@ -96,8 +116,9 @@ describe('ArtworkCard Component', () => {
   it('should navigate to artwork detail on click', () => {
     render(<ArtworkCard artwork={mockArtwork} />, { wrapper: createWrapper() })
 
-    const card = screen.getByRole('button') // The motion.div acts as a button
-    fireEvent.click(card)
+    // Click on the artwork title which should trigger navigation
+    const artworkTitle = screen.getByText(mockArtwork.title)
+    fireEvent.click(artworkTitle)
 
     expect(mockNavigate).toHaveBeenCalledWith(
       `/artwork/${mockArtwork.id}`,

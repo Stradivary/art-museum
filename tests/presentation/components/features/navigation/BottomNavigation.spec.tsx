@@ -36,7 +36,7 @@ describe('BottomNavigation', () => {
     renderBottomNavigation('/')
 
     const homeLink = screen.getByRole('link', { name: /home/i })
-    expect(homeLink).toHaveClass('bg-[#8a0000]')
+    expect(homeLink).toHaveClass('bg-primary/80')
 
     // Should show active indicator
     const indicator = homeLink.querySelector('.absolute.bottom-0')
@@ -47,7 +47,7 @@ describe('BottomNavigation', () => {
     renderBottomNavigation('/saved')
 
     const savedLink = screen.getByRole('link', { name: /saved/i })
-    expect(savedLink).toHaveClass('bg-[#8a0000]')
+    expect(savedLink).toHaveClass('bg-primary/80')
 
     // Should show active indicator
     const indicator = savedLink.querySelector('.absolute.bottom-0')
@@ -58,7 +58,7 @@ describe('BottomNavigation', () => {
     renderBottomNavigation('/profile')
 
     const profileLink = screen.getByRole('link', { name: /profile/i })
-    expect(profileLink).toHaveClass('bg-[#8a0000]')
+    expect(profileLink).toHaveClass('bg-primary/80')
 
     // Should show active indicator
     const indicator = profileLink.querySelector('.absolute.bottom-0')
@@ -72,9 +72,9 @@ describe('BottomNavigation', () => {
     const savedLink = screen.getByRole('link', { name: /saved/i })
     const profileLink = screen.getByRole('link', { name: /profile/i })
 
-    expect(homeLink).not.toHaveClass('bg-[#8a0000]')
-    expect(savedLink).not.toHaveClass('bg-[#8a0000]')
-    expect(profileLink).not.toHaveClass('bg-[#8a0000]')
+    expect(homeLink).not.toHaveClass('bg-primary/80')
+    expect(savedLink).not.toHaveClass('bg-primary/80')
+    expect(profileLink).not.toHaveClass('bg-primary/80')
   })
 
   it('should display icons for each navigation item', () => {
@@ -108,7 +108,7 @@ describe('BottomNavigation', () => {
 
     const grid = document.querySelector('.grid.grid-cols-3')
     expect(grid).toBeInTheDocument()
-    expect(grid).toHaveClass('bg-[#a20000]', 'text-white')
+    expect(grid).toHaveClass('bg-primary', 'text-primary-foreground')
   })
 
   it('should have hover states on non-active links', () => {
@@ -117,15 +117,15 @@ describe('BottomNavigation', () => {
     const homeLink = screen.getByRole('link', { name: /home/i })
     const profileLink = screen.getByRole('link', { name: /profile/i })
 
-    expect(homeLink).toHaveClass('hover:bg-[#8a0000]')
-    expect(profileLink).toHaveClass('hover:bg-[#8a0000]')
+    expect(homeLink).toHaveClass('hover:bg-primary/70')
+    expect(profileLink).toHaveClass('hover:bg-primary/70')
   })
 
   it('should handle URL with query parameters', () => {
     renderBottomNavigation('/?q=search')
 
     const homeLink = screen.getByRole('link', { name: /home/i })
-    expect(homeLink).toHaveClass('bg-[#8a0000]')
+    expect(homeLink).toHaveClass('bg-primary/80')
   })
 
   it('should be fixed positioned at bottom', () => {
@@ -133,7 +133,7 @@ describe('BottomNavigation', () => {
 
     const navigation = document.querySelector('.fixed.right-0.bottom-0.left-0')
     expect(navigation).toBeInTheDocument()
-    expect(navigation).toHaveClass('z-10', 'border-t', 'bg-white')
+    expect(navigation).toHaveClass('z-10', 'border-t', 'bg-background')
   })
 
   it('should have proper responsive layout', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { mockArtwork, mockArtworkPaginationResult } from '../__mocks__/data'
 
@@ -20,7 +20,7 @@ vi.mock('react-intersection-observer', () => ({
 vi.mock('@/infrastructure/repositories/ArtworkRepositoryImpl', () => ({
   artworkRepository: {
     getArtworks: vi.fn(),
-    getArtworkById: vi.fn(),
+    getArtworkBasicById: vi.fn(),
     searchArtworks: vi.fn(),
   },
 }))
@@ -57,8 +57,8 @@ const createWrapper = () => {
 }
 
 describe('Artwork Flow Integration Tests', () => {
-  let mockArtworkRepository: any
-  let mockSavedArtworkRepository: any
+  let mockArtworkRepository: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  let mockSavedArtworkRepository: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -74,7 +74,7 @@ describe('Artwork Flow Integration Tests', () => {
     mockArtworkRepository.getArtworks.mockResolvedValue(
       mockArtworkPaginationResult
     )
-    mockArtworkRepository.getArtworkById.mockResolvedValue(mockArtwork)
+    mockArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
     mockArtworkRepository.searchArtworks.mockResolvedValue([mockArtwork])
 
     mockSavedArtworkRepository.getAllSavedArtworks.mockResolvedValue([])
@@ -154,7 +154,7 @@ describe('Artwork Flow Integration Tests', () => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    expect(mockArtworkRepository.getArtworkById).toHaveBeenCalledWith(
+    expect(mockArtworkRepository.getArtworkBasicById).toHaveBeenCalledWith(
       mockArtwork.id
     )
     expect(result.current.artwork).toEqual(mockArtwork)

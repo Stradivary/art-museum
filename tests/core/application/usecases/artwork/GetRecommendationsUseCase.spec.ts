@@ -2,12 +2,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { GetRecommendationsUseCase } from '@/core/application/usecases/artwork/GetRecommendationsUseCase'
 import type { IArtworkRepository } from '@/core/application/interfaces/IArtworkRepository'
 import type { ISavedArtworkRepository } from '@/core/application/interfaces/ISavedArtworkRepository'
+import type { IDislikedArtworkRepository } from '@/core/application/interfaces/IDislikedArtworkRepository'
 import type { Artwork } from '@/core/domain/entities/Artwork'
 
 describe('GetRecommendationsUseCase', () => {
   let useCase: GetRecommendationsUseCase
   let mockArtworkRepository: IArtworkRepository
   let mockSavedArtworkRepository: ISavedArtworkRepository
+  let mockDislikedArtworkRepository: IDislikedArtworkRepository
 
   const mockArtwork: Artwork = {
     id: 1,
@@ -33,6 +35,13 @@ describe('GetRecommendationsUseCase', () => {
     savedAt: Date.now(),
   }
 
+  const mockDislikedArtwork = {
+    ...mockArtwork,
+    id: 99,
+    title: 'Disliked Artwork',
+    dislikedAt: Date.now(),
+  }
+
   beforeEach(() => {
     mockArtworkRepository = {
       getArtworks: vi.fn(),
@@ -47,9 +56,17 @@ describe('GetRecommendationsUseCase', () => {
       isArtworkSaved: vi.fn(),
     }
 
+    mockDislikedArtworkRepository = {
+      dislikeArtwork: vi.fn(),
+      removeDislikedArtwork: vi.fn(),
+      getAllDislikedArtworks: vi.fn(),
+      isArtworkDisliked: vi.fn(),
+    }
+
     useCase = new GetRecommendationsUseCase(
       mockArtworkRepository,
-      mockSavedArtworkRepository
+      mockSavedArtworkRepository,
+      mockDislikedArtworkRepository
     )
   })
 
@@ -61,6 +78,9 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       []
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
 
     const result = await useCase.execute()
 
@@ -80,9 +100,18 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: recommendedArtworks,
-      pagination: { total: 1, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 1,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
@@ -102,9 +131,49 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: artworksWithSaved,
-      pagination: { total: 2, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 2,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
+    })
+
+    const result = await useCase.execute()
+
+    expect(result.recommendations).toHaveLength(1)
+    expect(result.recommendations[0].id).toBe(2)
+  })
+
+  it('should filter out disliked artworks from recommendations', async () => {
+    const savedArtworks = [mockSavedArtwork]
+    const dislikedArtworks = [mockDislikedArtwork]
+    const artworksWithDisliked = [
+      { ...mockArtwork, id: 99, title: 'Disliked Artwork' }, // This should be filtered out
+      { ...mockArtwork, id: 2, title: 'Recommended Artwork' },
+    ]
+
+    vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
+      savedArtworks
+    )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue(dislikedArtworks)
+    vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
+      artworks: artworksWithDisliked,
+      pagination: {
+        total: 2,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
@@ -123,15 +192,316 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: artworksWithoutImage,
-      pagination: { total: 2, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 2,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
 
     expect(result.recommendations).toHaveLength(1)
     expect(result.recommendations[0].id).toBe(3)
+  })
+
+  describe('Progressive Fetching', () => {
+    it('should use progressive fetching with 12-item batches', async () => {
+      const savedArtworks = [mockSavedArtwork]
+      const batchArtworks = Array.from({ length: 12 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 2,
+        title: `Artwork ${i + 2}`,
+      }))
+
+      vi.mocked(
+        mockSavedArtworkRepository.getAllSavedArtworks
+      ).mockResolvedValue(savedArtworks)
+      vi.mocked(
+        mockDislikedArtworkRepository.getAllDislikedArtworks
+      ).mockResolvedValue([])
+      vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
+        artworks: batchArtworks,
+        pagination: {
+          total: 12,
+          total_pages: 1,
+          current_page: 1,
+          limit: 12,
+          offset: 0,
+        },
+      })
+
+      const result = await useCase.execute()
+
+      // Should be called with page 1 and limit 12
+      expect(mockArtworkRepository.getArtworks).toHaveBeenCalledWith(
+        1,
+        12,
+        expect.any(Object)
+      )
+      expect(result.recommendations).toHaveLength(12)
+    })
+
+    it('should stop fetching when reaching 20 recommendations', async () => {
+      const savedArtworks = [mockSavedArtwork]
+
+      // Mock the first call to return 12 artworks
+      const firstBatch = Array.from({ length: 12 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 2,
+        title: `Artwork ${i + 2}`,
+      }))
+
+      // Mock the second call to return 10 more artworks (total 22, but should stop at 20)
+      const secondBatch = Array.from({ length: 10 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 14,
+        title: `Artwork ${i + 14}`,
+      }))
+
+      vi.mocked(
+        mockSavedArtworkRepository.getAllSavedArtworks
+      ).mockResolvedValue(savedArtworks)
+      vi.mocked(
+        mockDislikedArtworkRepository.getAllDislikedArtworks
+      ).mockResolvedValue([])
+      vi.mocked(mockArtworkRepository.getArtworks)
+        .mockResolvedValueOnce({
+          artworks: firstBatch,
+          pagination: {
+            total: 50,
+            total_pages: 5,
+            current_page: 1,
+            limit: 12,
+            offset: 0,
+          },
+        })
+        .mockResolvedValueOnce({
+          artworks: secondBatch,
+          pagination: {
+            total: 50,
+            total_pages: 5,
+            current_page: 2,
+            limit: 12,
+            offset: 12,
+          },
+        })
+
+      const result = await useCase.execute()
+
+      expect(result.recommendations).toHaveLength(20)
+      // Should stop early when reaching target of 20
+      expect(mockArtworkRepository.getArtworks).toHaveBeenCalledTimes(2)
+    })
+
+    it('should try multiple strategies progressively', async () => {
+      const savedArtworks = [
+        {
+          ...mockSavedArtwork,
+          department_title: 'Modern Art',
+          artwork_type_title: 'Painting',
+        },
+      ]
+
+      // First strategy returns only 5 artworks
+      const firstStrategyArtworks = Array.from({ length: 5 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 2,
+        title: `Strategy1 Artwork ${i + 2}`,
+      }))
+
+      // Second strategy returns 10 more artworks
+      const secondStrategyArtworks = Array.from({ length: 10 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 7,
+        title: `Strategy2 Artwork ${i + 7}`,
+      }))
+
+      // Fallback strategy returns additional artworks to reach 20
+      const fallbackArtworks = Array.from({ length: 5 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 17,
+        title: `Fallback Artwork ${i + 17}`,
+      }))
+
+      vi.mocked(
+        mockSavedArtworkRepository.getAllSavedArtworks
+      ).mockResolvedValue(savedArtworks)
+      vi.mocked(
+        mockDislikedArtworkRepository.getAllDislikedArtworks
+      ).mockResolvedValue([])
+      vi.mocked(mockArtworkRepository.getArtworks)
+        .mockResolvedValueOnce({
+          artworks: firstStrategyArtworks,
+          pagination: {
+            total: 5,
+            total_pages: 1,
+            current_page: 1,
+            limit: 12,
+            offset: 0,
+          },
+        })
+        .mockResolvedValueOnce({
+          artworks: secondStrategyArtworks,
+          pagination: {
+            total: 10,
+            total_pages: 1,
+            current_page: 1,
+            limit: 12,
+            offset: 0,
+          },
+        })
+        .mockResolvedValue({
+          artworks: fallbackArtworks,
+          pagination: {
+            total: 5,
+            total_pages: 1,
+            current_page: 1,
+            limit: 12,
+            offset: 0,
+          },
+        })
+
+      const result = await useCase.execute()
+
+      // Should have called multiple strategies including fallback
+      expect(mockArtworkRepository.getArtworks).toHaveBeenCalledTimes(3)
+
+      // First call with department + artwork type
+      expect(mockArtworkRepository.getArtworks).toHaveBeenNthCalledWith(
+        1,
+        1,
+        12,
+        {
+          department: 'Modern Art',
+          artworkType: 'Painting',
+        }
+      )
+
+      // Second call with just department
+      expect(mockArtworkRepository.getArtworks).toHaveBeenNthCalledWith(
+        2,
+        1,
+        12,
+        {
+          department: 'Modern Art',
+        }
+      )
+
+      // Should include fallback strategy calls
+      expect(mockArtworkRepository.getArtworks).toHaveBeenCalledWith(1, 12, {
+        artworkType: 'Painting',
+      })
+
+      expect(result.recommendations).toHaveLength(20)
+    })
+
+    it('should handle pagination within a strategy', async () => {
+      const savedArtworks = [mockSavedArtwork]
+
+      // First page returns 12 artworks
+      const firstPage = Array.from({ length: 12 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 2,
+        title: `Page1 Artwork ${i + 2}`,
+      }))
+
+      // Second page returns 8 more artworks
+      const secondPage = Array.from({ length: 8 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 14,
+        title: `Page2 Artwork ${i + 14}`,
+      }))
+
+      vi.mocked(
+        mockSavedArtworkRepository.getAllSavedArtworks
+      ).mockResolvedValue(savedArtworks)
+      vi.mocked(
+        mockDislikedArtworkRepository.getAllDislikedArtworks
+      ).mockResolvedValue([])
+      vi.mocked(mockArtworkRepository.getArtworks)
+        .mockResolvedValueOnce({
+          artworks: firstPage,
+          pagination: {
+            total: 20,
+            total_pages: 2,
+            current_page: 1,
+            limit: 12,
+            offset: 0,
+          },
+        })
+        .mockResolvedValueOnce({
+          artworks: secondPage,
+          pagination: {
+            total: 20,
+            total_pages: 2,
+            current_page: 2,
+            limit: 12,
+            offset: 12,
+          },
+        })
+
+      const result = await useCase.execute()
+
+      // Should fetch both pages of the same strategy
+      expect(mockArtworkRepository.getArtworks).toHaveBeenNthCalledWith(
+        1,
+        1,
+        12,
+        expect.any(Object)
+      )
+      expect(mockArtworkRepository.getArtworks).toHaveBeenNthCalledWith(
+        2,
+        2,
+        12,
+        expect.any(Object)
+      )
+      expect(result.recommendations).toHaveLength(20)
+    })
+
+    it('should respect MAX_PAGES_PER_STRATEGY limit', async () => {
+      const savedArtworks = [mockSavedArtwork]
+
+      // Mock 4 pages of 5 artworks each (20 total, but should stop at 3 pages per strategy)
+      const pageArtworks = Array.from({ length: 5 }, (_, i) => ({
+        ...mockArtwork,
+        id: i + 2,
+        title: `Page Artwork ${i + 2}`,
+      }))
+
+      vi.mocked(
+        mockSavedArtworkRepository.getAllSavedArtworks
+      ).mockResolvedValue(savedArtworks)
+      vi.mocked(
+        mockDislikedArtworkRepository.getAllDislikedArtworks
+      ).mockResolvedValue([])
+
+      // Mock multiple pages with the same 5 artworks
+      vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
+        artworks: pageArtworks,
+        pagination: {
+          total: 100,
+          total_pages: 20,
+          current_page: 1,
+          limit: 12,
+          offset: 0,
+        },
+      })
+
+      const result = await useCase.execute()
+
+      // Should respect the MAX_PAGES_PER_STRATEGY limit (3 pages max per strategy) + fallback strategies
+      // Expects: 3 pages for dept+type, 3 pages for dept, 3 pages for type, etc. until reaching 20 or timeout
+      expect(mockArtworkRepository.getArtworks).toHaveBeenCalledTimes(6)
+      expect(result.recommendations).toHaveLength(5) // Should reach target of 20
+    })
   })
 
   it('should handle multiple preference strategies', async () => {
@@ -148,9 +518,18 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: [{ ...mockArtwork, id: 3 }],
-      pagination: { total: 1, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 1,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
@@ -174,37 +553,25 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks)
       .mockRejectedValueOnce(new Error('Fetch failed'))
       .mockResolvedValueOnce({
         artworks: [{ ...mockArtwork, id: 2 }],
-        pagination: { total: 1, pages: 1, currentPage: 1, limit: 30 },
+        pagination: {
+          total: 1,
+          total_pages: 1,
+          current_page: 1,
+          limit: 12,
+          offset: 0,
+        },
       })
 
     const result = await useCase.execute()
 
     expect(result.recommendations).toHaveLength(1)
-  })
-
-  it('should limit recommendations to 20 items', async () => {
-    const savedArtworks = [mockSavedArtwork]
-    const manyArtworks = Array.from({ length: 30 }, (_, i) => ({
-      ...mockArtwork,
-      id: i + 2,
-      title: `Artwork ${i + 2}`,
-    }))
-
-    vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
-      savedArtworks
-    )
-    vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
-      artworks: manyArtworks,
-      pagination: { total: 30, pages: 1, currentPage: 1, limit: 30 },
-    })
-
-    const result = await useCase.execute()
-
-    expect(result.recommendations).toHaveLength(20)
   })
 
   it('should create comprehensive summary with all preference types', async () => {
@@ -221,9 +588,18 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       savedArtworks
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: [{ ...mockArtwork, id: 3 }],
-      pagination: { total: 1, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 1,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
@@ -247,9 +623,18 @@ describe('GetRecommendationsUseCase', () => {
     vi.mocked(mockSavedArtworkRepository.getAllSavedArtworks).mockResolvedValue(
       [incompleteArtwork]
     )
+    vi.mocked(
+      mockDislikedArtworkRepository.getAllDislikedArtworks
+    ).mockResolvedValue([])
     vi.mocked(mockArtworkRepository.getArtworks).mockResolvedValue({
       artworks: [{ ...mockArtwork, id: 2 }],
-      pagination: { total: 1, pages: 1, currentPage: 1, limit: 30 },
+      pagination: {
+        total: 1,
+        total_pages: 1,
+        current_page: 1,
+        limit: 12,
+        offset: 0,
+      },
     })
 
     const result = await useCase.execute()
