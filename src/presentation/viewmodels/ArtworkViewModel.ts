@@ -10,7 +10,6 @@ import { dislikedArtworkRepository } from '@/infrastructure/repositories/Dislike
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { cleanFilters } from '@/lib/utils'
 import type { ArtworkPaginationResult } from '@/core/application/interfaces/IArtworkRepository'
 
 // Initialize use cases with repository implementation
@@ -25,11 +24,7 @@ const getRecommendationsUseCase = new GetRecommendationsUseCase(
 /**
  * ViewModel for infinite scrolling artwork listing
  */
-export function useArtworkListViewModel(
-  filters?: ArtworkFilters,
-  pageSize: number = 9
-) {
-  const cleanedFilters = filters ? cleanFilters(filters) : undefined
+export function useArtworkListViewModel(pageSize: number = 9) {
   const { ref, inView } = useInView()
 
   const {
@@ -40,12 +35,11 @@ export function useArtworkListViewModel(
     status: infiniteStatus,
     error: infiniteError,
   } = useInfiniteQuery<ArtworkPaginationResult, Error>({
-    queryKey: ['artworks', cleanedFilters, pageSize],
+    queryKey: ['artworks', pageSize],
     queryFn: async ({ pageParam }) => {
       return await getArtworksUseCase.execute(
         typeof pageParam === 'number' ? pageParam : 1,
-        pageSize,
-        cleanedFilters
+        pageSize
       )
     },
     initialPageParam: 1,
@@ -85,39 +79,76 @@ export function useArtworkListViewModel(
 }
 
 /**
- * ViewModel for searching artworks
+ * ViewModel for searching artworks with pagination
  */
 export function useArtworkSearchViewModel(
   query: string,
-  filters?: ArtworkFilters
+  filters?: ArtworkFilters,
+  pageSize: number = 9
 ) {
-  const cleanedFilters = filters ? cleanFilters(filters) : undefined
+  const { ref, inView } = useInView()
+
   const {
-    data: searchResults = [],
-    isLoading,
-    status,
-    error,
-  } = useQuery({
-    queryKey: ['artworks', 'search', query, cleanedFilters],
-    queryFn: async () => {
-      try {
-        return await searchArtworksUseCase.execute(query, cleanedFilters)
-      } catch (error) {
-        console.error('Error searching artworks:', error)
-        return []
-      }
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status: infiniteStatus,
+    error: infiniteError,
+  } = useInfiniteQuery<ArtworkPaginationResult, Error>({
+    queryKey: ['artworks', 'search', 'paginated', query, filters, pageSize],
+    queryFn: async ({ pageParam }) => {
+      return await searchArtworksUseCase.executePaginated(
+        query,
+        typeof pageParam === 'number' ? pageParam : 1,
+        pageSize,
+        filters
+      )
     },
-    enabled: query.trim().length > 0,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: ArtworkPaginationResult) => {
+      if (lastPage.pagination.current_page < lastPage.pagination.total_pages) {
+        return lastPage.pagination.current_page + 1
+      }
+      return undefined
+    },
+    enabled:
+      query.trim().length > 0 ||
+      (filters &&
+        Object.values(filters).some((v) => v !== undefined && v !== '')),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
+  // Auto-fetch next page when scrolling to the bottom
+  useEffect(() => {
+    if (
+      inView &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      query.trim().length > 0
+    ) {
+      fetchNextPage()
+    }
+  }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage, query])
+
+  // Flatten all pages into a single array
+  const allSearchResults = infiniteData?.pages
+    ? (infiniteData.pages as ArtworkPaginationResult[]).flatMap(
+        (page) => page.artworks
+      )
+    : []
+
   return {
-    searchResults,
-    isLoading,
-    isEmpty: searchResults.length === 0 && !isLoading && status !== 'pending',
+    searchResults: allSearchResults,
+    isLoading: infiniteStatus === 'pending',
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    ref,
+    error: infiniteError,
+    hasData: allSearchResults.length > 0,
+    isEmpty: allSearchResults.length === 0 && infiniteStatus !== 'pending',
     isSearching: query.trim() !== '',
-    error,
-    hasData: searchResults.length > 0,
   }
 }
 

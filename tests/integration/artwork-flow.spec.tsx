@@ -22,6 +22,7 @@ vi.mock('@/infrastructure/repositories/ArtworkRepositoryImpl', () => ({
     getArtworks: vi.fn(),
     getArtworkBasicById: vi.fn(),
     searchArtworks: vi.fn(),
+    searchArtworksPaginated: vi.fn(),
   },
 }))
 
@@ -40,6 +41,7 @@ vi.mock('@/core/frameworks/data/ArtworkApi', () => ({
     getArtworks: vi.fn(),
     getArtworkById: vi.fn(),
     searchArtworks: vi.fn(),
+    searchArtworksPaginated: vi.fn(),
   },
 }))
 
@@ -76,6 +78,16 @@ describe('Artwork Flow Integration Tests', () => {
     )
     mockArtworkRepository.getArtworkBasicById.mockResolvedValue(mockArtwork)
     mockArtworkRepository.searchArtworks.mockResolvedValue([mockArtwork])
+    mockArtworkRepository.searchArtworksPaginated.mockResolvedValue({
+      data: [mockArtwork],
+      pagination: {
+        currentPage: 1,
+        totalPages: 1,
+        totalCount: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    })
 
     mockSavedArtworkRepository.getAllSavedArtworks.mockResolvedValue([])
     mockSavedArtworkRepository.isArtworkSaved.mockResolvedValue(false)
@@ -107,8 +119,10 @@ describe('Artwork Flow Integration Tests', () => {
     })
 
     await waitFor(() => {
-      expect(mockArtworkRepository.searchArtworks).toHaveBeenCalledWith(
+      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledWith(
         'starry night',
+        expect.any(Number),
+        expect.any(Number),
         {}
       )
     })

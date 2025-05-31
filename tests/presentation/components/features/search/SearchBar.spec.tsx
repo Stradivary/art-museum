@@ -37,7 +37,7 @@ describe('SearchBar', () => {
   it('should render with default props', () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute(
       'placeholder',
@@ -50,14 +50,14 @@ describe('SearchBar', () => {
   it('should render with initial query', () => {
     renderSearchBar({ initialQuery: 'test query' })
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     expect(input).toHaveValue('test query')
   })
 
   it('should call onSearch when input value changes', async () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     fireEvent.change(input, { target: { value: 'test search' } })
 
     expect(input).toHaveValue('test search')
@@ -67,7 +67,7 @@ describe('SearchBar', () => {
   it('should navigate to search URL when query is entered', async () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     fireEvent.change(input, { target: { value: 'monet' } })
 
     expect(mockNavigate).toHaveBeenCalledWith('/?q=monet')
@@ -76,7 +76,7 @@ describe('SearchBar', () => {
   it('should navigate to home when query is cleared', async () => {
     renderSearchBar({ initialQuery: 'test' })
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     fireEvent.change(input, { target: { value: '' } })
 
     expect(mockNavigate).toHaveBeenCalledWith('/')
@@ -99,7 +99,7 @@ describe('SearchBar', () => {
   it('should clear search when clear button is clicked', () => {
     renderSearchBar({ initialQuery: 'test query' })
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     const clearButton = screen.getByLabelText('Clear search')
 
     expect(input).toHaveValue('test query')
@@ -114,7 +114,7 @@ describe('SearchBar', () => {
   it('should handle special characters in search query', () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     const specialQuery = 'café & art'
 
     fireEvent.change(input, { target: { value: specialQuery } })
@@ -133,7 +133,7 @@ describe('SearchBar', () => {
   it('should handle focus states correctly', () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
 
     // Focus the input and check if it's in the document
     fireEvent.focus(input)
@@ -145,7 +145,7 @@ describe('SearchBar', () => {
   it('should handle keyboard events', () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
 
     fireEvent.keyDown(input, { key: 'Enter' })
     // Should not cause any errors
@@ -155,7 +155,7 @@ describe('SearchBar', () => {
   it('should update query when typing', async () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
 
     // Type character by character
     fireEvent.change(input, { target: { value: 't' } })
@@ -171,7 +171,7 @@ describe('SearchBar', () => {
   it('should handle empty string search', () => {
     renderSearchBar({ initialQuery: 'initial' })
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     fireEvent.change(input, { target: { value: '' } })
 
     expect(mockOnSearch).toHaveBeenCalledWith('')
@@ -181,7 +181,7 @@ describe('SearchBar', () => {
   it('should properly encode URL parameters', () => {
     renderSearchBar()
 
-    const input = screen.getByRole('searchbox')
+    const input = screen.getByRole('textbox')
     const queryWithSpaces = 'van gogh paintings'
 
     fireEvent.change(input, { target: { value: queryWithSpaces } })

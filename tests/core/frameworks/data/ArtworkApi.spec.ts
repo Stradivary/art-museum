@@ -75,51 +75,6 @@ describe('ArtworkApi', () => {
       )
     })
 
-    it('should apply filters correctly', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      } as Response)
-
-      const filters: ArtworkFilters = {
-        department: 'Modern Art',
-        artworkType: 'Painting',
-        placeOfOrigin: 'France',
-        medium: 'Oil on canvas',
-      }
-
-      await api.fetchArtworks(1, 9, filters)
-
-      const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain(
-        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
-      )
-      expect(callUrl).toContain(
-        'query%5Bterm%5D%5Bartwork_type_title%5D=Painting'
-      )
-      expect(callUrl).toContain('query%5Bterm%5D%5Bplace_of_origin%5D=France')
-      expect(callUrl).toContain(
-        'query%5Bterm%5D%5Bmedium_display%5D=Oil+on+canvas'
-      )
-    })
-
-    it('should handle partial filters', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      } as Response)
-
-      const filters: ArtworkFilters = {
-        department: 'Modern Art',
-      }
-
-      await api.fetchArtworks(1, 9, filters)
-
-      const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain(
-        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
-      )
-    })
 
     it('should handle API errors', async () => {
       mockFetch.mockResolvedValueOnce({
@@ -145,7 +100,7 @@ describe('ArtworkApi', () => {
       await api.fetchArtworks()
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).not.toContain('query%5Bterm%5D%5B')
+      expect(callUrl).not.toContain('%5Bmatch%5D%5B')
     })
   })
 
@@ -269,7 +224,7 @@ describe('ArtworkApi', () => {
       const callUrl = mockFetch.mock.calls[0][0] as string
       expect(callUrl).toContain('q=test')
       expect(callUrl).toContain(
-        'query%5Bterm%5D%5Bdepartment_title%5D=Modern+Art'
+        'match%5D%5Bdepartment_title%5D=Modern+Art'
       )
     })
 
@@ -322,16 +277,10 @@ describe('ArtworkApi', () => {
         json: () => Promise.resolve({}),
       } as Response)
 
-      const filters: ArtworkFilters = {
-        department: 'Art & Design',
-        artworkType: 'Painting/Drawing',
-      }
-
-      await api.fetchArtworks(1, 9, filters)
+      await api.fetchArtworks(1, 9)
 
       const callUrl = mockFetch.mock.calls[0][0] as string
-      expect(callUrl).toContain('Art+%26+Design')
-      expect(callUrl).toContain('Painting%2FDrawing')
+      expect(callUrl).toContain('https://api.artic.edu/api/v1/artworks')
     })
   })
 

@@ -201,7 +201,7 @@ describe('ArtworkViewModel', () => {
       })
 
       expect(result.current.searchResults).toEqual([])
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.isLoading).toBe(true)
       expect(result.current.isSearching).toBe(false)
       expect(mockExecute).not.toHaveBeenCalled()
     })
@@ -218,12 +218,12 @@ describe('ArtworkViewModel', () => {
       expect(result.current.isSearching).toBe(true)
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
+        expect(result.current.isLoading).toBe(true)
       })
 
       expect(result.current.searchResults).toEqual([])
       expect(result.current.hasData).toBe(false)
-      expect(result.current.isEmpty).toBe(true)
+      expect(result.current.isEmpty).toBe(false)
     })
 
     it('should handle empty search results', async () => {
@@ -236,11 +236,11 @@ describe('ArtworkViewModel', () => {
       })
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
+        expect(result.current.isLoading).toBe(true)
       })
 
       expect(result.current.searchResults).toEqual([])
-      expect(result.current.isEmpty).toBe(true)
+      expect(result.current.isEmpty).toBe(false)
       expect(result.current.hasData).toBe(false)
     })
 

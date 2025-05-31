@@ -31,11 +31,7 @@ export interface IArtworkRepository {
   /**
    * Get a paginated list of artworks
    */
-  getArtworks(
-    page: number,
-    limit: number,
-    filters?: ArtworkFilters
-  ): Promise<ArtworkPaginationResult>
+  getArtworks(page: number, limit: number): Promise<ArtworkPaginationResult>
 
   /**
    * Get basic artwork info by ID (optimized for cards)
@@ -57,4 +53,14 @@ export interface IArtworkRepository {
    * Search for artworks matching a query
    */
   searchArtworks(query: string, filters?: ArtworkFilters): Promise<Artwork[]>
+
+  /**
+   * Search for artworks matching a query with pagination
+   */
+  searchArtworksPaginated(
+    query: string,
+    page: number,
+    limit: number,
+    filters?: ArtworkFilters
+  ): Promise<ArtworkPaginationResult>
 }

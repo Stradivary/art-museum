@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
-import { cleanFilters } from '@/lib/utils'
 import {
   useArtworkListViewModel,
   useArtworkSearchViewModel,
 } from '@/presentation/viewmodels/ArtworkViewModel'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
 
+// Helper function to check if there are any active filters
+function hasActiveFilters(filters: ArtworkFilters): boolean {
+  return Object.values(filters).some(
+    (value) => value !== undefined && value !== ''
+  )
+}
+
 export function useArtworkGridViewModel(
   searchQuery: string,
   filters: ArtworkFilters
 ) {
-  // Always clean filters before passing to viewmodels
-  const cleanedFilters = cleanFilters(filters)
-
   // Responsive grid columns and page size
   const [gridCols, setGridCols] = useState(2)
   const [pageSize, setPageSize] = useState(8)
@@ -35,25 +38,34 @@ export function useArtworkGridViewModel(
     return () => window.removeEventListener('resize', updateGrid)
   }, [])
 
+  // Check if we should use search (either has search query or active filters)
+  const shouldUseSearch = searchQuery.trim() !== '' || hasActiveFilters(filters)
   // Get view models for list and search functionality
-  const listVM = useArtworkListViewModel(cleanedFilters, pageSize)
-  const searchVM = useArtworkSearchViewModel(searchQuery, cleanedFilters)
+  // getArtworks no longer supports filters, so we only use it when there are no filters
+  const listVM = useArtworkListViewModel(pageSize)
+  const searchVM = useArtworkSearchViewModel(
+    searchQuery || '', // Use empty if no search query but filters are present
+    filters,
+    pageSize
+  )
 
-  // Determine which data to use based on search query
-  const isSearching = searchVM.isSearching
+  // Determine which data to use based on search query or filters
+  const isSearching = shouldUseSearch
   const artworks = isSearching ? searchVM.searchResults : listVM.artworks
   const isLoading = isSearching ? searchVM.isLoading : listVM.isLoading
   const error = isSearching ? searchVM.error : listVM.error
   const hasData = isSearching ? searchVM.hasData : listVM.hasData
-  const isEmpty = searchVM.isEmpty
+  const isEmpty = isSearching ? searchVM.isEmpty : listVM.artworks.length === 0
 
   return {
     artworks,
     isLoading,
-    isFetchingNextPage: listVM.isFetchingNextPage,
-    hasNextPage: listVM.hasNextPage,
-    fetchNextPage: listVM.fetchNextPage,
-    ref: listVM.ref,
+    isFetchingNextPage: isSearching
+      ? searchVM.isFetchingNextPage
+      : listVM.isFetchingNextPage,
+    hasNextPage: isSearching ? searchVM.hasNextPage : listVM.hasNextPage,
+    fetchNextPage: isSearching ? searchVM.fetchNextPage : listVM.fetchNextPage,
+    ref: isSearching ? searchVM.ref : listVM.ref,
     error,
     hasData,
     isEmpty,
