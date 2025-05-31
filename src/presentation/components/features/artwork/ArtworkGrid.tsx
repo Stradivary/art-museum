@@ -143,6 +143,22 @@ export function ArtworkGrid({
           )}
         </div>
       )}
+
+      {isSearching && hasNextPage && (
+        <div ref={ref} className="flex justify-center py-8">
+          {isFetchingNextPage ? (
+            <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
+          ) : (
+            <Button
+              onClick={() => fetchNextPage()}
+              variant="outline"
+              className="bg-card hover:bg-gray-50"
+            >
+              Load More Search Results
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

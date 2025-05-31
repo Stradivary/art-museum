@@ -41,8 +41,7 @@ describe('ArtworkRepositoryImpl', () => {
 
       expect(mockArtworkApi.fetchArtworks).toHaveBeenCalledWith(
         page,
-        limit,
-        filters
+        limit
       )
       expect(result).toEqual({
         artworks: mockPaginatedArtworks.artworks,

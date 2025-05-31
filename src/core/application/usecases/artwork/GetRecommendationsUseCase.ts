@@ -194,6 +194,7 @@ export class GetRecommendationsUseCase {
     }
 
     const fetchAndAddProgressively = async (
+      query: string,
       filters: ArtworkFilters
     ): Promise<boolean> => {
       let page = 1
@@ -204,7 +205,8 @@ export class GetRecommendationsUseCase {
         pagesAttempted < MAX_PAGES_PER_STRATEGY
       ) {
         try {
-          const result = await this.artworkRepository.getArtworks(
+          const result = await this.artworkRepository.searchArtworksPaginated(
+            query,
             page,
             BATCH_SIZE,
             filters
@@ -236,6 +238,7 @@ export class GetRecommendationsUseCase {
         } catch (error) {
           console.warn(
             `Error fetching page ${page} for strategy:`,
+            query,
             filters,
             error
           )
@@ -246,53 +249,90 @@ export class GetRecommendationsUseCase {
       return recommendations.length >= TARGET_RECOMMENDATIONS
     }
 
-    // Prepare strategies as filter objects (ordered by specificity)
-    const strategies: ArtworkFilters[] = []
+    // Prepare strategies with search queries and filters (ordered by specificity)
+    const strategies: { query: string; filters: ArtworkFilters }[] = []
 
-    // Most specific: department + artwork type
+    // Most specific: department + artwork type with combined search query
     if (
       preferences.departments.length > 0 &&
       preferences.artworkTypes.length > 0
     ) {
       strategies.push({
-        department: preferences.departments[0][0],
-        artworkType: preferences.artworkTypes[0][0],
+        query: `${preferences.departments[0][0]} ${preferences.artworkTypes[0][0]}`,
+        filters: {
+          department: preferences.departments[0][0],
+          artworkType: preferences.artworkTypes[0][0],
+        },
       })
     }
 
-    // Medium specificity: individual preferences
+    // Artist-specific search (high value for personalization)
+    if (preferences.artists.length > 0) {
+      strategies.push({
+        query: preferences.artists[0][0],
+        filters: {},
+      })
+    }
+
+    // Medium specificity: individual preferences with targeted search
     if (preferences.departments.length > 0) {
-      strategies.push({ department: preferences.departments[0][0] })
+      strategies.push({
+        query: preferences.departments[0][0],
+        filters: { department: preferences.departments[0][0] },
+      })
     }
+
     if (preferences.artworkTypes.length > 0) {
-      strategies.push({ artworkType: preferences.artworkTypes[0][0] })
+      strategies.push({
+        query: preferences.artworkTypes[0][0],
+        filters: { artworkType: preferences.artworkTypes[0][0] },
+      })
     }
+
     if (preferences.placesOfOrigin.length > 0) {
-      strategies.push({ placeOfOrigin: preferences.placesOfOrigin[0][0] })
+      strategies.push({
+        query: preferences.placesOfOrigin[0][0],
+        filters: { placeOfOrigin: preferences.placesOfOrigin[0][0] },
+      })
     }
+
     if (preferences.mediums.length > 0) {
-      strategies.push({ medium: preferences.mediums[0][0] })
+      strategies.push({
+        query: preferences.mediums[0][0],
+        filters: { medium: preferences.mediums[0][0] },
+      })
     }
 
     // Execute strategies until we have enough recommendations
-    for (const filters of strategies) {
+    for (const strategy of strategies) {
       try {
-        const isComplete = await fetchAndAddProgressively(filters)
+        const isComplete = await fetchAndAddProgressively(
+          strategy.query,
+          strategy.filters
+        )
         if (isComplete) {
           break
         }
       } catch (error) {
-        console.warn('Strategy failed:', filters, error)
+        console.warn('Strategy failed:', strategy, error)
       }
     }
 
-    // If we still don't have enough recommendations, try a fallback without filters
+    // If we still don't have enough recommendations, try a fallback with broader search
     if (recommendations.length < TARGET_RECOMMENDATIONS) {
       try {
         console.log(
-          `Only found ${recommendations.length} recommendations, trying fallback without filters`
+          `Only found ${recommendations.length} recommendations, trying fallback with broader search`
         )
-        await fetchAndAddProgressively({})
+
+        // Use most common preference as a general search term
+        const fallbackQuery =
+          preferences.departments[0]?.[0] ||
+          preferences.artworkTypes[0]?.[0] ||
+          preferences.placesOfOrigin[0]?.[0] ||
+          'art'
+
+        await fetchAndAddProgressively(fallbackQuery, {})
       } catch (error) {
         console.warn('Fallback strategy failed:', error)
       }

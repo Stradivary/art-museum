@@ -30,25 +30,23 @@ describe('GetArtworksUseCase', () => {
 
     const result = await useCase.execute()
 
-    expect(mockRepository.getArtworks).toHaveBeenCalledWith(1, 10, undefined)
+    expect(mockRepository.getArtworks).toHaveBeenCalledWith(1, 10)
     expect(result).toEqual(mockArtworkPaginationResult)
   })
 
   it('should call repository getArtworks with custom parameters', async () => {
     const page = 2
     const limit = 20
-    const filters: ArtworkFilters = { department: 'Modern Art' }
 
     vi.mocked(mockRepository.getArtworks).mockResolvedValue(
       mockArtworkPaginationResult
     )
 
-    const result = await useCase.execute(page, limit, filters)
+    const result = await useCase.execute(page, limit)
 
     expect(mockRepository.getArtworks).toHaveBeenCalledWith(
       page,
-      limit,
-      filters
+      limit
     )
     expect(result).toEqual(mockArtworkPaginationResult)
   })

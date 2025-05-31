@@ -17,7 +17,6 @@ import {
   TooltipTrigger,
 } from '@/presentation/components/ui/tooltip'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
-import { cleanFilters } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
 interface ArtworkFilterProps {
@@ -98,7 +97,7 @@ export function ArtworkFilter({
       [key]: value || undefined,
     }
     // Use utility to clean filters
-    onFiltersChange(cleanFilters(newFilters))
+    onFiltersChange(newFilters)
   }
 
   const clearAllFilters = () => {

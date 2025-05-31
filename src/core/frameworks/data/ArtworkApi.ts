@@ -64,22 +64,25 @@ export class ArtworkApi {
     // Add filters using the correct API format: query[term][field]=value
     if (filters) {
       if (filters.department) {
-        searchParams.append('query[term][department_title]', filters.department)
+        searchParams.append(
+          'query[match][department_title]',
+          filters.department
+        )
       }
       if (filters.artworkType) {
         searchParams.append(
-          'query[term][artwork_type_title]',
+          'query[match][artwork_type_title]',
           filters.artworkType
         )
       }
       if (filters.placeOfOrigin) {
         searchParams.append(
-          'query[term][place_of_origin]',
+          'query[match][place_of_origin]',
           filters.placeOfOrigin
         )
       }
       if (filters.medium) {
-        searchParams.append('query[term][medium_display]', filters.medium)
+        searchParams.append('query[match][medium_display]', filters.medium)
       }
     }
 
@@ -89,13 +92,9 @@ export class ArtworkApi {
   /**
    * Fetch paginated artworks from the API
    */
-  async fetchArtworks(
-    page = 1,
-    limit = 9,
-    filters?: ArtworkFilters
-  ): Promise<ArtworkApiResponse> {
+  async fetchArtworks(page = 1, limit = 9): Promise<ArtworkApiResponse> {
     try {
-      const searchParams = this.buildParams(undefined, filters)
+      const searchParams = this.buildParams()
       searchParams.append('page', page.toString())
       searchParams.append('limit', limit.toString())
 
@@ -184,6 +183,35 @@ export class ArtworkApi {
       return await response.json()
     } catch (error) {
       console.error('Error searching artworks:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Search for artworks by query string with pagination
+   */
+  async searchArtworksPaginated(
+    query: string,
+    page = 1,
+    limit = 9,
+    filters?: ArtworkFilters
+  ): Promise<ArtworkApiResponse> {
+    try {
+      const searchParams = this.buildParams(query, filters)
+      searchParams.append('page', page.toString())
+      searchParams.append('limit', limit.toString())
+
+      const response = await fetch(
+        `${this.baseUrl}/artworks/search?${searchParams.toString()}`
+      )
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error searching artworks with pagination:', error)
       throw error
     }
   }

@@ -93,7 +93,7 @@ export function Recommendations({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="mb-8 rounded-lg border bg-gradient-to-r from-card to-background p-6"
+        className="from-card to-background mb-8 rounded-lg border bg-gradient-to-r p-6"
       >
         <div className="mb-3 flex items-center gap-3">
           <Heart className="h-5 w-5 text-[#a20000]" />

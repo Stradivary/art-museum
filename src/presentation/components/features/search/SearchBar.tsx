@@ -52,7 +52,6 @@ export function SearchBar({
           <Search className="text-border h-3 w-3 transition-colors duration-200" />
         </div>
         <input
-          type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="text-foreground w-full rounded-full bg-transparent p-3 pr-10 pl-10 placeholder-gray-500 focus:ring-0 focus:outline-none"

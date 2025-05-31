@@ -17,11 +17,10 @@ export class ArtworkRepositoryImpl implements IArtworkRepository {
    */
   async getArtworks(
     page: number,
-    limit: number,
-    filters?: ArtworkFilters
+    limit: number
   ): Promise<ArtworkPaginationResult> {
     try {
-      const response = await artworkApi.fetchArtworks(page, limit, filters)
+      const response = await artworkApi.fetchArtworks(page, limit)
 
       return {
         artworks: response.data,
@@ -88,6 +87,36 @@ export class ArtworkRepositoryImpl implements IArtworkRepository {
       return response.data
     } catch (error) {
       console.error('Repository error searching artworks:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Search for artworks matching a query with pagination
+   */
+  async searchArtworksPaginated(
+    query: string,
+    page: number,
+    limit: number,
+    filters?: ArtworkFilters
+  ): Promise<ArtworkPaginationResult> {
+    try {
+      const response = await artworkApi.searchArtworksPaginated(
+        query,
+        page,
+        limit,
+        filters
+      )
+
+      return {
+        artworks: response.data,
+        pagination: response.pagination,
+      }
+    } catch (error) {
+      console.error(
+        'Repository error searching artworks with pagination:',
+        error
+      )
       throw error
     }
   }
