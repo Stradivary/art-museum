@@ -81,12 +81,7 @@ describe('ErrorFallback', () => {
     const container = screen
       .getByText('Oops! Something went wrong')
       .closest('div')
-    expect(container).toHaveClass(
-      'w-full',
-      'max-w-md',
-      'rounded-xl',
-      'bg-card'
-    )
+    expect(container).toHaveClass('w-full', 'max-w-md', 'rounded-xl', 'bg-card')
   })
 
   it('should render both error and reset props together', () => {

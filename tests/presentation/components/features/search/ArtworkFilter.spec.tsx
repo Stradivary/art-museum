@@ -37,6 +37,9 @@ describe('ArtworkFilter', () => {
     // Change department
     const selects = screen.getAllByRole('combobox')
     fireEvent.change(selects[0], { target: { value: 'Modern Art' } })
-    expect(onFiltersChange).toHaveBeenCalledWith({ department: 'Modern Art', artwork_type_title: '' })
+    expect(onFiltersChange).toHaveBeenCalledWith({
+      department: 'Modern Art',
+      artwork_type_title: '',
+    })
   })
 })

@@ -9,6 +9,8 @@ import { SecurityProvider } from '../components/shared/SecurityProvider'
 import { ErrorBoundary } from '../components/shared/ErrorBoundary'
 import { PageLoadingFallback } from '../components/shared/Loading'
 import { TooltipProvider } from '../components/ui/tooltip'
+import { TeachingTipProvider } from '../components/shared/teachingTip/TeachingTipProvider'
+import { TeachingTipOverlay } from '../components/shared/teachingTip/TeachingTipOverlay'
 /**
  * Main layout component for the application
  */
@@ -17,18 +19,21 @@ export function MainLayout() {
     <SecurityProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider delayDuration={300}>
-          <ErrorBoundary>
-            <div className="min-h-screen pb-16">
-              <Suspense
-                fallback={<PageLoadingFallback text="Loading page..." />}
-              >
-                <Outlet />
-              </Suspense>
-              <Suspense fallback={null}>
-                <BottomNavigation />
-              </Suspense>
-            </div>
-          </ErrorBoundary>
+          <TeachingTipProvider>
+            <ErrorBoundary>
+              <div className="min-h-screen pb-16">
+                <Suspense
+                  fallback={<PageLoadingFallback text="Loading page..." />}
+                >
+                  <Outlet />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <BottomNavigation />
+                </Suspense>
+              </div>
+              <TeachingTipOverlay />
+            </ErrorBoundary>
+          </TeachingTipProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </SecurityProvider>

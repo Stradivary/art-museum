@@ -1,8 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { HomePageContent } from '@/presentation/components/features/home/HomePageContent'
 import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
+import { TeachingTipProvider } from '@/presentation/components/shared/teachingTip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+// Mock TeachingTipTrackingService to prevent localStorage access issues
+vi.mock('@/infrastructure/services/TeachingTipTrackingService', () => ({
+  TeachingTipTrackingService: {
+    getShownTips: () => new Set(),
+    markTipAsShown: vi.fn(),
+    markTipsAsShown: vi.fn(),
+    getUnshownTips: (tipIds: string[]) => tipIds,
+    resetAllTips: vi.fn(),
+    isTipShown: () => false,
+  },
+}))
 
 // Mock router hooks
 const mockSetSearchParams = vi.fn()
@@ -18,10 +32,67 @@ vi.mock('react-router', () => ({
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
 }))
 
+// Mock utils to prevent any potential issues
+vi.mock('@/lib/utils', () => ({
+  cn: (...inputs: any[]) => inputs.join(' '),
+  cleanFilters: (filters: any) => {
+    const cleaned: any = {}
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        cleaned[key] = value
+      }
+    })
+    return cleaned
+  },
+}))
+
+// // Mock localStorage service to prevent async issues
+// vi.mock('@/infrastructure/services/LocalStorageService', () => ({
+//   localStorageService: {
+//     getItem: vi.fn().mockResolvedValue(null),
+//     setItem: vi.fn().mockResolvedValue(undefined),
+//     removeItem: vi.fn().mockResolvedValue(undefined),
+//     clear: vi.fn().mockResolvedValue(undefined),
+//   },
+// }))
+
+// Mock teaching tip hooks to prevent infinite loops
+vi.mock('@/presentation/hooks/useRegisterTeachingTip', () => ({
+  useRegisterTeachingTip: () => ({
+    ref: { current: null },
+    showTip: vi.fn(),
+    isRegistered: false,
+  }),
+}))
+
+// Mock the cache clearing hook to prevent side effects
+vi.mock('@/presentation/hooks/useClearArtworkGridCacheOnFilterChange', () => ({
+  useClearArtworkGridCacheOnFilterChange: vi.fn(),
+}))
+
 // Mock view models
 const mockUseRecommendationsViewModel = vi.fn()
 vi.mock('@/presentation/viewmodels/ArtworkViewModel', () => ({
   useRecommendationsViewModel: () => mockUseRecommendationsViewModel(),
+}))
+
+// Mock TeachingTipTrackingService to prevent localStorage access
+vi.mock('@/infrastructure/services/TeachingTipTrackingService', () => ({
+  TeachingTipTrackingService: {
+    getShownTips: () => new Set(),
+    markTipAsShown: vi.fn(),
+    markTipsAsShown: vi.fn(),
+    getUnshownTips: (tipIds: string[]) => tipIds,
+    resetAllTips: vi.fn(),
+    isTipShown: () => false,
+  },
+}))
+
+// Mock TeachingTipTrigger to prevent any teaching tip related issues
+vi.mock('@/presentation/components/shared/teachingTip/TeachingTipTrigger', () => ({
+  TeachingTipTrigger: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="teaching-tip-trigger">{children}</div>
+  ),
 }))
 
 // Mock child components
@@ -111,7 +182,14 @@ vi.mock('framer-motion', () => ({
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { 
+        retry: false,
+        gcTime: 0,
+        staleTime: 0,
+      },
+      mutations: {
+        retry: false,
+      },
     },
   })
 
@@ -119,7 +197,9 @@ const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = createTestQueryClient()
   return render(
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>{ui}</ThemeProvider>
+      <TeachingTipProvider>
+        <ThemeProvider>{ui}</ThemeProvider>
+      </TeachingTipProvider>
     </QueryClientProvider>
   )
 }
@@ -127,6 +207,11 @@ const renderWithProviders = (ui: React.ReactElement) => {
 describe('HomePageContent', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    
+    // Clear any localStorage that might cause issues
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.clear()
+    }
 
     // Reset mock search params
     mockSearchParams.get.mockReturnValue(null)
@@ -138,6 +223,10 @@ describe('HomePageContent', () => {
       isLoading: false,
       error: null,
     })
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('should render search bar and filter components', () => {

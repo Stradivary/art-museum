@@ -39,10 +39,7 @@ describe('ArtworkRepositoryImpl', () => {
 
       const result = await repository.getArtworks(page, limit, filters)
 
-      expect(mockArtworkApi.fetchArtworks).toHaveBeenCalledWith(
-        page,
-        limit
-      )
+      expect(mockArtworkApi.fetchArtworks).toHaveBeenCalledWith(page, limit)
       expect(result).toEqual({
         artworks: mockPaginatedArtworks.artworks,
         pagination: mockPaginatedArtworks.pagination,

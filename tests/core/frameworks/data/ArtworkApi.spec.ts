@@ -75,7 +75,6 @@ describe('ArtworkApi', () => {
       )
     })
 
-
     it('should handle API errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -209,7 +208,7 @@ describe('ArtworkApi', () => {
       expect(result).toEqual(mockResponse)
     })
 
-    it('should search artworks with filters', async () => {
+    it('should search artworks with single filter', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockResponse),
@@ -223,9 +222,26 @@ describe('ArtworkApi', () => {
 
       const callUrl = mockFetch.mock.calls[0][0] as string
       expect(callUrl).toContain('q=test')
-      expect(callUrl).toContain(
-        'match%5D%5Bdepartment_title%5D=Modern+Art'
-      )
+      expect(callUrl).toContain('query%5Bmatch%5D%5Bdepartment_title%5D=Modern+Art')
+    })
+
+    it('should search artworks with multiple filters using bool query', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      } as Response)
+
+      const filters: ArtworkFilters = {
+        department: 'Modern Art',
+        artworkType: 'Painting',
+      }
+
+      await api.searchArtworks('test', filters)
+
+      const callUrl = mockFetch.mock.calls[0][0] as string
+      expect(callUrl).toContain('q=test')
+      expect(callUrl).toContain('bool%5Bmust%5D%5B%5D%5Bmatch%5D%5Bdepartment_title%5D=Modern+Art')
+      expect(callUrl).toContain('bool%5Bmust%5D%5B%5D%5Bmatch%5D%5Bartwork_type_title%5D=Painting')
     })
 
     it('should handle search API errors', async () => {

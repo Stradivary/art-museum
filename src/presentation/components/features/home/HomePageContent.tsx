@@ -12,6 +12,8 @@ import { useSearchParams } from 'react-router'
 import { cleanFilters } from '@/lib/utils'
 import { localStorageService } from '@/infrastructure/services/LocalStorageService'
 import { useClearArtworkGridCacheOnFilterChange } from '@/presentation/hooks/useClearArtworkGridCacheOnFilterChange'
+import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
+import { TeachingTipTrigger } from '@/presentation/components/shared/teachingTip/TeachingTipTrigger'
 
 interface HomePageContentProps {
   initialSearchQuery?: string
@@ -27,6 +29,31 @@ export function HomePageContent({
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery)
   const [filters, setFilters] = useState<ArtworkFilters>({})
+
+  // Register teaching tips
+  const searchTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'home-search',
+    title: 'Search Artworks',
+    description:
+      'Use the search bar to find specific artworks by title, artist, style, or keywords. Try searching for "Monet" or "impressionism"!',
+    position: 'bottom',
+  })
+
+  const filterTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'home-filter',
+    title: 'Filter Artworks',
+    description:
+      'Use filters to narrow down artworks by artist, artwork type, and other criteria. Perfect for discovering specific styles!',
+    position: 'bottom',
+  })
+
+  const recommendationsTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'home-recommendations',
+    title: 'Curated Recommendations',
+    description:
+      'Discover amazing artworks from our curated recommendations. These change regularly to showcase different themes and artists.',
+    position: 'top',
+  })
 
   // Get recommendations
   const {
@@ -85,6 +112,13 @@ export function HomePageContent({
 
   return (
     <div className="space-y-6">
+      {/* Tutorial Trigger */}
+      <div className="flex justify-end">
+        <TeachingTipTrigger variant="button" showAll size="sm">
+          Show Tutorial
+        </TeachingTipTrigger>
+      </div>
+
       {/* Search and Filter Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -93,13 +127,13 @@ export function HomePageContent({
         className="border-border/50 bg-background/90 sticky top-16 z-10 -mx-4 rounded-lg border-b px-4 py-4 backdrop-blur-sm"
       >
         <div className="flex flex-col gap-4 sm:flex-row">
-          <div className="flex-1">
+          <div className="flex-1" ref={searchTip.ref}>
             <SearchBar
               initialQuery={searchQuery}
               onSearch={handleSearchQueryChange}
             />
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" ref={filterTip.ref}>
             <ArtworkFilter
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -114,6 +148,7 @@ export function HomePageContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
+          ref={recommendationsTip.ref}
         >
           <Recommendations
             recommendations={recommendations}
