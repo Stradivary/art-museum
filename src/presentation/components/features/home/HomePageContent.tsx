@@ -111,12 +111,6 @@ export function HomePageContent({
 
   return (
     <div className="space-y-6">
-      {/* Tutorial Trigger */}
-      <div className="flex justify-end">
-        <TeachingTipTrigger variant="button" showAll size="sm">
-          Show Tutorial
-        </TeachingTipTrigger>
-      </div>
 
       {/* Search and Filter Section */}
       <motion.div
