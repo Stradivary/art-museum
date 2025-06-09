@@ -15,6 +15,9 @@ describe('GetArtworksUseCase', () => {
       getArtworkById: vi.fn(),
       getArtworks: vi.fn(),
       searchArtworks: vi.fn(),
+      getArtworkBasicById : vi.fn(),
+      getArtworkDetailById : vi.fn(),
+      searchArtworksPaginated : vi.fn(),
     }
     useCase = new GetArtworksUseCase(mockRepository)
   })
@@ -44,10 +47,7 @@ describe('GetArtworksUseCase', () => {
 
     const result = await useCase.execute(page, limit)
 
-    expect(mockRepository.getArtworks).toHaveBeenCalledWith(
-      page,
-      limit
-    )
+    expect(mockRepository.getArtworks).toHaveBeenCalledWith(page, limit)
     expect(result).toEqual(mockArtworkPaginationResult)
   })
 

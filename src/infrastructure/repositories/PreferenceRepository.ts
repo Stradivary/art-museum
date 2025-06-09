@@ -4,7 +4,7 @@ import localforage from 'localforage'
 export interface Preference {
   theme: 'light' | 'dark'
   language: string
-  notifications: boolean
+  showTeachingTips: boolean
 }
 
 export class PreferenceRepository {

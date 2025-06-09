@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { HomePageContent } from '../components/features/home/HomePageContent'
 import { PageHeader } from '../components/shared/PageHeader'
 import { SearchBarSkeleton } from '../components/shared/Loading'
-
 /**
  * Home page container component
  */

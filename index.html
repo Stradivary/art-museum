@@ -18,12 +18,12 @@
     </script>
     <script>
       // Early catch for beforeinstallprompt
-      window.deferredPWAInstallPrompt = null;
-      window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault();
-        window.deferredPWAInstallPrompt = e;
-        window.dispatchEvent(new Event('pwa-install-prompt-captured'));
-      });
+      window.deferredPWAInstallPrompt = null
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault()
+        window.deferredPWAInstallPrompt = e
+        window.dispatchEvent(new Event('pwa-install-prompt-captured'))
+      })
     </script>
   </head>
 

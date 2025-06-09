@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { PageHeader } from '@/presentation/components/shared/PageHeader'
 import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
+import { TeachingTipProvider } from '@/presentation/components/shared/teachingTip'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -16,8 +17,40 @@ vi.mock('framer-motion', () => ({
   },
 }))
 
+// Mock teaching tip hooks to prevent infinite loops
+vi.mock('@/presentation/hooks/useRegisterTeachingTip', () => ({
+  useRegisterTeachingTip: () => ({
+    ref: { current: null },
+    showTip: vi.fn(),
+    isRegistered: false,
+  }),
+}))
+
+// Mock TeachingTipTrackingService to prevent localStorage access
+vi.mock('@/infrastructure/services/TeachingTipTrackingService', () => ({
+  TeachingTipTrackingService: {
+    getShownTips: () => new Set(),
+    markTipAsShown: vi.fn(),
+    markTipsAsShown: vi.fn(),
+    getUnshownTips: (tipIds: string[]) => tipIds,
+    resetAllTips: vi.fn(),
+    isTipShown: () => false,
+  },
+}))
+
+// Mock TeachingTipTrigger to prevent any teaching tip related issues
+vi.mock(
+  '@/presentation/components/shared/teachingTip/TeachingTipTrigger',
+  () => ({
+    TeachingTipTrigger: ({ children }: { children: React.ReactNode }) => (
+      <div data-testid="teaching-tip-trigger">{children}</div>
+    ),
+  })
+)
+
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
+  HelpCircle: () => <svg data-testid="help-icon" />,
   ArrowLeft: () => <svg data-testid="arrow-left-icon" />,
   Moon: () => <svg data-testid="moon-icon" />,
 }))
@@ -44,7 +77,9 @@ vi.mock('react-router', async (importOriginal) => {
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
     <MemoryRouter>
-      <ThemeProvider>{component}</ThemeProvider>
+      <TeachingTipProvider>
+        <ThemeProvider>{component}</ThemeProvider>
+      </TeachingTipProvider>
     </MemoryRouter>
   )
 }

@@ -230,7 +230,9 @@ describe('GetRecommendationsUseCase', () => {
       vi.mocked(
         mockDislikedArtworkRepository.getAllDislikedArtworks
       ).mockResolvedValue([])
-      vi.mocked(mockArtworkRepository.searchArtworksPaginated).mockResolvedValue({
+      vi.mocked(
+        mockArtworkRepository.searchArtworksPaginated
+      ).mockResolvedValue({
         artworks: batchArtworks,
         pagination: {
           total: 12,
@@ -244,12 +246,9 @@ describe('GetRecommendationsUseCase', () => {
       const result = await useCase.execute()
 
       // Should be called with page 1 and limit 12
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledWith(
-        "Modern Art Painting",
-        1,
-        12,
-        expect.any(Object)
-      )
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledWith('Modern Art Painting', 1, 12, expect.any(Object))
       expect(result.recommendations).toHaveLength(12)
     })
 
@@ -302,7 +301,9 @@ describe('GetRecommendationsUseCase', () => {
 
       expect(result.recommendations).toHaveLength(20)
       // Should stop early when reaching target of 20
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledTimes(2)
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledTimes(2)
     })
 
     it('should try multiple strategies progressively', async () => {
@@ -376,39 +377,30 @@ describe('GetRecommendationsUseCase', () => {
       const result = await useCase.execute()
 
       // Should have called multiple strategies including fallback
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledTimes(3)
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledTimes(3)
 
       // First call with department + artwork type
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenNthCalledWith(
-        1,
-        "Modern Art Painting",
-        1,
-        12,
-        {
-          department: 'Modern Art',
-          artworkType: 'Painting',
-        }
-      )
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenNthCalledWith(1, 'Modern Art Painting', 1, 12, {
+        department: 'Modern Art',
+        artworkType: 'Painting',
+      })
 
       // Second call with just department
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenNthCalledWith(
-        2,
-        "Test Artist",
-        1,
-        12,
-        {}
-      )
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenNthCalledWith(2, 'Test Artist', 1, 12, {})
 
       // Should include fallback strategy calls
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledWith(
-        "Modern Art Painting",
-        1,
-        12,
-        {
-          artworkType: 'Painting',
-          department: 'Modern Art',
-        }
-      )
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledWith('Modern Art Painting', 1, 12, {
+        artworkType: 'Painting',
+        department: 'Modern Art',
+      })
 
       expect(result.recommendations).toHaveLength(20)
     })
@@ -461,16 +453,20 @@ describe('GetRecommendationsUseCase', () => {
       const result = await useCase.execute()
 
       // Should fetch both pages of the same strategy
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenNthCalledWith(
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenNthCalledWith(
         1,
-        "Modern Art Painting",
+        'Modern Art Painting',
         1,
         12,
         expect.any(Object)
       )
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenNthCalledWith(
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenNthCalledWith(
         2,
-        "Modern Art Painting",
+        'Modern Art Painting',
         2,
         12,
         expect.any(Object)
@@ -496,7 +492,9 @@ describe('GetRecommendationsUseCase', () => {
       ).mockResolvedValue([])
 
       // Mock multiple pages with the same 5 artworks
-      vi.mocked(mockArtworkRepository.searchArtworksPaginated).mockResolvedValue({
+      vi.mocked(
+        mockArtworkRepository.searchArtworksPaginated
+      ).mockResolvedValue({
         artworks: pageArtworks,
         pagination: {
           total: 100,
@@ -511,7 +509,9 @@ describe('GetRecommendationsUseCase', () => {
 
       // Should respect the MAX_PAGES_PER_STRATEGY limit (3 pages max per strategy) + fallback strategies
       // Expects: 3 pages for dept+type, 3 pages for dept, 3 pages for type, etc. until reaching 20 or timeout
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledTimes(7)
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledTimes(7)
       expect(result.recommendations).toHaveLength(5) // Should reach target of 20
     })
   })

@@ -33,7 +33,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
 
-      - name: Test report 
+      - name: Test report
         run: npx vitest --reporter=junit --outputFile=test-report.junit.xml
 
       - name: Upload test report to Codecov

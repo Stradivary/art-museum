@@ -36,6 +36,35 @@ vi.mock('@/presentation/components/features/OfflineFallback', () => ({
   OfflineFallback: () => <div data-testid="offline-fallback">Offline</div>,
 }))
 
+// Mock teaching tip hooks to prevent infinite loops
+vi.mock('@/presentation/hooks/useRegisterTeachingTip', () => ({
+  useRegisterTeachingTip: () => ({
+    ref: { current: null },
+    showTip: vi.fn(),
+    isRegistered: false,
+  }),
+}))
+
+// Mock TeachingTipTrackingService to prevent localStorage access
+vi.mock('@/infrastructure/services/TeachingTipTrackingService', () => ({
+  TeachingTipTrackingService: {
+    getShownTips: () => new Set(),
+    markTipAsShown: vi.fn(),
+    markTipsAsShown: vi.fn(),
+    getUnshownTips: (tipIds: string[]) => tipIds,
+    resetAllTips: vi.fn(),
+    isTipShown: () => false,
+  },
+}))
+
+// Mock TeachingTipTrigger to prevent any teaching tip related issues
+vi.mock('@/presentation/components/shared/teachingTip/TeachingTipTrigger', () => ({
+  TeachingTipTrigger: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="teaching-tip-trigger">{children}</div>
+  ),
+}))
+
+
 vi.mock('@/presentation/components/shared/Image', () => ({
   default: ({
     src,
@@ -93,10 +122,37 @@ vi.mock('framer-motion', () => ({
     ),
   },
 }))
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { 
+        retry: false,
+        gcTime: 0,
+        staleTime: 0,
+      },
+      mutations: {
+        retry: false,
+      },
+    },
+  })
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  const queryClient = createTestQueryClient()
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <TeachingTipProvider>
+        <ThemeProvider>{ui}</ThemeProvider>
+      </TeachingTipProvider>
+    </QueryClientProvider>
+  )
+}
 
 import type { Artwork } from '@/core/domain/entities/Artwork'
 import { ArtworkDetailContent } from '@/presentation/components/features/artwork/ArtworkDetailContent'
+import { TeachingTipProvider } from '@/presentation/components/shared/teachingTip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react'
+import { ThemeProvider } from 'next-themes';
 import type { PropsWithChildren } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -115,8 +171,8 @@ describe('ArtworkDetailContent', () => {
       error: null,
     })
 
-    render(<ArtworkDetailContent id="123" />)
+    renderWithProviders(<ArtworkDetailContent id="123" />)
 
     expect(screen.getByTestId('artwork-detail-skeleton')).toBeInTheDocument()
   })
-})
+}) 

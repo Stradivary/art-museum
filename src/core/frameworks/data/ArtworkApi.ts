@@ -61,32 +61,44 @@ export class ArtworkApi {
       searchParams.append('q', query)
     }
 
-    // Add filters using the correct API format: query[term][field]=value
+    // Add filters using the correct API format for boolean queries
     if (filters) {
-      if (filters.department) {
-        searchParams.append(
-          'query[match][department_title]',
-          filters.department
-        )
-      }
-      if (filters.artworkType) {
-        searchParams.append(
-          'query[match][artwork_type_title]',
-          filters.artworkType
-        )
-      }
-      if (filters.placeOfOrigin) {
-        searchParams.append(
-          'query[match][place_of_origin]',
-          filters.placeOfOrigin
-        )
-      }
-      if (filters.medium) {
-        searchParams.append('query[match][medium_display]', filters.medium)
+      const activeFilters = Object.entries(filters).filter(([, value]) => value)
+      
+      if (activeFilters.length > 0) {
+        // For multiple filters, use bool[must][] syntax
+        if (activeFilters.length > 1) {
+          activeFilters.forEach(([key, value]) => {
+            const fieldName = this.getFieldNameForFilter(key)
+            if (fieldName) {
+              searchParams.append(`bool[must][][match][${fieldName}]`, value)
+            }
+          })
+        } else {
+          // For single filter, use query[match] syntax
+          const [key, value] = activeFilters[0]
+          const fieldName = this.getFieldNameForFilter(key)
+          if (fieldName) {
+            searchParams.append(`query[match][${fieldName}]`, value)
+          }
+        }
       }
     }
 
     return searchParams
+  }
+
+  /**
+   * Map filter keys to API field names
+   */
+  private getFieldNameForFilter(filterKey: string): string | null {
+    const fieldMapping: Record<string, string> = {
+      department: 'department_title',
+      artworkType: 'artwork_type_title',
+      placeOfOrigin: 'place_of_origin',
+      medium: 'medium_display',
+    }
+    return fieldMapping[filterKey] || null
   }
 
   /**

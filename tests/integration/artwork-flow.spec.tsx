@@ -119,7 +119,9 @@ describe('Artwork Flow Integration Tests', () => {
     })
 
     await waitFor(() => {
-      expect(mockArtworkRepository.searchArtworksPaginated).toHaveBeenCalledWith(
+      expect(
+        mockArtworkRepository.searchArtworksPaginated
+      ).toHaveBeenCalledWith(
         'starry night',
         expect.any(Number),
         expect.any(Number),
