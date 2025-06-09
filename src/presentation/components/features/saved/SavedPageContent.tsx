@@ -5,18 +5,27 @@ import { Bookmark } from 'lucide-react'
 import { useSavedArtworkViewModel } from '../../../viewmodels/SavedArtworkViewModel'
 import { SavedArtworkCard } from './SavedArtworkCard'
 import { Link } from 'react-router'
+import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
 
 /**
  * Component to display the saved artworks page content
  */
 export function SavedPageContent() {
+  // Register teaching tip for saved artworks page
+  const savedTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'saved-artworks',
+    title: 'Saved Artworks',
+    description:
+      'View and manage artworks you have saved for later. Remove artworks from your saved list at any time.',
+    position: 'top',
+  })
   const { savedArtworks, isLoading, removeSavedArtwork } =
     useSavedArtworkViewModel()
 
   if (isLoading) {
     return (
-      <div className="flex h-40 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
+      <div className="flex h-40 items-center justify-center" ref={savedTip.ref}>
+        <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900" />
       </div>
     )
   }
@@ -28,6 +37,7 @@ export function SavedPageContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
+        ref={savedTip.ref}
       >
         <Bookmark className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <p className="mb-4 text-gray-500">No saved artworks yet.</p>
@@ -42,7 +52,10 @@ export function SavedPageContent() {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      ref={savedTip.ref}
+    >
       {savedArtworks.map((artwork) => (
         <motion.div
           key={artwork.id}

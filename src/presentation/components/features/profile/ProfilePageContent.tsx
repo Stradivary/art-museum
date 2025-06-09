@@ -11,6 +11,7 @@ import { PWAInstallSection } from './profile/PWAInstallSection'
 import { AppFeaturesSection } from './profile/AppFeaturesSection'
 import { UserStatsSection } from './profile/UserStatsSection'
 import { AboutAppSection } from './profile/AboutAppSection'
+import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
 
 function getFingerprint() {
   // Simple browser fingerprint (not cryptographically unique)
@@ -30,6 +31,52 @@ function getFingerprint() {
 export const ProfilePageContent = () => {
   const { userStats, featureStatuses, pwaStatus, handleInstallApp } =
     useProfileViewModel()
+
+  // Register teaching tips
+  const profileTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-user',
+    title: 'Your Profile',
+    description:
+      'This section shows your unique browser fingerprint and profile information.',
+    position: 'top',
+  })
+  const settingsTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-settings',
+    title: 'Settings',
+    description: 'Manage your app preferences and settings here.',
+    position: 'top',
+  })
+  const clearTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-clear',
+    title: 'Clear Preferences',
+    description: 'Remove all saved and disliked artworks from your device.',
+    position: 'top',
+  })
+  const statsTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-stats',
+    title: 'Your Stats',
+    description: 'See your saved artworks count and connection status.',
+    position: 'top',
+  })
+  const pwaTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-pwa',
+    title: 'Install as App',
+    description:
+      'Install this app to your device for a native-like experience.',
+    position: 'top',
+  })
+  const featuresTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-features',
+    title: 'App Features',
+    description: 'Check which features are enabled or available in the app.',
+    position: 'top',
+  })
+  const aboutTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'profile-about',
+    title: 'About This App',
+    description: 'Learn more about this art museum app and its creators.',
+    position: 'top',
+  })
 
   const [clearLoading, setClearLoading] = useState(false)
   const [fingerprint, setFingerprint] = useState('')
@@ -94,6 +141,7 @@ export const ProfilePageContent = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
+        ref={profileTip.ref}
       >
         <UserProfile fingerprint={fingerprint} />
       </motion.div>
@@ -104,6 +152,7 @@ export const ProfilePageContent = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.05 }}
+        ref={settingsTip.ref}
       >
         <SettingsSection />
       </motion.div>
@@ -114,36 +163,45 @@ export const ProfilePageContent = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.08 }}
+        ref={clearTip.ref}
       >
         <ClearPreferenceSection onClear={handleClear} loading={clearLoading} />
       </motion.div>
 
       {/* Stats Section */}
-      <UserStatsSection
-        savedArtworksCount={userStats.savedArtworksCount}
-        isOnline={userStats.isOnline}
-        connectionStatus={userStats.connectionStatus}
-      />
+      <div ref={statsTip.ref}>
+        <UserStatsSection
+          savedArtworksCount={userStats.savedArtworksCount}
+          isOnline={userStats.isOnline}
+          connectionStatus={userStats.connectionStatus}
+        />
+      </div>
 
       {/* PWA Installation Section */}
-      <PWAInstallSection
-        isInstalled={pwaStatus.isInstalled}
-        isInstalling={pwaStatus.isInstalling}
-        canInstall={pwaStatus.canInstall}
-        installationMessage={pwaStatus.installationMessage}
-        onInstall={handleInstallApp}
-      />
+      <div ref={pwaTip.ref}>
+        <PWAInstallSection
+          isInstalled={pwaStatus.isInstalled}
+          isInstalling={pwaStatus.isInstalling}
+          canInstall={pwaStatus.canInstall}
+          installationMessage={pwaStatus.installationMessage}
+          onInstall={handleInstallApp}
+        />
+      </div>
 
       {/* App Features Section */}
-      <AppFeaturesSection
-        features={featureStatuses}
-        getIcon={getFeatureStatusIcon}
-        getBadge={getFeatureStatusBadge}
-        getText={getFeatureStatusText}
-      />
+      <div ref={featuresTip.ref}>
+        <AppFeaturesSection
+          features={featureStatuses}
+          getIcon={getFeatureStatusIcon}
+          getBadge={getFeatureStatusBadge}
+          getText={getFeatureStatusText}
+        />
+      </div>
 
       {/* Info Section */}
-      <AboutAppSection isInstalled={pwaStatus.isInstalled} />
+      <div ref={aboutTip.ref}>
+        <AboutAppSection isInstalled={pwaStatus.isInstalled} />
+      </div>
     </div>
   )
 }

@@ -1,10 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, HelpCircle } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { Button } from '../ui/button'
 import { ThemeToggle } from './ThemeToggle'
+import { TeachingTipTrigger } from './teachingTip'
 
 interface PageHeaderProps {
   title: string
@@ -86,7 +87,14 @@ export function PageHeader({
             </motion.div>
           )}
 
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {/* Tutorial Trigger */}
+            <TeachingTipTrigger variant="button" showAll size="sm">
+              <HelpCircle className="h-4 w-4" />
+            </TeachingTipTrigger>
+
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </motion.header>

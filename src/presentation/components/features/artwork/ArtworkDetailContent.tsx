@@ -10,6 +10,7 @@ import { shouldShowOfflineFallback } from '@/lib/networkUtils'
 import { OfflineFallback } from '../OfflineFallback'
 import { LikeButton } from '../../shared/LikeButton'
 import { ImageViewer } from '../../shared/ImageViewer'
+import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
 
 interface ArtworkDetailContentProps {
   id: string
@@ -21,6 +22,14 @@ interface ArtworkDetailContentProps {
 export function ArtworkDetailContent({
   id,
 }: Readonly<ArtworkDetailContentProps>) {
+  // Register teaching tip for artwork detail page
+  const detailTip = useRegisterTeachingTip<HTMLDivElement>({
+    id: 'artwork-detail',
+    title: 'Artwork Details',
+    description:
+      'Explore detailed information about the selected artwork, including its image, artist, and history.',
+    position: 'top',
+  })
   const navigate = useNavigate()
   const { artwork, isLoading, error } = useArtworkDetailViewModel(
     Number.parseInt(id)
@@ -52,6 +61,7 @@ export function ArtworkDetailContent({
       style={{
         viewTransitionName: artwork ? 'artwork-card-' + artwork.id : undefined,
       }}
+      ref={detailTip.ref}
     >
       {isLoading || !artwork ? (
         <ArtworkDetailSkeleton />

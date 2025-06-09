@@ -10,7 +10,7 @@ export function usePreference() {
   const [preference, setPreference] = useState<Preference | null>({
     theme: 'light',
     language: 'en',
-    notifications: false,
+    showTeachingTips: true,
   })
   const [loading, setLoading] = useState(true)
   useEffect(() => {
@@ -20,7 +20,7 @@ export function usePreference() {
         pref ?? {
           theme: 'light',
           language: 'en',
-          notifications: false,
+          showTeachingTips: true,
         }
       )
       setLoading(false)
@@ -34,8 +34,8 @@ export function usePreference() {
       const newPref: Preference = {
         theme: update.theme ?? preference?.theme ?? 'light',
         language: update.language ?? preference?.language ?? 'en',
-        notifications:
-          update.notifications ?? preference?.notifications ?? false,
+        showTeachingTips:
+          update.showTeachingTips ?? preference?.showTeachingTips ?? true,
       }
       setPreference(newPref)
       await service.setPreference(newPref)

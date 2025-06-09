@@ -4,17 +4,31 @@ import { useTranslation } from 'react-i18next'
 
 import { usePreference } from '@/presentation/hooks/usePreference'
 import { useTheme } from '@/presentation/hooks/useTheme'
+import { TeachingTipTrackingService } from '@/infrastructure/services/TeachingTipTrackingService'
 
 export function SettingsSection() {
   const { t } = useTranslation()
   const { preference, updatePreference, loading } = usePreference()
   const { setTheme } = useTheme()
+
   if (loading) return null
+
   // fallback to default preference if not set
   const pref = preference ?? {
     theme: 'light',
     language: 'en',
-    notifications: false,
+    showTeachingTips: true,
+  }
+
+  const handleResetTeachingTips = () => {
+    TeachingTipTrackingService.resetAllTips()
+    // Optionally show a confirmation message
+    alert(
+      t(
+        'settings.teachingTipsReset',
+        'All teaching tips have been reset and will show again.'
+      )
+    )
   }
   return (
     <div className="space-y-4">
@@ -42,14 +56,25 @@ export function SettingsSection() {
       </div>
       <div className="flex items-center justify-between">
         <span className="text-sm">
-          {t('settings.notifications', 'Notifications')}
+          {t('settings.showTeachingTips', 'Show Teaching Tips')}
         </span>
         <Switch
-          checked={pref.notifications}
+          checked={pref.showTeachingTips}
           onCheckedChange={(checked) =>
-            updatePreference({ notifications: checked })
+            updatePreference({ showTeachingTips: checked })
           }
         />
+      </div>
+      <div className="flex items-center justify-between">
+        <span className="text-sm">
+          {t('settings.resetTeachingTips', 'Reset Teaching Tips')}
+        </span>
+        <button
+          onClick={handleResetTeachingTips}
+          className="rounded bg-gray-200 px-3 py-1 text-xs transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+        >
+          {t('settings.reset', 'Reset')}
+        </button>
       </div>
     </div>
   )

@@ -1,19 +1,18 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { ArtworkGrid } from '../artwork/ArtworkGrid'
-import { Recommendations } from '../artwork/Recommendations'
-import { SearchBar } from '../search/SearchBar'
-import { ArtworkFilter } from '../search/ArtworkFilter'
-import { useRecommendationsViewModel } from '../../../viewmodels/ArtworkViewModel'
 import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepository'
-import { useSearchParams } from 'react-router'
-import { cleanFilters } from '@/lib/utils'
 import { localStorageService } from '@/infrastructure/services/LocalStorageService'
+import { cleanFilters } from '@/lib/utils'
 import { useClearArtworkGridCacheOnFilterChange } from '@/presentation/hooks/useClearArtworkGridCacheOnFilterChange'
 import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
-import { TeachingTipTrigger } from '@/presentation/components/shared/teachingTip/TeachingTipTrigger'
+import { motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
+import { useRecommendationsViewModel } from '../../../viewmodels/ArtworkViewModel'
+import { ArtworkGrid } from '../artwork/ArtworkGrid'
+import { Recommendations } from '../artwork/Recommendations'
+import { ArtworkFilter } from '../search/ArtworkFilter'
+import { SearchBar } from '../search/SearchBar'
 
 interface HomePageContentProps {
   initialSearchQuery?: string
