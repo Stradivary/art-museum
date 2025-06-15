@@ -7,12 +7,11 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  NODE_VERSION: '20' 
-  BUILD_DIR: '/var/www/abangbakso'
+  NODE_VERSION: "20"
+  BUILD_DIR: "/var/www/abangbakso"
   PRODUCTION_DEPLOYMENT_URL: "https://sv-art-museum.vercel.app/"
 
 jobs:
-
   test:
     name: Install & Test
     runs-on: ubuntu-latest
@@ -24,7 +23,7 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -56,7 +55,7 @@ jobs:
         with:
           name: coverage
           path: coverage
-      
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -83,7 +82,7 @@ jobs:
         run: |
           TIMEOUT=300  # 5 minutes timeout
           START_TIME=$(date +%s)
-          
+
           while true; do
             CURRENT_TIME=$(date +%s)
             if [ $((CURRENT_TIME - START_TIME)) -gt $TIMEOUT ]; then
@@ -111,7 +110,6 @@ jobs:
             sleep 10
           done
 
-
   build:
     needs: quality
     name: Build Application
@@ -124,7 +122,7 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -147,7 +145,6 @@ jobs:
           path: dist
           retention-days: 1
 
-
   zap_scan: # Job untuk melakukan Security Scan
     name: Security Scan
     needs: build
@@ -162,5 +159,3 @@ jobs:
           target: ${{ env.PRODUCTION_DEPLOYMENT_URL }}
           token: ${{ secrets.GH_SECRET }}
           cmd_options: '-a -z "-config view.locale=id_ID"'
-
-           
