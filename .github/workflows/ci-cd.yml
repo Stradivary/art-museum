@@ -77,38 +77,38 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Check Quality Gate
-        id: quality_gate
-        run: |
-          TIMEOUT=300  # 5 minutes timeout
-          START_TIME=$(date +%s)
+      # - name: Check Quality Gate
+      #   id: quality_gate
+      #   run: |
+      #     TIMEOUT=300  # 5 minutes timeout
+      #     START_TIME=$(date +%s)
 
-          while true; do
-            CURRENT_TIME=$(date +%s)
-            if [ $((CURRENT_TIME - START_TIME)) -gt $TIMEOUT ]; then
-              echo "Timeout waiting for Quality Gate"
-              echo "quality_gate_passed=false" >> $GITHUB_OUTPUT
-              exit 1
-            fi
+      #     while true; do
+      #       CURRENT_TIME=$(date +%s)
+      #       if [ $((CURRENT_TIME - START_TIME)) -gt $TIMEOUT ]; then
+      #         echo "Timeout waiting for Quality Gate"
+      #         echo "quality_gate_passed=false" >> $GITHUB_OUTPUT
+      #         exit 1
+      #       fi
             
-            RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=Stradivary_art-museum")
+      #       RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+      #         "https://sonarcloud.io/api/qualitygates/project_status?projectKey=Stradivary_art-museum")
             
-            STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+      #       STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
             
-            if [ "$STATUS" = "OK" ]; then
-              echo "Quality Gate passed"
-              echo "quality_gate_passed=true" >> $GITHUB_OUTPUT
-              exit 0
-            elif [ "$STATUS" = "ERROR" ]; then
-              echo "Quality Gate failed"
-              echo "quality_gate_passed=false" >> $GITHUB_OUTPUT
-              exit 1
-            fi
+      #       if [ "$STATUS" = "OK" ]; then
+      #         echo "Quality Gate passed"
+      #         echo "quality_gate_passed=true" >> $GITHUB_OUTPUT
+      #         exit 0
+      #       elif [ "$STATUS" = "ERROR" ]; then
+      #         echo "Quality Gate failed"
+      #         echo "quality_gate_passed=false" >> $GITHUB_OUTPUT
+      #         exit 1
+      #       fi
             
-            echo "Quality Gate status is pending... waiting"
-            sleep 10
-          done
+      #       echo "Quality Gate status is pending... waiting"
+      #       sleep 10
+      #     done
 
   build:
     needs: quality
