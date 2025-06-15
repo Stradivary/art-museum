@@ -150,7 +150,7 @@ jobs:
 
   zap_scan: # Job untuk melakukan Security Scan
     name: Security Scan
-    needs: deploy
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
