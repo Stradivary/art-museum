@@ -53,7 +53,7 @@ export function SavedPageContent() {
 
   return (
     <div
-      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4"
       ref={savedTip.ref}
     >
       {savedArtworks.map((artwork) => (

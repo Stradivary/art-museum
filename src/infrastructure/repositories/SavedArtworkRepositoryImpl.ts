@@ -84,6 +84,15 @@ export class SavedArtworkRepositoryImpl implements ISavedArtworkRepository {
       throw error
     }
   }
+
+  async clearArtworks(): Promise<void> {
+    try {
+      await localStorageService.removeItem(this.STORAGE_KEY)
+    } catch (error) {
+      console.error('Error clearing saved artworks:', error)
+      throw error
+    }
+  }
 }
 
 // Export a singleton instance

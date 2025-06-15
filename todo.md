@@ -1,0 +1,12 @@
+- [x] cursor pointer ketika hover card ataupun button
+- [x] button filter,clear, zoom background merah dan di hover
+- [x] Filter masih ngebug
+- [x] bug button clear preferences ( tidak bisa di klik )
+- [x] search karakter minimal 4 karakter baru hit api search
+- [x] bilingual melengkapi ( indonesia )
+- [x] scroll di hilangkan / di tipiskan namun masih bisa scrollable
+- [ ] fix help di semua pages
+- [x] butuh di tambahkan tombol dan label notifikasi untuk memunculkan rekomendasi berdasarkan liked - artworks.
+- [x] /docs ( teknikal )
+- [x] readme ( label legendnya di tambahin github action, codecov, sonarcloud / quality gate )
+- [x] security di tambahin di pipeline / ci|cd

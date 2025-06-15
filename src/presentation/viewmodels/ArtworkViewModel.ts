@@ -11,6 +11,7 @@ import type { ArtworkFilters } from '@/core/application/interfaces/IArtworkRepos
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import type { ArtworkPaginationResult } from '@/core/application/interfaces/IArtworkRepository'
+import { localStorageService } from '@/infrastructure/services/LocalStorageService'
 
 // Initialize use cases with repository implementation
 const getArtworksUseCase = new GetArtworksUseCase(artworkRepository)
@@ -24,7 +25,7 @@ const getRecommendationsUseCase = new GetRecommendationsUseCase(
 /**
  * ViewModel for infinite scrolling artwork listing
  */
-export function useArtworkListViewModel(pageSize: number = 9) {
+export function useArtworkListViewModel(pageSize: number = 9, enabled = true) {
   const { ref, inView } = useInView()
 
   const {
@@ -32,6 +33,7 @@ export function useArtworkListViewModel(pageSize: number = 9) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isFetching,
     status: infiniteStatus,
     error: infiniteError,
   } = useInfiniteQuery<ArtworkPaginationResult, Error>({
@@ -50,14 +52,15 @@ export function useArtworkListViewModel(pageSize: number = 9) {
       return undefined
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled,
   })
 
   // Auto-fetch next page when scrolling to the bottom
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView && !isFetching && hasNextPage && !isFetchingNextPage) {
       fetchNextPage()
     }
-  }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage])
+  }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching])
 
   // Flatten all pages into a single array
   const allArtworks = infiniteData?.pages
@@ -98,6 +101,7 @@ export function useArtworkSearchViewModel(
   } = useInfiniteQuery<ArtworkPaginationResult, Error>({
     queryKey: ['artworks', 'search', 'paginated', query, filters, pageSize],
     queryFn: async ({ pageParam }) => {
+      localStorageService.setItem('artwork-filters', filters)
       return await searchArtworksUseCase.executePaginated(
         query,
         typeof pageParam === 'number' ? pageParam : 1,
@@ -155,17 +159,22 @@ export function useArtworkSearchViewModel(
 /**
  * ViewModel for getting personalized recommendations
  */
-export function useRecommendationsViewModel() {
+export function useRecommendationsViewModel({
+  enabled = true,
+}: {
+  enabled?: boolean
+}) {
   const {
     data: recommendations,
-    isLoading,
+    isFetching: isLoading,
     error,
     refetch,
   } = useQuery({
     queryKey: ['recommendations'],
     queryFn: () => getRecommendationsUseCase.execute(),
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    retry: 2,
+    staleTime: 1 * 60 * 1000, // 1 minutes
+    retry: 1,
+    enabled,
   })
 
   return {

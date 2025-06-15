@@ -54,12 +54,14 @@ export function HomePageContent({
     position: 'top',
   })
 
+  const showRecommendations = !searchQuery && Object.keys(filters).length === 0
   // Get recommendations
   const {
     recommendations,
     isLoading: recommendationsLoading,
     error: recommendationsError,
-  } = useRecommendationsViewModel()
+    refetch,
+  } = useRecommendationsViewModel({ enabled: showRecommendations })
 
   useEffect(() => {
     const query = searchParams.get('q')
@@ -79,16 +81,15 @@ export function HomePageContent({
       })
   }, [])
 
-  // Save filters to local storage whenever they change
-  useEffect(() => {
-    localStorageService.setItem('artwork-filters', filters)
-  }, [filters])
-
   // Clear artwork grid cache when filters change
   useClearArtworkGridCacheOnFilterChange(filters)
 
   const handleSearchQueryChange = useCallback(
     (query: string) => {
+      if (query.length < 3 && query !== '') {
+        // If query is less than 3 characters, do not update search params
+        return
+      }
       setSearchQuery(query)
       setSearchParams((prev) => {
         const newParams = new URLSearchParams(prev)
@@ -107,11 +108,8 @@ export function HomePageContent({
     setFilters(cleanFilters(newFilters))
   }, [])
 
-  const showRecommendations = !searchQuery && Object.keys(filters).length === 0
-
   return (
     <div className="space-y-6">
-
       {/* Search and Filter Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -144,9 +142,14 @@ export function HomePageContent({
           ref={recommendationsTip.ref}
         >
           <Recommendations
+            key={
+              'recommendations' +
+              (recommendations?.summary?.totalRecommendations?.toString() || 0)
+            }
             recommendations={recommendations}
             isLoading={recommendationsLoading}
             error={recommendationsError}
+            refetch={refetch}
           />
         </motion.div>
       )}

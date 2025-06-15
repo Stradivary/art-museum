@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { usePreference } from '@/presentation/hooks/usePreference'
 import { useTheme } from '@/presentation/hooks/useTheme'
 import { TeachingTipTrackingService } from '@/infrastructure/services/TeachingTipTrackingService'
+import { ThemeToggle } from '@/presentation/components/shared/ThemeToggle'
 
 export function SettingsSection() {
   const { t } = useTranslation()
@@ -34,21 +35,15 @@ export function SettingsSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-sm">{t('settings.darkMode', 'Dark Mode')}</span>
-        <Switch
-          checked={pref.theme === 'dark'}
-          onCheckedChange={(checked) => {
-            const theme = checked ? 'dark' : 'light'
-            setTheme(theme)
-            updatePreference({ theme })
-          }}
-        />
+
+        <ThemeToggle />
       </div>
       <div className="flex items-center justify-between">
         <span className="text-sm">{t('settings.language', 'Language')}</span>
         <Select
           value={pref.language}
           onChange={(e) => updatePreference({ language: e.target.value })}
-          className="w-28"
+          className="w-38"
         >
           <option value="en">{t('settings.english', 'English')}</option>
           <option value="id">{t('settings.bahasa', 'Bahasa Indonesia')}</option>

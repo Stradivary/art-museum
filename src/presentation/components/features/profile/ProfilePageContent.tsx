@@ -29,8 +29,13 @@ function getFingerprint() {
 }
 
 export const ProfilePageContent = () => {
-  const { userStats, featureStatuses, pwaStatus, handleInstallApp } =
-    useProfileViewModel()
+  const {
+    userStats,
+    featureStatuses,
+    pwaStatus,
+    handleInstallApp,
+    clearSavedArtworks,
+  } = useProfileViewModel()
 
   // Register teaching tips
   const profileTip = useRegisterTeachingTip<HTMLDivElement>({
@@ -87,10 +92,9 @@ export const ProfilePageContent = () => {
 
   const handleClear = async () => {
     setClearLoading(true)
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('savedArtworks')
-      localStorage.removeItem('dislikedArtworks')
-    }
+
+    await clearSavedArtworks()
+
     setClearLoading(false)
   }
 

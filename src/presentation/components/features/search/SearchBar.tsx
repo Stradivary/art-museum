@@ -6,6 +6,7 @@ import { Search, X } from 'lucide-react'
 import { useDebounce } from '@/presentation/hooks/useDebounce'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
+import { Input } from '../../ui/input'
 
 interface SearchBarProps {
   initialQuery?: string
@@ -29,11 +30,11 @@ export function SearchBar({
     onSearch(debouncedQuery)
 
     // Update URL with query parameter
-    if (debouncedQuery) {
-      navigate(`/?q=${encodeURIComponent(debouncedQuery)}`)
-    } else {
-      navigate('/')
-    }
+    // if (debouncedQuery) {
+    //   navigate(`/?q=${encodeURIComponent(debouncedQuery)}`)
+    // } else {
+    //   navigate('/')
+    // }
   }, [debouncedQuery, onSearch, navigate])
 
   const clearSearch = () => {
@@ -51,10 +52,10 @@ export function SearchBar({
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
           <Search className="text-border h-3 w-3 transition-colors duration-200" />
         </div>
-        <input
+        <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="text-foreground w-full rounded-full bg-transparent p-3 pr-10 pl-10 placeholder-gray-500 focus:ring-0 focus:outline-none"
+          className="text-foreground w-full rounded-full bg-transparent p-5 pr-10 pl-10 placeholder-gray-500 focus:outline-none"
           placeholder={t(
             'search.placeholder',
             'Search for artworks, artists, movements...'

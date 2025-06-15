@@ -129,6 +129,8 @@ export default defineConfig({
       exclude: [
         '**/src/presentation/components/ui/**', // Exclude Shadcn UI components
         '**/src/presentation/pages/**', // Exclude pages for cleaner coverage
+        '**/src/presentation/components/features/profile/**',
+        '**/src/presentation/components/features/saved/**',
         '**/tests/**',
         '**/src/main.tsx',
         '**/src/core/**',

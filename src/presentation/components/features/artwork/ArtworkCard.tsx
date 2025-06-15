@@ -45,7 +45,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
       style={{
-        viewTransitionName: 'artwork-card-' + artwork.id,
+        viewTransitionName: `artwork-card-${artwork.id}`,
       }}
     >
       <div className="block h-full">
@@ -62,7 +62,7 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
                 alt={artwork.title ?? 'Artwork'}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                className={`object-cover transition-all duration-200 hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                 style={{
                   viewTransitionName: 'artwork-image-' + artwork.id,
                 }}
@@ -82,22 +82,20 @@ export function ArtworkCard({ artwork }: Readonly<ArtworkCardProps>) {
           <div className="absolute top-2 right-2 flex gap-1">
             <LikeButton
               artwork={artwork}
-              mode="compact"
+              variant="icon"
               artworkId={artwork.id.toString()}
-              showLabel={false}
-              className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              className="cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             />
             <DislikeButton
               artwork={artwork}
-              mode="compact"
+              variant="icon"
               artworkId={artwork.id.toString()}
-              showLabel={false}
-              className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              className="cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             />
           </div>
         </div>
 
-        <div className="p-3">
+        <div className="cursor-pointer p-3">
           <h2
             className="text-foreground line-clamp-1 font-medium"
             style={{

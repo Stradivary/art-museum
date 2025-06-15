@@ -21,6 +21,28 @@ const getAllSavedArtworksUseCase = new GetAllSavedArtworksUseCase(
  */
 export function useSavedArtworkViewModel() {
   const queryClient = useQueryClient()
+  // Responsive grid columns and page size
+  const [gridCols, setGridCols] = useState(2)
+  const [pageSize, setPageSize] = useState(8)
+
+  useEffect(() => {
+    function updateGrid() {
+      if (window.innerWidth >= 1024) {
+        setGridCols(4)
+        setPageSize(12)
+      } else if (window.innerWidth >= 768) {
+        setGridCols(3)
+        setPageSize(9)
+      } else {
+        setGridCols(2)
+        setPageSize(8)
+      }
+    }
+    updateGrid()
+    window.addEventListener('resize', updateGrid)
+    return () => window.removeEventListener('resize', updateGrid)
+  }, [])
+
   const [isClient, setIsClient] = useState(false)
 
   // Client-side only code to prevent hydration errors
@@ -57,6 +79,8 @@ export function useSavedArtworkViewModel() {
   }
 
   return {
+    gridCols,
+    pageSize,
     savedArtworks,
     isLoading,
     saveArtwork,

@@ -21,7 +21,7 @@ export function TeachingTipTrigger({
   className,
   children,
   tipId,
-  showAll = false,
+  showAll = true,
 }: TeachingTipTriggerProps) {
   const { showTip, showAllTips, isActive } = useTeachingTip()
 

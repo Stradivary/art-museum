@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useImageViewer } from './useImageViewer'
+import { TeachingTipTrigger, useRegisterTeachingTip } from './teachingTip'
+import { usePreference } from '@/presentation/hooks/usePreference'
 
 interface ImageViewerProps {
   src: string
@@ -20,6 +22,34 @@ interface ImageViewerProps {
 }
 
 export function ImageViewer({ src, alt, className, style }: ImageViewerProps) {
+  const { preference } = usePreference()
+  // Register teaching tips for zoom, rotate, and fullscreen buttons
+  const zoomInTip = useRegisterTeachingTip({
+    id: 'image-viewer-zoom-in',
+    title: 'Zoom In',
+    description: 'Click to zoom in on the artwork image for a closer look.',
+    position: 'bottom',
+  })
+  const zoomOutTip = useRegisterTeachingTip({
+    id: 'image-viewer-zoom-out',
+    title: 'Zoom Out',
+    description: 'Click to zoom out and see more of the artwork.',
+    position: 'bottom',
+  })
+  const rotateTip = useRegisterTeachingTip({
+    id: 'image-viewer-rotate',
+    title: 'Rotate Image',
+    description: 'Click to rotate the artwork image.',
+    position: 'bottom',
+  })
+  const fullscreenTip = useRegisterTeachingTip({
+    id: 'image-viewer-fullscreen',
+    title: 'Fullscreen Mode',
+    description:
+      'Click to enter or exit fullscreen mode for an immersive view.',
+    position: 'left',
+  })
+
   const [open, setOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const dialogRef = useRef<HTMLDivElement | null>(null)
@@ -113,22 +143,48 @@ export function ImageViewer({ src, alt, className, style }: ImageViewerProps) {
               )}
             >
               <div className="flex gap-2">
-                <Button size="icon" variant="ghost" onClick={zoomIn}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={zoomIn}
+                  aria-label="Zoom In"
+                  ref={zoomInTip.ref as React.RefObject<HTMLButtonElement>}
+                  data-teaching-tip-id="image-viewer-zoom-in"
+                >
                   <ZoomIn className="h-5 w-5" />
                 </Button>
-                <Button size="icon" variant="ghost" onClick={zoomOut}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={zoomOut}
+                  aria-label="Zoom Out"
+                  ref={zoomOutTip.ref as React.RefObject<HTMLButtonElement>}
+                  data-teaching-tip-id="image-viewer-zoom-out"
+                >
                   <ZoomOut className="h-5 w-5" />
                 </Button>
-                <Button size="icon" variant="ghost" onClick={rotate}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={rotate}
+                  aria-label="Rotate"
+                  ref={rotateTip.ref as React.RefObject<HTMLButtonElement>}
+                  data-teaching-tip-id="image-viewer-rotate"
+                >
                   <RotateCw className="h-5 w-5" />
                 </Button>
               </div>
               <div
                 className={cn(
                   'flex items-center gap-2',
-                  isFullscreen ? ' ' : 'mr-10'
+                  isFullscreen ? ' ' : 'mr-6'
                 )}
               >
+                {preference?.showTeachingTips && (
+                  <TeachingTipTrigger variant="button" showAll size="sm">
+                    Help
+                  </TeachingTipTrigger>
+                )}
                 <Button
                   size="icon"
                   variant="ghost"
@@ -136,6 +192,8 @@ export function ImageViewer({ src, alt, className, style }: ImageViewerProps) {
                   aria-label={
                     isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'
                   }
+                  ref={fullscreenTip.ref as React.RefObject<HTMLButtonElement>}
+                  data-teaching-tip-id="image-viewer-fullscreen"
                 >
                   {isFullscreen ? (
                     <Minimize2 className="h-5 w-5" />

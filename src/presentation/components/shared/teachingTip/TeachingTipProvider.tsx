@@ -7,6 +7,11 @@ import type {
   TeachingTipProviderProps,
 } from '@/types/teachingTip'
 import { TeachingTipTrackingService } from '@/infrastructure/services/TeachingTipTrackingService'
+import { v4 as uuidv4 } from 'uuid'
+
+interface TeachingTipProviderPropsWithId extends TeachingTipProviderProps {
+  id?: string
+}
 
 const TeachingTipContext = createContext<TeachingTipContextType | null>(null)
 
@@ -16,7 +21,8 @@ export function TeachingTipProvider({
   children,
   onComplete,
   onSkip,
-}: TeachingTipProviderProps) {
+  id = uuidv4(), // generate a unique id if not provided
+}: TeachingTipProviderPropsWithId) {
   const [tips, setTips] = useState<Map<string, TeachingTip>>(new Map())
   const [isActive, setIsActive] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -71,8 +77,8 @@ export function TeachingTipProvider({
   }, [tips])
 
   const nextTip = useCallback(() => {
+    // Mark current tip as shown
     if (currentTip) {
-      // Mark current tip as shown
       TeachingTipTrackingService.markTipAsShown(currentTip.id)
     }
 
@@ -83,25 +89,26 @@ export function TeachingTipProvider({
 
       setCurrentIndex(nextIndex)
       setCurrentTip(nextTip || null)
-    } else {
-      // Last tip, close the sequence
-      setIsActive(false)
-      setCurrentTip(null)
-      setTipSequence([])
-      setCurrentIndex(0)
-      onComplete?.()
+      return
     }
+    // Last tip, close the sequence
+    setIsActive(false)
+    setCurrentTip(null)
+    setTipSequence([])
+    setCurrentIndex(0)
+    onComplete?.()
   }, [currentIndex, tipSequence, tips, onComplete, currentTip])
 
   const previousTip = useCallback(() => {
-    if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1
-      const prevTipId = tipSequence[prevIndex]
-      const prevTip = tips.get(prevTipId)
-
-      setCurrentIndex(prevIndex)
-      setCurrentTip(prevTip || null)
+    if (currentIndex <= 0) {
+      return
     }
+    const prevIndex = currentIndex - 1
+    const prevTipId = tipSequence[prevIndex]
+    const prevTip = tips.get(prevTipId)
+
+    setCurrentIndex(prevIndex)
+    setCurrentTip(prevTip || null)
   }, [currentIndex, tipSequence, tips])
 
   const skipTip = useCallback(() => {
@@ -143,6 +150,21 @@ export function TeachingTipProvider({
     [tips]
   )
 
+  const restartTips = useCallback(() => {
+    TeachingTipTrackingService.resetAllTips()
+    setIsActive(false)
+    setCurrentIndex(0)
+  }, [])
+
+  // Add restartCurrentTip for single-tip restart
+  const restartCurrentTip = useCallback(() => {
+    TeachingTipTrackingService.resetTip(currentTip?.id || '')
+    if (!currentTip) return
+    setCurrentIndex(0)
+    setCurrentTip(tips.get(currentTip.id) || null)
+    setIsActive(true)
+  }, [currentTip, tips])
+
   // Handle keyboard events
   useEffect(() => {
     if (!isActive) return
@@ -163,6 +185,7 @@ export function TeachingTipProvider({
 
   const contextValue = useMemo<TeachingTipContextType>(
     () => ({
+      id,
       isActive,
       currentTip,
       currentIndex,
@@ -178,8 +201,11 @@ export function TeachingTipProvider({
       closeTips,
       isTipRegistered,
       getTipById,
+      restartTips,
+      restartCurrentTip, // add to context
     }),
     [
+      id,
       isActive,
       currentTip,
       currentIndex,
@@ -195,6 +221,8 @@ export function TeachingTipProvider({
       closeTips,
       isTipRegistered,
       getTipById,
+      restartTips,
+      restartCurrentTip,
     ]
   )
 

@@ -1,16 +1,17 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useArtworkDetailViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
-import { ArtworkDetailSkeleton } from './ArtworkDetailSkeleton'
-import { SafeHtmlRenderer } from '../../shared/SafeHtmlRenderer'
-import { useNavigate } from 'react-router'
-import { Button } from '@/presentation/components/ui/button'
 import { shouldShowOfflineFallback } from '@/lib/networkUtils'
-import { OfflineFallback } from '../OfflineFallback'
-import { LikeButton } from '../../shared/LikeButton'
-import { ImageViewer } from '../../shared/ImageViewer'
+import { Button } from '@/presentation/components/ui/button'
 import { useRegisterTeachingTip } from '@/presentation/hooks/useRegisterTeachingTip'
+import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router'
+import { useArtworkDetailViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
+import { ImageViewer } from '../../shared/ImageViewer'
+import { LikeButton } from '../../shared/LikeButton'
+import { SafeHtmlRenderer } from '../../shared/SafeHtmlRenderer'
+import { OfflineFallback } from '../OfflineFallback'
+import { ArtworkDetailSkeleton } from './ArtworkDetailSkeleton'
+import { TeachingTipProvider } from '../../shared/teachingTip'
 
 interface ArtworkDetailContentProps {
   id: string
@@ -22,14 +23,31 @@ interface ArtworkDetailContentProps {
 export function ArtworkDetailContent({
   id,
 }: Readonly<ArtworkDetailContentProps>) {
-  // Register teaching tip for artwork detail page
-  const detailTip = useRegisterTeachingTip<HTMLDivElement>({
-    id: 'artwork-detail',
-    title: 'Artwork Details',
+  // // Register teaching tip for artwork detail page
+  // const detailTip = useRegisterTeachingTip<HTMLDivElement>({
+  //   id: 'artwork-detail',
+  //   title: 'Artwork Details & Actions',
+  //   description:
+  //     'This page shows the selected artwork with its image, title, artist, year, and more. You can zoom the image, mark as favorite, and explore additional information below.',
+  //   position: 'top',
+  // })
+  // Register teaching tip for image zoom button
+  const imageZoomTip = useRegisterTeachingTip<HTMLButtonElement>({
+    id: 'artwork-image-zoom',
+    title: 'Zoom Artwork Image',
     description:
-      'Explore detailed information about the selected artwork, including its image, artist, and history.',
-    position: 'top',
+      'Click this button to open the image viewer. In the viewer, you can zoom, rotate, pan, and view the artwork in fullscreen.',
+    position: 'bottom',
   })
+  // Register teaching tip for favorite button
+  const favoriteTip = useRegisterTeachingTip<HTMLButtonElement>({
+    id: 'artwork-favorite',
+    title: 'Favorite Artwork',
+    description:
+      'Click the heart button to add or remove this artwork from your favorites. You can view your favorites in your profile.',
+    position: 'left',
+  })
+
   const navigate = useNavigate()
   const { artwork, isLoading, error } = useArtworkDetailViewModel(
     Number.parseInt(id)
@@ -61,7 +79,6 @@ export function ArtworkDetailContent({
       style={{
         viewTransitionName: artwork ? 'artwork-card-' + artwork.id : undefined,
       }}
-      ref={detailTip.ref}
     >
       {isLoading || !artwork ? (
         <ArtworkDetailSkeleton />
@@ -69,12 +86,21 @@ export function ArtworkDetailContent({
         <div>
           <div className="bg-muted relative h-[50vh] w-full">
             {artwork.image_id ? (
-              <ImageViewer
-                src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
-                alt={artwork.title ?? 'Artwork'}
-                className="h-full w-full object-contain"
-                style={{ viewTransitionName: 'artwork-image-' + artwork.id }}
-              />
+              <span
+                ref={imageZoomTip.ref}
+                data-teaching-tip-id="artwork-image-zoom"
+              >
+                <TeachingTipProvider>
+                  <ImageViewer
+                    src={`https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`}
+                    alt={artwork.title ?? 'Artwork'}
+                    className="h-full w-full object-contain"
+                    style={{
+                      viewTransitionName: 'artwork-image-' + artwork.id,
+                    }}
+                  />
+                </TeachingTipProvider>
+              </span>
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 <p className="text-gray-500">No image available</p>
@@ -100,13 +126,18 @@ export function ArtworkDetailContent({
                   {artwork.title}
                 </h1>
                 <div className="flex items-center gap-2">
-                  <LikeButton
-                    artwork={artwork}
-                    mode="default"
-                    size="lg"
-                    artworkId={artwork.id.toString()}
-                    className="px-6"
-                  />
+                  <span
+                    ref={favoriteTip.ref}
+                    data-teaching-tip-id="artwork-favorite"
+                  >
+                    <LikeButton
+                      artwork={artwork}
+                      variant="labeled"
+                      size="lg"
+                      artworkId={artwork.id.toString()}
+                      className="px-6"
+                    />
+                  </span>
                   {/* <DislikeButton
                     artwork={artwork}
                     mode="default"
