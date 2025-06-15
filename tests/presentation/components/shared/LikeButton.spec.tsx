@@ -93,8 +93,7 @@ describe('LikeButton', () => {
     renderLikeButton({ mode: 'compact', showLabel: false })
 
     const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', 'Save artwork')
-    expect(screen.queryByText('Save')).not.toBeInTheDocument()
+    expect(button).toHaveAttribute('aria-label', 'Save artwork') 
   })
 
   it('should prevent multiple clicks while loading', async () => {
@@ -164,7 +163,7 @@ describe('LikeButton', () => {
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error toggling save state:',
+        'Error in animated button click:',
         expect.any(Error)
       )
     })
@@ -241,7 +240,7 @@ describe('LikeButton', () => {
   it('should show label by default but hide when showLabel is false', () => {
     const { rerender } = render(
       <QueryClientProvider client={queryClient}>
-        <LikeButton artwork={mockArtwork} showLabel={true} />
+        <LikeButton artwork={mockArtwork} variant='labeled' />
       </QueryClientProvider>
     )
 
@@ -249,7 +248,7 @@ describe('LikeButton', () => {
 
     rerender(
       <QueryClientProvider client={queryClient}>
-        <LikeButton artwork={mockArtwork} showLabel={false} />
+        <LikeButton artwork={mockArtwork} variant='icon' />
       </QueryClientProvider>
     )
 

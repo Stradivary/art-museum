@@ -25,6 +25,7 @@ interface RecommendationsProps {
   recommendations: RecommendationResult | null | undefined
   isLoading: boolean
   error?: Error | null
+  refetch?: () => void
 }
 
 /**
@@ -34,6 +35,7 @@ export function Recommendations({
   recommendations,
   isLoading,
   error,
+  refetch,
 }: Readonly<RecommendationsProps>) {
   const { t } = useTranslation()
   if (isLoading) {
@@ -107,6 +109,13 @@ export function Recommendations({
             'Save some artworks you love to get personalized recommendations!'
           )}
         </p>
+        <Button
+          variant="secondary"
+          className="mb-4 w-full"
+          onClick={() => refetch?.()}
+        >
+          {t('recommendations.refresh', 'Refresh Recommendations')}
+        </Button>
         <div className="text-foreground0 flex items-center text-sm">
           <span>
             💡{' '}

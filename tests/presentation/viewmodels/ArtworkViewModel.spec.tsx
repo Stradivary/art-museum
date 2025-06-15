@@ -263,9 +263,12 @@ describe('ArtworkViewModel', () => {
       const mockExecute = vi.fn().mockRejectedValue(mockError)
       mockGetRecommendationsUseCase.prototype.execute = mockExecute
 
-      const { result } = renderHook(() => useRecommendationsViewModel(), {
-        wrapper: createWrapper,
-      })
+      const { result } = renderHook(
+        () => useRecommendationsViewModel({ enabled: true }),
+        {
+          wrapper: createWrapper,
+        }
+      )
 
       await waitFor(() => {
         expect(result.current.error).toBeTruthy()

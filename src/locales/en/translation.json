@@ -45,19 +45,23 @@
     "title": "App Features",
     "offline": {
       "name": "Offline Mode",
-      "description": "Browse artworks even when you are not connected to the internet."
+      "description": "Browse artworks even when you are not connected to the internet.",
+      "inactive": "Install the app to unlock offline capabilities."
     },
     "imageCaching": {
       "name": "Image Caching",
-      "description": "Artworks images are cached for faster loading and offline access."
+      "description": "Artworks images are cached for faster loading and offline access.",
+      "inactive": "Install the app to unlock image caching."
     },
     "pwa": {
       "name": "PWA Installation",
-      "description": "Install the app to your device for a native-like experience."
+      "description": "Install the app to your device for a native-like experience.",
+      "inactive": "App content is stored on your device."
     },
     "notifications": {
       "name": "Notifications",
-      "description": "Get notified about new artworks and updates."
+      "description": "Get notified about new artworks and updates.",
+      "inactive": "Install the app to unlock notifications."
     }
   },
   "saved": {

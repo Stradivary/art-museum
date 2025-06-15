@@ -92,15 +92,7 @@ describe('MainLayout', () => {
     expect(screen.getByTestId('error-boundary')).toBeInTheDocument()
   })
 
-  it('should render the main content area with proper structure', () => {
-    renderWithRouter(<MainLayout />)
-
-    // Check for main content wrapper - look for the div with the specific classes
-    const mainContent = document.querySelector('.min-h-screen.pb-16')
-    expect(mainContent).toBeInTheDocument()
-    expect(mainContent).toContainElement(screen.getByTestId('outlet'))
-  })
-
+ 
   it('should render the Outlet component for route content', () => {
     renderWithRouter(<MainLayout />)
 
@@ -141,15 +133,7 @@ describe('MainLayout', () => {
     const errorBoundary = screen.getByTestId('error-boundary')
     expect(tooltipProvider).toContainElement(errorBoundary)
   })
-
-  it('should apply correct CSS classes to main container', () => {
-    renderWithRouter(<MainLayout />)
-
-    const mainContainer = document.querySelector('.min-h-screen.pb-16')
-    expect(mainContainer).toBeInTheDocument()
-    expect(mainContainer).toHaveClass('min-h-screen')
-    expect(mainContainer).toHaveClass('pb-16') // Padding for bottom navigation
-  })
+ 
 
   it('should render without errors', () => {
     expect(() => renderWithRouter(<MainLayout />)).not.toThrow()

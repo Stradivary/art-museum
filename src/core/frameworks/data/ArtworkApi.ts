@@ -64,7 +64,7 @@ export class ArtworkApi {
     // Add filters using the correct API format for boolean queries
     if (filters) {
       const activeFilters = Object.entries(filters).filter(([, value]) => value)
-      
+
       if (activeFilters.length > 0) {
         // For multiple filters, use bool[must][] syntax
         if (activeFilters.length > 1) {

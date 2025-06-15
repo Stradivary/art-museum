@@ -20,6 +20,14 @@
     "saveAria": "Simpan karya seni",
     "removeAria": "Hapus dari yang tersimpan"
   },
+  "dislikeButton": {
+    "save": "Hindari",
+    "saved": "Tidak Disukai",
+    "saving": "Menyimpan...",
+    "removing": "Menghapus...",
+    "saveAria": "Simpan kedalam tidak disukai",
+    "removeAria": "Hapus dari yang tersimpan"
+  },
   "pwa": {
     "installed": "Aplikasi Terpasang",
     "installing": "Menginstal...",
@@ -45,15 +53,18 @@
     "title": "Fitur Aplikasi",
     "offline": {
       "name": "Mode Offline",
-      "description": "Jelajahi karya seni bahkan saat Anda tidak terhubung ke internet."
+      "description": "Jelajahi karya seni bahkan saat Anda tidak terhubung ke internet.",
+      "inactive": "Install aplikasi untuk mengaktifkan mode offline."
     },
     "imageCaching": {
       "name": "Cache Gambar",
-      "description": "Gambar karya seni disimpan untuk pemuatan lebih cepat dan akses offline."
+      "description": "Gambar karya seni disimpan untuk pemuatan lebih cepat dan akses offline.",
+      "inactive": "Install aplikasi untuk mengaktifkan cache gambar."
     },
     "pwa": {
       "name": "Instalasi PWA",
-      "description": "Pasang aplikasi ke perangkat Anda untuk pengalaman seperti aplikasi native."
+      "description": "Aplikasi diinstal di perangkat Anda untuk pengalaman yang lebih baik.",
+      "inactive": "Aplikasi berjalan sementara di perangkat Anda."
     },
     "notifications": {
       "name": "Notifikasi",

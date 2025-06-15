@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { type SavedArtwork } from '@/core/domain/entities/Artwork'
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react'
-import { type SavedArtwork } from '@/core/domain/entities/Artwork'
-import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
-import { useNavigate, useLocation } from 'react-router'
-import Image from '../../shared/Image'
-import { Button } from '@/presentation/components/ui/button'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation, useNavigate } from 'react-router'
+import { usePrefetchArtworkViewModel } from '../../../viewmodels/ArtworkDetailViewModel'
+import { AnimatedButton } from '../../shared/AnimatedButton'
+import Image from '../../shared/Image'
 
 interface SavedArtworkCardProps {
   artwork: SavedArtwork
@@ -73,7 +73,7 @@ export function SavedArtworkCard({
       onHoverStart={() => setIsHovering(true)}
       onHoverEnd={() => setIsHovering(false)}
       style={{
-        viewTransitionName: 'artwork-card-' + artwork.id,
+        viewTransitionName: `artwork-card-${artwork.id}`,
       }}
     >
       <div className="block">
@@ -90,7 +90,7 @@ export function SavedArtworkCard({
                 alt={artwork.title ?? t('saved.noImageAlt', 'Artwork')}
                 fill
                 sizes="(max-width: 768px) 50vw, 33vw"
-                className={`object-cover transition-opacity duration-200 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                className={`object-cover transition-all duration-200 hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                 style={{
                   viewTransitionName: 'artwork-image-' + artwork.id,
                 }}
@@ -106,19 +106,23 @@ export function SavedArtworkCard({
             </div>
           )}
 
-          {/* Delete button overlay */}
-          <Button
-            onClick={handleDelete}
-            variant="destructive"
-            size="icon"
-            className="bg-card dark:bg-card hover:bg-accent absolute top-2 right-2 h-8 w-8 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-            aria-label={t('saved.deleteAria', 'Delete saved artwork')}
-          >
-            <Trash2 className="text-primary h-4 w-4" />
-          </Button>
+          <div className="absolute top-2 right-2 flex gap-1">
+            <AnimatedButton
+              icon={Trash2}
+              isActive={false} // Always false since it's not a toggle
+              onClick={handleDelete}
+              activeLabel="" // Not used since isActive is always false
+              inactiveLabel={t('delete.label', 'Delete')}
+              loadingActiveLabel="" // Not used
+              loadingInactiveLabel={t('delete.deleting', 'Deleting...')}
+              variant="icon"
+              className={`border-red-600 bg-red-600 text-white hover:border-red-700 hover:bg-red-700`}
+              aria-label={t('delete.aria', 'Delete item')}
+            />
+          </div>
         </div>
 
-        <div className="p-3">
+        <div className="cursor-pointer p-3">
           <h2
             className="text-foreground line-clamp-1 font-medium"
             style={{

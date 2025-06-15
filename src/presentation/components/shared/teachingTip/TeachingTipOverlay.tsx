@@ -121,6 +121,8 @@ export function TeachingTipOverlay() {
     previousTip,
     skipAllTips,
     closeTips,
+    restartTips,
+    restartCurrentTip, // use restartCurrentTip for single tip
   } = useTeachingTip()
 
   const [highlightBox, setHighlightBox] = useState<HighlightBox | null>(null)
@@ -199,6 +201,22 @@ export function TeachingTipOverlay() {
 
   const isFirstTip = currentIndex === 0
   const isLastTip = currentIndex === totalTips - 1
+
+  const tipsEnding = isLastTip ? (
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={restartTips}>
+        Restart
+      </Button>
+      {/* <Button size="sm" onClick={closeTips}>
+        {currentTip.finishButtonText || 'Finish'}
+      </Button> */}
+    </div>
+  ) : (
+    <Button size="sm" onClick={nextTip}>
+      {currentTip.nextButtonText || 'Next'}
+      <ChevronRight className="ml-1 h-3 w-3" />
+    </Button>
+  )
 
   return createPortal(
     <AnimatePresence>
@@ -290,7 +308,7 @@ export function TeachingTipOverlay() {
           </Button>
 
           {/* Content */}
-          <div className="pr-8">
+          <div className="pr-1">
             <h3 className="mb-2 text-sm font-semibold">{currentTip.title}</h3>
             <p className="text-muted-foreground mb-4 text-sm">
               {currentTip.description}
@@ -334,12 +352,23 @@ export function TeachingTipOverlay() {
                 )}
               </div>
 
-              <Button size="sm" onClick={isLastTip ? closeTips : nextTip}>
-                {isLastTip
-                  ? currentTip.finishButtonText || 'Finish'
-                  : currentTip.nextButtonText || 'Next'}
-                {!isLastTip && <ChevronRight className="ml-1 h-3 w-3" />}
-              </Button>
+              {/* Show Restart only for single tip mode on finish */}
+              {isLastTip && totalTips === 1 ? (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={restartCurrentTip}
+                  >
+                    Restart
+                  </Button>
+                  <Button size="sm" onClick={closeTips}>
+                    {currentTip.finishButtonText || 'Finish'}
+                  </Button>
+                </div>
+              ) : (
+                tipsEnding
+              )}
             </div>
           </div>
         </motion.div>
