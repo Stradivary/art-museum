@@ -93,7 +93,7 @@ jobs:
             fi
             
             RESPONSE=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
-              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=Stradivary_bakso-app")
+              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=Stradivary_art-museum")
             
             STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
             
