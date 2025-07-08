@@ -37,7 +37,7 @@ describe('ArtworkRepositoryImpl', () => {
 
       mockArtworkApi.fetchArtworks.mockResolvedValue(mockApiResponse)
 
-      const result = await repository.getArtworks(page, limit, filters)
+      const result = await repository.getArtworks(page, limit)
 
       expect(mockArtworkApi.fetchArtworks).toHaveBeenCalledWith(page, limit)
       expect(result).toEqual({
@@ -200,6 +200,102 @@ describe('ArtworkRepositoryImpl', () => {
         undefined
       )
       expect(result).toEqual(searchResults)
+    })
+
+    describe('getArtworkBasicById', () => {
+      beforeEach(() => {
+        // Add the missing mock for fetchArtworkBasicById
+        mockArtworkApi.fetchArtworkBasicById = vi.fn()
+      })
+
+      it('should fetch basic artwork by id successfully', async () => {
+        const artworkId = 456
+        mockArtworkApi.fetchArtworkBasicById.mockResolvedValue(mockArtwork)
+
+        const result = await repository.getArtworkBasicById(artworkId)
+
+        expect(mockArtworkApi.fetchArtworkBasicById).toHaveBeenCalledWith(artworkId)
+        expect(result).toEqual(mockArtwork)
+      })
+
+      it('should handle API errors', async () => {
+        const artworkId = 456
+        const error = new Error('Basic artwork not found')
+        mockArtworkApi.fetchArtworkBasicById.mockRejectedValue(error)
+
+        await expect(repository.getArtworkBasicById(artworkId)).rejects.toThrow(
+          'Basic artwork not found'
+        )
+      })
+
+      it('should log and rethrow errors', async () => {
+        const consoleErrorSpy = vi
+          .spyOn(console, 'error')
+          .mockImplementation(() => {})
+        const artworkId = 456
+        const error = new Error('Network Error')
+        mockArtworkApi.fetchArtworkBasicById.mockRejectedValue(error)
+
+        await expect(repository.getArtworkBasicById(artworkId)).rejects.toThrow(
+          'Network Error'
+        )
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          `Repository error fetching basic artwork with id ${artworkId}:`,
+          error
+        )
+
+        consoleErrorSpy.mockRestore()
+      })
+
+      describe('getArtworkDetailById', () => {
+        beforeEach(() => {
+        // Add the missing mock for fetchArtworkDetailById
+        mockArtworkApi.fetchArtworkDetailById = vi.fn()
+        })
+
+        it('should fetch detailed artwork by id successfully', async () => {
+        const artworkId = 789
+        mockArtworkApi.fetchArtworkDetailById.mockResolvedValue(mockArtwork)
+
+        const result = await repository.getArtworkDetailById(artworkId)
+
+        expect(mockArtworkApi.fetchArtworkDetailById).toHaveBeenCalledWith(artworkId)
+        expect(result).toEqual(mockArtwork)
+        })
+
+        it('should handle API errors', async () => {
+        const artworkId = 789
+        const error = new Error('Detailed artwork not found')
+        mockArtworkApi.fetchArtworkDetailById.mockRejectedValue(error)
+
+        await expect(repository.getArtworkDetailById(artworkId)).rejects.toThrow(
+          'Detailed artwork not found'
+        )
+        })
+
+        it('should log and rethrow errors', async () => {
+        const consoleErrorSpy = vi
+          .spyOn(console, 'error')
+          .mockImplementation(() => {})
+        const artworkId = 789
+        const error = new Error('Network Error')
+        mockArtworkApi.fetchArtworkDetailById.mockRejectedValue(error)
+
+        await expect(repository.getArtworkDetailById(artworkId)).rejects.toThrow(
+          'Network Error'
+        )
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          `Repository error fetching detailed artwork with id ${artworkId}:`,
+          error
+        )
+
+        consoleErrorSpy.mockRestore()
+        })
+
+
+      })
     })
   })
 })

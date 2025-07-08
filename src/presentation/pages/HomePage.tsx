@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { HomePageContent } from '../components/features/home/HomePageContent'
 import { PageHeader } from '../components/shared/PageHeader'
 import { SearchBarSkeleton } from '../components/shared/Loading'
+
 /**
  * Home page container component
  */
@@ -19,6 +20,8 @@ export default function HomePage() {
       <PageHeader title="Art Institute of Chicago" />
 
       <div className="mx-auto max-w-7xl p-4">
+        {/* Teaching Tip Demo - for testing */}
+        {/* <TeachingTipExample /> */}
         <Suspense fallback={<SearchBarSkeleton />}>
           <HomePageContent />
         </Suspense>

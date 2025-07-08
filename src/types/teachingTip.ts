@@ -32,6 +32,8 @@ export interface TeachingTipContextType {
   // Utilities
   isTipRegistered: (id: string) => boolean
   getTipById: (id: string) => TeachingTip | undefined
+  restartTips: () => void
+  restartCurrentTip: () => void
 }
 
 export interface TeachingTipProviderProps {

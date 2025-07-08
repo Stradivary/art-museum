@@ -125,12 +125,15 @@ export function useImageViewer(initialZoom = 1, initialRotation = 0) {
   const zoomOut = useCallback(() => setZoom((z) => Math.max(z - 0.2, 0.2)), [])
   const rotate = useCallback(() => {
     setRotation((prev) => {
-      if (prev === 270) {
+      const next = prev + 90
+      if (next === 360) {
         setTimeout(() => setRotation(0), 4)
+        return 360
       }
-      return prev + 90
+      return next % 360
     })
   }, [])
+
   const reset = useCallback(() => {
     setZoom(1)
     setRotation(0)

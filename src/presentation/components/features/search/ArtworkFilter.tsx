@@ -138,9 +138,9 @@ export function ArtworkFilter({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={`bg-card text-foreground h-12 w-42 rounded-full transition-all duration-200 hover:bg-gray-50 ${
+              className={`bg-card text-card-foreground hover:bg-primary hover:text-primary-foreground h-12 w-42 cursor-pointer rounded-full transition-all duration-200 ${
                 hasActiveFilters
-                  ? 'border-[#a20000] text-[#a20000] shadow-sm'
+                  ? 'border-primary text-primary shadow-sm'
                   : 'border-gray-200'
               }`}
             >

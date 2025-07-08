@@ -23,4 +23,6 @@ export interface ISavedArtworkRepository {
    * Check if an artwork is saved
    */
   isArtworkSaved(id: number): Promise<boolean>
+
+  clearArtworks(): Promise<void>
 }

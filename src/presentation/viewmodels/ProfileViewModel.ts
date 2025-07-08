@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { usePWAInstall } from '@/presentation/hooks/usePWAInstall'
 import { useSavedArtworkViewModel } from '@/presentation/viewmodels/SavedArtworkViewModel'
+import { useTranslation } from 'react-i18next'
+import { ClearSavedArtworkUseCase } from '@/core/application/usecases/savedArtwork/ClearSavedArtworkUseCase'
+import { savedArtworkRepository } from '@/infrastructure/repositories/SavedArtworkRepositoryImpl'
 
 export interface ProfileFeatureStatus {
   name: string
@@ -9,7 +12,12 @@ export interface ProfileFeatureStatus {
   description: string
 }
 
+const clearSavedArtworkUseCase = new ClearSavedArtworkUseCase(
+  savedArtworkRepository
+)
+
 export const useProfileViewModel = () => {
+  const { t } = useTranslation()
   const { isInstallable, isInstalled, installApp } = usePWAInstall()
   const { savedArtworks } = useSavedArtworkViewModel()
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -61,18 +69,6 @@ export const useProfileViewModel = () => {
     return 'caches' in window
   }
 
-  // Check if local storage is working
-  const isLocalStorageWorking = (): boolean => {
-    try {
-      const testKey = '__ls_test__'
-      localStorage.setItem(testKey, 'test')
-      localStorage.removeItem(testKey)
-      return true
-    } catch {
-      return false
-    }
-  }
-
   // Get PWA features status based on installation and capabilities
   const getFeatureStatuses = (): ProfileFeatureStatus[] => {
     const getOfflineBrowsingStatus = () => {
@@ -87,28 +83,28 @@ export const useProfileViewModel = () => {
 
     const baseFeatures: ProfileFeatureStatus[] = [
       {
-        name: 'Offline Browsing',
+        name: t('features.offline.name'),
         isEnabled: isInstalled && isServiceWorkerActive(),
         status: getOfflineBrowsingStatus(),
         description: isInstalled
-          ? 'Browse previously viewed artworks offline'
-          : 'Install the app to enable offline browsing',
+          ? t('features.offline.description')
+          : t('features.offline.inactive'),
       },
       {
-        name: 'Image Caching',
+        name: t('features.imageCaching.name'),
         isEnabled: isInstalled && isCacheStorageAvailable(),
         status: getImageCachingStatus(),
         description: isInstalled
-          ? 'Artwork images are cached for faster loading'
-          : 'Install the app to enable image caching',
+          ? t('features.imageCaching.description')
+          : t('features.imageCaching.inactive'),
       },
       {
-        name: 'Local Storage',
-        isEnabled: isLocalStorageWorking(),
-        status: isLocalStorageWorking() ? 'enabled' : 'disabled',
-        description: isLocalStorageWorking()
-          ? 'Your saved artworks are stored locally'
-          : 'Local storage is not available',
+        name: t('features.pwa.name'),
+        isEnabled: isInstalled,
+        status: isInstalled ? 'enabled' : 'disabled',
+        description: isInstalled
+          ? t('features.pwa.description')
+          : t('features.pwa.inactive'),
       },
     ]
 
@@ -120,7 +116,9 @@ export const useProfileViewModel = () => {
     return {
       savedArtworksCount: savedArtworks.length,
       isOnline,
-      connectionStatus: isOnline ? 'Online' : 'Offline',
+      connectionStatus: isOnline
+        ? t('profile.connectionStatus.online')
+        : t('profile.connectionStatus.offline'),
     }
   }
 
@@ -148,6 +146,14 @@ export const useProfileViewModel = () => {
     return 'Installation not available on this device/browser'
   }
 
+  const clearSavedArtworks = () => {
+    clearSavedArtworkUseCase.execute()
+
+    alert(
+      t('profile.clearSavedArtworks', 'Your saved artworks have been cleared.')
+    )
+  }
+
   return {
     // Data
     userStats: getUserStats(),
@@ -162,5 +168,7 @@ export const useProfileViewModel = () => {
     isInstalled,
     isInstallable,
     isInstalling,
+
+    clearSavedArtworks,
   }
 }

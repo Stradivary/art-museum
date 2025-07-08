@@ -21,7 +21,7 @@ export function MainLayout() {
         <TooltipProvider delayDuration={300}>
           <TeachingTipProvider>
             <ErrorBoundary>
-              <div className="min-h-screen pb-16">
+              <div className="h-screen overflow-auto pb-16">
                 <Suspense
                   fallback={<PageLoadingFallback text="Loading page..." />}
                 >
