@@ -40,36 +40,39 @@ export function useArtworkGridViewModel(
 
   // Check if we should use search (either has search query or active filters)
   const shouldUseSearch = searchQuery.trim() !== '' || hasActiveFilters(filters)
-  // Get view models for list and search functionality
-  // getArtworks no longer supports filters, so we only use it when there are no filters
-  const listVM = useArtworkListViewModel(pageSize)
+
+  const listVM = useArtworkListViewModel(pageSize, !shouldUseSearch)
+
   const searchVM = useArtworkSearchViewModel(
-    searchQuery || '', // Use empty if no search query but filters are present
+    searchQuery || '',
     filters,
     pageSize
   )
 
-  // Determine which data to use based on search query or filters
-  const isSearching = shouldUseSearch
-  const artworks = isSearching ? searchVM.searchResults : listVM.artworks
-  const isLoading = isSearching ? searchVM.isLoading : listVM.isLoading
-  const error = isSearching ? searchVM.error : listVM.error
-  const hasData = isSearching ? searchVM.hasData : listVM.hasData
-  const isEmpty = isSearching ? searchVM.isEmpty : listVM.artworks.length === 0
+  const artworks = shouldUseSearch ? searchVM.searchResults : listVM.artworks
+  const isLoading = shouldUseSearch ? searchVM.isLoading : listVM.isLoading
+  const error = shouldUseSearch ? searchVM.error : listVM.error
+  const hasData = shouldUseSearch ? searchVM.hasData : listVM.hasData
+  const isEmpty = shouldUseSearch
+    ? searchVM.isEmpty
+    : listVM.artworks.length === 0
 
   return {
     artworks,
     isLoading,
-    isFetchingNextPage: isSearching
+    isFetchingNextPage: shouldUseSearch
       ? searchVM.isFetchingNextPage
       : listVM.isFetchingNextPage,
-    hasNextPage: isSearching ? searchVM.hasNextPage : listVM.hasNextPage,
-    fetchNextPage: isSearching ? searchVM.fetchNextPage : listVM.fetchNextPage,
-    ref: isSearching ? searchVM.ref : listVM.ref,
+    hasNextPage: shouldUseSearch ? searchVM.hasNextPage : listVM.hasNextPage,
+    fetchNextPage: shouldUseSearch
+      ? searchVM.fetchNextPage
+      : listVM.fetchNextPage,
+    listRef: listVM.ref,
+    searchRef: searchVM.ref,
     error,
     hasData,
     isEmpty,
-    isSearching,
+    isSearching: shouldUseSearch,
     gridCols,
     pageSize,
   }

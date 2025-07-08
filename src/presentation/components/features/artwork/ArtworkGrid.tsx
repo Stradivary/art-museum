@@ -29,7 +29,8 @@ export function ArtworkGrid({
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-    ref,
+    listRef,
+    searchRef,
     error,
     hasData,
     isEmpty,
@@ -129,9 +130,9 @@ export function ArtworkGrid({
       </div>
 
       {!isSearching && hasNextPage && (
-        <div ref={ref} className="flex justify-center py-8">
+        <div ref={listRef} className="flex justify-center py-8">
           {isFetchingNextPage ? (
-            <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900" />
           ) : (
             <Button
               onClick={() => fetchNextPage()}
@@ -145,7 +146,7 @@ export function ArtworkGrid({
       )}
 
       {isSearching && hasNextPage && (
-        <div ref={ref} className="flex justify-center py-8">
+        <div ref={searchRef} className="flex justify-center py-8">
           {isFetchingNextPage ? (
             <div className="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
           ) : (

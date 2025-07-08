@@ -270,5 +270,37 @@ describe('SavedArtworkRepositoryImpl', () => {
       // Cleanup
       consoleErrorSpy.mockRestore()
     })
+
+    describe('clearArtworks', () => {
+      it('should clear all saved artworks', async () => {
+        // Arrange
+        mockedLocalStorage.removeItem.mockResolvedValue(undefined)
+
+        // Act
+        await repository.clearArtworks()
+
+        // Assert
+        expect(mockedLocalStorage.removeItem).toHaveBeenCalledWith(STORAGE_KEY)
+      })
+
+      it('should handle error when clearing artworks', async () => {
+        // Arrange
+        const error = new Error('Storage error')
+        mockedLocalStorage.removeItem.mockRejectedValue(error)
+        const consoleErrorSpy = vi
+          .spyOn(console, 'error')
+          .mockImplementation(() => {})
+
+        // Act & Assert
+        await expect(repository.clearArtworks()).rejects.toThrow('Storage error')
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error clearing saved artworks:',
+          error
+        )
+
+        // Cleanup
+        consoleErrorSpy.mockRestore()
+      })
+    })
   })
 })

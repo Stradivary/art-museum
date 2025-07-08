@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { PageHeader } from '@/presentation/components/shared/PageHeader'
 import { ThemeProvider } from '@/presentation/components/shared/ThemeProvider'
+import { HelpCircle } from 'lucide-react'
 import { TeachingTipProvider } from '@/presentation/components/shared/teachingTip'
 
 // Mock framer-motion

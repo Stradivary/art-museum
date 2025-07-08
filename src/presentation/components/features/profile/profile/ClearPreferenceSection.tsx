@@ -14,12 +14,7 @@ export function ClearPreferenceSection({
       <span className="text-sm">
         {t('settings.clearPreferences', 'Clear Preferences')}
       </span>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={onClear}
-        disabled={loading}
-      >
+      <Button variant="destructive" size="sm" onClick={onClear}>
         {loading
           ? t('settings.clearing', 'Clearing...')
           : t('settings.clearSaved', 'Clear Saved & Disliked Content')}

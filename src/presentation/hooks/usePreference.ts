@@ -1,11 +1,7 @@
 import i18n from '@/i18n'
 import { useCallback, useEffect, useState } from 'react'
 import type { Preference } from '@/infrastructure/repositories/PreferenceRepository'
-import { PreferenceService } from '@/core/application/services/PreferenceService'
-
-// Remove useMemo for service, use a module-level singleton instead
-const service = new PreferenceService()
-
+import { preferenceService } from '@/core/application/services/PreferenceService'
 export function usePreference() {
   const [preference, setPreference] = useState<Preference | null>({
     theme: 'light',
@@ -15,7 +11,7 @@ export function usePreference() {
   const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (typeof window === 'undefined') return
-    service.getPreference().then((pref) => {
+    preferenceService.getPreference().then((pref) => {
       setPreference(
         pref ?? {
           theme: 'light',
@@ -38,10 +34,10 @@ export function usePreference() {
           update.showTeachingTips ?? preference?.showTeachingTips ?? true,
       }
       setPreference(newPref)
-      await service.setPreference(newPref)
+      await preferenceService.setPreference(newPref)
       // Always update language and theme after preference change
       if (update.language) i18n.changeLanguage(update.language)
-      if (update.theme) {
+      if (update.theme && typeof window !== 'undefined') {
         if (update.theme === 'dark') {
           document.documentElement.classList.add('dark')
         } else {

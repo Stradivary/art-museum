@@ -16,3 +16,6 @@ export class PreferenceService {
     await PreferenceRepository.clear()
   }
 }
+
+// Remove useMemo for service, use a module-level singleton instead
+export const preferenceService = new PreferenceService()

@@ -1,7 +1,8 @@
 'use client'
 
+import { usePreference } from '@/presentation/hooks/usePreference'
 import { motion } from 'framer-motion'
-import { ArrowLeft, HelpCircle } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { Button } from '../ui/button'
 import { ThemeToggle } from './ThemeToggle'
@@ -26,7 +27,7 @@ export function PageHeader({
   className = '',
 }: Readonly<PageHeaderProps>) {
   const navigate = useNavigate()
-
+  const { preference } = usePreference()
   const handleBackClick = () => {
     if (onBackClick) {
       onBackClick()
@@ -87,11 +88,16 @@ export function PageHeader({
             </motion.div>
           )}
 
-          <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-2"
+            key={`${preference?.showTeachingTips}teaching-tips`}
+          >
             {/* Tutorial Trigger */}
-            <TeachingTipTrigger variant="button" showAll size="sm">
-              <HelpCircle className="h-4 w-4" />
-            </TeachingTipTrigger>
+            {preference?.showTeachingTips === true && (
+              <TeachingTipTrigger variant="button" showAll size="sm">
+                Help
+              </TeachingTipTrigger>
+            )}
 
             <ThemeToggle />
           </div>

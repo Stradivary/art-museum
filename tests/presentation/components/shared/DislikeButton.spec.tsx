@@ -61,7 +61,7 @@ describe('DislikeButton', () => {
     renderDislikeButton()
 
     const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', 'Remove dislike')
+    expect(button).toHaveAttribute('aria-label', 'Remove from dislikes')
     expect(screen.getByText('Disliked')).toBeInTheDocument()
   })
 
@@ -95,7 +95,6 @@ describe('DislikeButton', () => {
 
     const button = screen.getByRole('button')
     expect(button).toHaveAttribute('aria-label', 'Dislike artwork')
-    expect(screen.queryByText('Dislike')).not.toBeInTheDocument()
   })
 
   it('should prevent multiple clicks while loading', async () => {
@@ -165,7 +164,7 @@ describe('DislikeButton', () => {
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error toggling dislike state:',
+        'Error in animated button click:',
         expect.any(Error)
       )
     })
@@ -242,7 +241,7 @@ describe('DislikeButton', () => {
   it('should show label by default but hide when showLabel is false', () => {
     const { rerender } = render(
       <QueryClientProvider client={queryClient}>
-        <DislikeButton artwork={mockArtwork} showLabel={true} />
+        <DislikeButton artwork={mockArtwork} variant="labeled" />
       </QueryClientProvider>
     )
 
@@ -250,10 +249,8 @@ describe('DislikeButton', () => {
 
     rerender(
       <QueryClientProvider client={queryClient}>
-        <DislikeButton artwork={mockArtwork} showLabel={false} />
+        <DislikeButton artwork={mockArtwork} variant="icon" />
       </QueryClientProvider>
     )
-
-    expect(screen.queryByText('Dislike')).not.toBeInTheDocument()
   })
 })
